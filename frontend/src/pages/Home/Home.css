@@ -1,0 +1,18 @@
+.agents-section {
+    background: #0f172a;
+    padding: 100px 80px;
+    text-align: center;
+    color: white;
+}
+
+.agents-section h2 {
+    font-size: 40px;
+    margin-bottom: 60px;
+}
+
+.agent-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}

@@ -1,0 +1,31 @@
+.footer{
+
+    background:#020617;
+
+    color:white;
+
+    text-align:center;
+
+    padding:60px 20px;
+
+    border-top:1px solid #1e293b;
+}
+
+.footer h3{
+
+    color:#38bdf8;
+
+    margin-bottom:15px;
+}
+
+.footer p{
+
+    color:#94a3b8;
+
+    margin-bottom:25px;
+}
+
+.footer small{
+
+    color:#64748b;
+}

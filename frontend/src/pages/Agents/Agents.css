@@ -1,0 +1,23 @@
+.agents-page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  padding: 120px 80px 60px;
+  text-align: center;
+}
+
+.agents-page h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.agents-page p {
+  color: #cbd5e1;
+  margin-bottom: 50px;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}

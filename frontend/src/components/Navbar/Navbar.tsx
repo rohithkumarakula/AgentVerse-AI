@@ -1,15 +1,27 @@
 import "./Navbar.css";
+import { NavLink } from "react-router-dom";
 
 function Navbar() {
   return (
     <nav className="navbar">
-      <div className="logo">🚀 AgentVerse AI</div>
+      <h1 className="logo">🚀 AgentVerse AI</h1>
 
       <ul className="nav-links">
-        <li>Home</li>
-        <li>Agents</li>
-        <li>Features</li>
-        <li>About</li>
+        <li>
+          <NavLink to="/">Home</NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/agents">Agents</NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/features">Features</NavLink>
+        </li>
+
+        <li>
+          <a href="#">About</a>
+        </li>
       </ul>
 
       <button className="login-btn">Get Started</button>

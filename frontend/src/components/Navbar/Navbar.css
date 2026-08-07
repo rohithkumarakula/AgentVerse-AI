@@ -40,3 +40,17 @@
 .login-btn:hover {
   background: #1d4ed8;
 }
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: #38bdf8;
+}
+
+.nav-links a.active {
+  color: #38bdf8;
+  font-weight: bold;
+}

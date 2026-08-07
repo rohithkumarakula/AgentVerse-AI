@@ -1,0 +1,38 @@
+.notfound {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.notfound h1 {
+  font-size: 100px;
+  color: #38bdf8;
+}
+
+.notfound h2 {
+  font-size: 36px;
+}
+
+.notfound p {
+  font-size: 20px;
+  color: #cbd5e1;
+}
+
+.home-btn {
+  text-decoration: none;
+  background: #2563eb;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.home-btn:hover {
+  background: #1d4ed8;
+}

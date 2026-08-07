@@ -1,0 +1,49 @@
+.features-page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  padding: 120px 80px 60px;
+  text-align: center;
+}
+
+.features-page h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.features-page p {
+  color: #cbd5e1;
+  margin-bottom: 50px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 16px;
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  margin-bottom: 15px;
+  color: #38bdf8;
+}
+
+.feature-card p {
+  color: #cbd5e1;
+  line-height: 1.6;
+}

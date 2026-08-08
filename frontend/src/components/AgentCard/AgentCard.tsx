@@ -1,4 +1,5 @@
 import "./AgentCard.css";
+import { useNavigate } from "react-router-dom";
 
 type AgentCardProps = {
   title: string;
@@ -7,6 +8,14 @@ type AgentCardProps = {
 };
 
 function AgentCard({ title, description, icon }: AgentCardProps) {
+  const navigate = useNavigate();
+
+  function handleExplore() {
+    if (title === "TailorAI") {
+      navigate("/tailor-ai");
+    }
+  }
+
   return (
     <div className="agent-card">
       <div className="agent-icon">{icon}</div>
@@ -15,7 +24,7 @@ function AgentCard({ title, description, icon }: AgentCardProps) {
 
       <p>{description}</p>
 
-      <button>Explore</button>
+      <button onClick={handleExplore}>Explore</button>
     </div>
   );
 }

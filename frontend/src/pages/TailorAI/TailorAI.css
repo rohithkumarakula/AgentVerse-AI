@@ -1,0 +1,76 @@
+.tailor-page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+  padding: 120px 20px 60px;
+}
+
+.tailor-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.tailor-header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.tailor-header p {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+}
+
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.chat-messages {
+  min-height: 400px;
+  padding: 20px;
+}
+
+.ai-message {
+  background: #334155;
+  padding: 15px 20px;
+  border-radius: 12px;
+  max-width: 70%;
+  color: #e2e8f0;
+}
+
+.chat-input {
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid #475569;
+  padding-top: 20px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #0f172a;
+  color: white;
+  outline: none;
+}
+
+.chat-input input::placeholder {
+  color: #94a3b8;
+}
+
+.chat-input button {
+  padding: 14px 25px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background: #1d4ed8;
+}

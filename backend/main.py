@@ -29,8 +29,14 @@ app.add_middleware(
 )
 
 
+class Message(BaseModel):
+    text: str
+    sender: str
+
+
 class TailorRequest(BaseModel):
     message: str
+    history: list[Message] = []
 
 
 @app.get("/")
@@ -51,23 +57,55 @@ def health():
 
 @app.post("/tailor-ai")
 def tailor_ai(request: TailorRequest):
+
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are TailorAI, an expert AI career assistant for students "
+                "and fresh graduates.\n\n"
+
+                "Your job is to provide practical, personalized career guidance "
+                "for software and technology careers.\n\n"
+
+                "You can help with:\n"
+                "- Career roadmaps\n"
+                "- Programming and technical skills\n"
+                "- Projects and GitHub portfolios\n"
+                "- Resume and LinkedIn improvement\n"
+                "- Interview preparation\n"
+                "- Job and placement preparation\n"
+                "- Learning plans and study schedules\n\n"
+
+                "Rules:\n"
+                "1. Give clear and practical advice.\n"
+                "2. Break complex topics into simple steps.\n"
+                "3. Prefer structured answers with headings and bullet points.\n"
+                "4. Avoid unnecessary information.\n"
+                "5. When giving a roadmap, organize it in a logical order.\n"
+                "6. Ask a clarifying question when the user's goal is unclear.\n"
+                "7. Encourage the user, but remain realistic about skills, "
+                "time, and job requirements."
+            )
+        }
+    ]
+
+    # Add previous conversation to the AI context
+    for message in request.history:
+        messages.append({
+            "role": "user" if message.sender == "user" else "assistant",
+            "content": message.text
+        })
+
+    # Add the current user message
+    messages.append({
+        "role": "user",
+        "content": request.message
+    })
+
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are TailorAI, a professional AI career assistant. "
-                    "Help users with career planning, skills, resumes, "
-                    "interviews, jobs, and professional development. "
-                    "Give practical and clear advice."
-                )
-            },
-            {
-                "role": "user",
-                "content": request.message
-            }
-        ],
+        messages=messages,
         temperature=0.7,
         max_tokens=500
     )

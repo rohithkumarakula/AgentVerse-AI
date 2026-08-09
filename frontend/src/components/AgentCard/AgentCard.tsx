@@ -11,10 +11,14 @@ function AgentCard({ title, description, icon }: AgentCardProps) {
   const navigate = useNavigate();
 
   function handleExplore() {
-    if (title === "TailorAI") {
-      navigate("/tailor-ai");
-    }
+  if (title === "TailorAI") {
+    navigate("/tailor-ai");
+  } else if (title === "StudyAI") {
+    navigate("/study-ai");
+  } else if (title === "LifeAI") {
+    navigate("/life-ai");
   }
+}
 
   return (
     <div className="agent-card">

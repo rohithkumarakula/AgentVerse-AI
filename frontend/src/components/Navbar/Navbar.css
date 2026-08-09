@@ -1,56 +1,258 @@
+/* =========================================
+   AGENTVERSE AI — PREMIUM NAVBAR
+========================================= */
+
 .navbar {
+  position: relative;
+  z-index: 100;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 60px;
-  background: #0f172a;
-  color: white;
+  justify-content: space-between;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 18px 6%;
+
+  background: rgba(8, 9, 13, 0.78);
+
+  color: #f8fafc;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.18);
 }
 
+/* =========================================
+   LOGO
+========================================= */
+
 .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 1.55rem;
+  font-weight: 800;
+
+  letter-spacing: -0.035em;
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition: opacity 0.2s ease;
 }
+
+.logo:hover {
+  opacity: 0.9;
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
 
 .nav-links {
   display: flex;
+  align-items: center;
+
   list-style: none;
-  gap: 30px;
+
+  gap: 34px;
+
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links li {
+  position: relative;
+
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.nav-links li:hover {
-  color: #38bdf8;
+/* Navigation links */
+
+.nav-links a {
+  position: relative;
+
+  display: inline-block;
+
+  padding: 8px 2px;
+
+  text-decoration: none;
+
+  color: #a7adbd;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
 }
+
+/* Hover */
+
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+/* Purple underline */
+
+.nav-links a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #8b5cf6,
+    #c084fc
+  );
+
+  transition: width 0.25s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Active page */
+
+.nav-links a.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+
+  box-shadow:
+    0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+/* =========================================
+   GET STARTED BUTTON
+========================================= */
 
 .login-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
+  position: relative;
+
+  padding: 11px 20px;
+
+  border: 1px solid rgba(167, 139, 250, 0.25);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
+  color: #ffffff;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
   cursor: pointer;
-  transition: 0.3s;
+
+  box-shadow:
+    0 8px 25px rgba(124, 58, 237, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .login-btn:hover {
-  background: #1d4ed8;
-}
-.nav-links a {
-  text-decoration: none;
-  color: white;
-  transition: 0.3s;
+  transform: translateY(-1px);
+
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 10px 30px rgba(124, 58, 237, 0.35);
 }
 
-.nav-links a:hover {
-  color: #38bdf8;
+.login-btn:active {
+  transform: translateY(0);
 }
 
-.nav-links a.active {
-  color: #38bdf8;
-  font-weight: bold;
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 800px) {
+  .navbar {
+    padding: 16px 24px;
+  }
+
+  .nav-links {
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 0.88rem;
+  }
+
+  .login-btn {
+    padding: 9px 15px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .navbar {
+    padding: 15px 18px;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .nav-links {
+    gap: 14px;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+  }
+
+  .login-btn {
+    padding: 8px 12px;
+    border-radius: 9px;
+  }
+}
+
+@media (max-width: 520px) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .nav-links {
+    order: 3;
+
+    width: 100%;
+
+    justify-content: center;
+
+    gap: 20px;
+  }
 }

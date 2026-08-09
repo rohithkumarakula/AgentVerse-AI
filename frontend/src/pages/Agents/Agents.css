@@ -1,23 +1,305 @@
+/* =========================================
+   AGENTVERSE AI — AGENTS PAGE
+========================================= */
+
 .agents-page {
   min-height: 100vh;
-  background: #0f172a;
-  color: white;
-  padding: 120px 80px 60px;
+
+  position: relative;
+
+  padding: 120px 6% 90px;
+
   text-align: center;
+
+  color: #f8fafc;
+
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(124, 58, 237, 0.16),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 35%,
+      rgba(168, 85, 247, 0.10),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(99, 102, 241, 0.08),
+      transparent 32%
+    ),
+    #07080d;
 }
+
+/* =========================================
+   BACKGROUND GRID
+========================================= */
+
+.agents-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    );
+
+  background-size: 60px 60px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.8) 60%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.8) 60%,
+    transparent 100%
+  );
+}
+
+/* =========================================
+   AMBIENT GLOW
+========================================= */
+
+.agents-page::after {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  top: 80px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(124, 58, 237, 0.06);
+
+  filter: blur(100px);
+
+  pointer-events: none;
+}
+
+/* =========================================
+   PAGE TITLE
+========================================= */
 
 .agents-page h1 {
-  font-size: 3rem;
-  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+
+  display: inline-block;
+
+  margin: 0 0 14px;
+
+  padding: 5px 4px 10px;
+
+  font-size: clamp(2.7rem, 6vw, 4.5rem);
+
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  letter-spacing: -0.05em;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 15%,
+      #e9ddff 55%,
+      #c084fc 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
 }
 
-.agents-page p {
-  color: #cbd5e1;
-  margin-bottom: 50px;
+/* =========================================
+   PAGE DESCRIPTION
+========================================= */
+
+.agents-page > p {
+  position: relative;
+  z-index: 1;
+
+  max-width: 600px;
+
+  margin: 0 auto 55px;
+
+  color: #9299aa;
+
+  font-size: 1.05rem;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.005em;
 }
+
+/* =========================================
+   AGENTS GRID
+========================================= */
 
 .agents-grid {
+  position: relative;
+  z-index: 1;
+
+  width: min(1050px, 100%);
+
+  margin: 0 auto;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 28px;
+
+  align-items: stretch;
+}
+
+/* =========================================
+   CARD SIZE OVERRIDE
+========================================= */
+
+/*
+   AgentCard.css normally gives each card
+   a fixed width.
+
+   On the Agents page we want the cards
+   to fill each grid column evenly.
+*/
+
+.agents-grid .agent-card {
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================================
+   ENTRANCE ANIMATION
+========================================= */
+
+.agents-grid .agent-card {
+  animation: agentCardReveal 0.5s ease both;
+}
+
+.agents-grid .agent-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.agents-grid .agent-card:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.agents-grid .agent-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.agents-grid .agent-card:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.agents-grid .agent-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.agents-grid .agent-card:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+@keyframes agentCardReveal {
+  from {
+    opacity: 0;
+
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 950px) {
+  .agents-page {
+    padding: 110px 5% 80px;
+  }
+
+  .agents-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+  .agents-page {
+    padding: 95px 16px 65px;
+  }
+
+  .agents-page h1 {
+    font-size: 2.6rem;
+
+    letter-spacing: -0.04em;
+  }
+
+  .agents-page > p {
+    margin-bottom: 38px;
+
+    font-size: 0.95rem;
+  }
+
+  .agents-grid {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+
+    width: min(360px, 100%);
+  }
+}
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 420px) {
+  .agents-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .agents-page h1 {
+    font-size: 2.25rem;
+  }
 }

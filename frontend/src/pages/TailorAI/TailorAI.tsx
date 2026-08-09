@@ -35,6 +35,7 @@ function TailorAI() {
         },
         body: JSON.stringify({
           message: userMessage,
+          history:messages,
         }),
       });
 
@@ -65,10 +66,21 @@ function TailorAI() {
 
       <section className="tailor-page">
         <div className="tailor-header">
-          <h1>🤖 TailorAI</h1>
-          <p>Your personal AI career assistant.</p>
-        </div>
+  <div className="tailor-brand">
+    <div className="tailor-icon">🤖</div>
 
+    <div>
+      <h1>TailorAI</h1>
+      <div className="tailor-status">
+        <span></span>
+        AI Career Assistant
+      </div>
+    </div>
+  </div>
+
+  <p>Your personal AI career assistant.</p>
+</div>
+        
         <div className="chat-container">
           <div className="chat-messages">
             <div className="ai-message">

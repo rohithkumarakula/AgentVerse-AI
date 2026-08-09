@@ -7,7 +7,12 @@ function Hero() {
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1>🚀 AgentVerse AI</h1>
+
+        <div className="hero-brand">
+          <span className="hero-rocket">🚀</span>
+
+          <h1>AgentVerse AI</h1>
+        </div>
 
         <h2>One Platform. Infinite AI Agents.</h2>
 
@@ -31,6 +36,7 @@ function Hero() {
             Explore Agents
           </button>
         </div>
+
       </div>
     </section>
   );

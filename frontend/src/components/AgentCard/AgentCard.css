@@ -1,61 +1,241 @@
-.agent-card{
+/* =========================================
+   AGENTVERSE AI — PREMIUM AGENT CARD
+========================================= */
 
-    background:#1e293b;
+.agent-card {
+  position: relative;
 
-    border-radius:15px;
+  width: 300px;
 
-    padding:30px;
+  padding: 30px 26px;
 
-    width:300px;
+  box-sizing: border-box;
 
-    text-align:center;
+  text-align: center;
 
-    color:white;
+  color: #f8fafc;
 
-    transition:.3s;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018)
+    );
 
-    border:1px solid #334155;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  border-radius: 22px;
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.28);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.agent-card:hover{
+/* =========================================
+   SUBTLE CARD GLOW
+========================================= */
 
-    transform:translateY(-8px);
+.agent-card::before {
+  content: "";
 
-    border-color:#38bdf8;
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  top: -100px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(139, 92, 246, 0.12);
+
+  filter: blur(50px);
+
+  pointer-events: none;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
 }
 
-.agent-icon{
+/* =========================================
+   HOVER
+========================================= */
 
-    font-size:50px;
+.agent-card:hover {
+  transform: translateY(-10px);
 
-    margin-bottom:20px;
+  border-color: rgba(167, 139, 250, 0.30);
+
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.38),
+    0 0 45px rgba(124, 58, 237, 0.10);
 }
 
-.agent-card h3{
+.agent-card:hover::before {
+  background: rgba(139, 92, 246, 0.20);
 
-    margin-bottom:15px;
+  transform:
+    translateX(-50%)
+    scale(1.15);
 }
 
-.agent-card p{
+/* =========================================
+   ICON
+========================================= */
 
-    color:#cbd5e1;
+.agent-icon {
+  position: relative;
+  z-index: 1;
 
-    margin-bottom:25px;
+  width: 72px;
+  height: 72px;
 
-    line-height:1.6;
+  margin: 0 auto 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 2.7rem;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(139, 92, 246, 0.16),
+      rgba(168, 85, 247, 0.05)
+    );
+
+  border: 1px solid rgba(167, 139, 250, 0.16);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.agent-card button{
+.agent-card:hover .agent-icon {
+  transform: translateY(-3px) scale(1.04);
 
-    background:#2563eb;
+  box-shadow:
+    0 10px 30px rgba(124, 58, 237, 0.16);
+}
 
-    color:white;
+/* =========================================
+   TITLE
+========================================= */
 
-    border:none;
+.agent-card h3 {
+  position: relative;
+  z-index: 1;
 
-    padding:12px 25px;
+  margin: 0 0 12px;
 
-    border-radius:8px;
+  color: #ffffff;
 
-    cursor:pointer;
+  font-size: 1.35rem;
+
+  font-weight: 700;
+
+  letter-spacing: -0.025em;
+}
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.agent-card p {
+  position: relative;
+  z-index: 1;
+
+  min-height: 52px;
+
+  margin: 0 0 24px;
+
+  color: #9299aa;
+
+  font-size: 0.92rem;
+
+  line-height: 1.65;
+}
+
+/* =========================================
+   EXPLORE BUTTON
+========================================= */
+
+.agent-card button {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+
+  padding: 12px 20px;
+
+  border: 1px solid rgba(167, 139, 250, 0.20);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
+  color: #ffffff;
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px rgba(124, 58, 237, 0.15);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.agent-card button:hover {
+  transform: translateY(-2px);
+
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 12px 30px rgba(124, 58, 237, 0.30);
+}
+
+.agent-card button:active {
+  transform: translateY(0);
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+  .agent-card {
+    width: min(340px, 100%);
+
+    padding: 28px 24px;
+  }
 }

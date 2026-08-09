@@ -1,99 +1,454 @@
-.hero{
-    min-height:85vh;
-    background:#0f172a;
-    color:white;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+/* =========================================
+   AGENTVERSE AI — PREMIUM HERO
+========================================= */
 
-    text-align:center;
+.hero {
+  min-height: 82vh;
+  position: relative;
 
-    padding:40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 100px 24px 80px;
+
+  overflow: hidden;
+  text-align: center;
+
+  color: #f8fafc;
+
+  background:
+    radial-gradient(
+      circle at 20% 25%,
+      rgba(124, 58, 237, 0.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 35%,
+      rgba(168, 85, 247, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(99, 102, 241, 0.09),
+      transparent 32%
+    ),
+    #07080d;
 }
 
-.hero-content{
-    max-width:900px;
+/* =========================================
+   BACKGROUND GRID
+========================================= */
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    );
+
+  background-size: 60px 60px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 55%,
+    transparent 100%
+  );
 }
 
-.hero h1{
+/* =========================================
+   AMBIENT GLOW
+========================================= */
 
-    font-size:70px;
-    margin-bottom:15px;
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 520px;
+  height: 520px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background: rgba(124, 58, 237, 0.07);
+
+  filter: blur(100px);
+
+  pointer-events: none;
 }
 
-.hero h2{
+/* =========================================
+   HERO CONTENT
+========================================= */
 
-    font-size:38px;
-    color:#38bdf8;
+.hero-content {
+  position: relative;
+  z-index: 1;
 
-    margin-bottom:25px;
+  width: min(950px, 100%);
+
+  margin: 0 auto;
+
+  animation: heroReveal 0.7s ease-out both;
 }
 
-.hero p{
+/* =========================================
+   HERO BRAND
+========================================= */
 
-    font-size:20px;
-    line-height:1.8;
+.hero-brand {
+  display: flex;
 
-    color:#cbd5e1;
+  align-items: center;
+  justify-content: center;
 
-    margin-bottom:40px;
+  gap: 18px;
+
+  width: 100%;
+  max-width: 100%;
+
+  margin-bottom: 28px;
+
+  box-sizing: border-box;
 }
 
-.hero-buttons{
+/* =========================================
+   ROCKET
+========================================= */
 
-    display:flex;
-    justify-content:center;
+.hero-rocket {
+  display: inline-block;
 
-    gap:20px;
+  flex-shrink: 0;
+
+  font-size: clamp(3rem, 6vw, 4.8rem);
+
+  filter:
+    drop-shadow(
+      0 0 18px rgba(168, 85, 247, 0.25)
+    );
+
+  animation: rocketFloat 3s ease-in-out infinite;
 }
 
-.primary-btn{
+/* =========================================
+   AGENTVERSE AI
+========================================= */
 
-    background:#2563eb;
+.hero-brand h1 {
+  margin: 0;
+  padding-bottom: 12px;
 
-    color:white;
+  font-family: "Inter", sans-serif;
 
-    border:none;
+  font-size: clamp(3.2rem, 7vw, 5.5rem);
 
-    padding:15px 35px;
+  line-height: 1.2;
 
-    border-radius:10px;
+  font-weight: 800;
 
-    cursor:pointer;
+  letter-spacing: -0.04em;
 
-    font-size:17px;
+  white-space: nowrap;
 
-    transition:.3s;
+  overflow: visible;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 15%,
+      #e9ddff 55%,
+      #c084fc 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+  font-synthesis: none;
 }
 
-.primary-btn:hover{
+/* =========================================
+   MAIN HEADLINE
+========================================= */
 
-    background:#1d4ed8;
+.hero h2 {
+  margin: 0 auto 24px;
+
+  max-width: 850px;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: clamp(2rem, 5vw, 3.4rem);
+
+  line-height: 1.12;
+
+  font-weight: 700;
+
+  letter-spacing: -0.045em;
+
+  color: #f8fafc;
 }
 
-.secondary-btn{
+/* =========================================
+   DESCRIPTION
+========================================= */
 
-    background:transparent;
+.hero p {
+  max-width: 680px;
 
-    color:white;
+  margin: 0 auto 38px;
 
-    border:2px solid #38bdf8;
+  font-family: "Inter", sans-serif;
 
-    padding:15px 35px;
+  color: #9299aa;
 
-    border-radius:10px;
+  font-size: clamp(1rem, 2vw, 1.15rem);
 
-    cursor:pointer;
+  line-height: 1.8;
 
-    font-size:17px;
-
-    transition:.3s;
+  letter-spacing: 0.005em;
 }
 
-.secondary-btn:hover{
+/* =========================================
+   BUTTONS
+========================================= */
 
-    background:#38bdf8;
+.hero-buttons {
+  display: flex;
 
-    color:#0f172a;
+  justify-content: center;
+  align-items: center;
+
+  gap: 14px;
+
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   PRIMARY BUTTON
+========================================= */
+
+.primary-btn {
+  min-width: 155px;
+
+  padding: 14px 25px;
+
+  border: 1px solid rgba(167, 139, 250, 0.25);
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
+  color: #ffffff;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 35px rgba(124, 58, 237, 0.20);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 16px 40px rgba(124, 58, 237, 0.35);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================
+   SECONDARY BUTTON
+========================================= */
+
+.secondary-btn {
+  min-width: 155px;
+
+  padding: 13px 25px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  color: #e5e7eb;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(10px);
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.secondary-btn:hover {
+  transform: translateY(-2px);
+
+  background: rgba(139, 92, 246, 0.10);
+
+  border-color: rgba(167, 139, 250, 0.35);
+
+  color: #ffffff;
+}
+
+.secondary-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rocketFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(2deg);
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 800px) {
+  .hero {
+    min-height: 78vh;
+    padding: 90px 20px 70px;
+  }
+
+  .hero-brand h1 {
+    font-size: clamp(2.8rem, 10vw, 4.8rem);
+  }
+
+  .hero h2 {
+    font-size: clamp(1.9rem, 7vw, 2.8rem);
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+  .hero-brand {
+    gap: 10px;
+  }
+
+  .hero-brand h1 {
+    font-size: 2.8rem;
+  }
+
+  .hero-rocket {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 80px 16px 60px;
+  }
+
+  .hero-brand {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hero-brand h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-rocket {
+    font-size: 3rem;
+  }
+
+  .hero h2 {
+    font-size: 1.9rem;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: min(280px, 100%);
+  }
 }

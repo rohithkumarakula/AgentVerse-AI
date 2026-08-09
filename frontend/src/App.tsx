@@ -10,11 +10,14 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+
       <Route path="/agents" element={<Agents />} />
+
       <Route path="/features" element={<Features />} />
+
       <Route path="/tailor-ai" element={<TailorAI />} />
+
       <Route path="*" element={<NotFound />} />
-      
     </Routes>
   );
 }

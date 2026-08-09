@@ -1,76 +1,618 @@
+/* =========================================
+   TAILOR AI — PREMIUM AI SAAS UI
+========================================= */
+
 .tailor-page {
   min-height: 100vh;
-  background: #0f172a;
-  color: white;
-  padding: 120px 20px 60px;
+  padding: 115px 24px 60px;
+  position: relative;
+
+  /* Prevent horizontal overflow without clipping
+     the TailorAI heading vertically */
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  background:
+    radial-gradient(
+      circle at 15% 12%,
+      rgba(139, 92, 246, 0.16),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 35%,
+      rgba(217, 70, 239, 0.09),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(99, 102, 241, 0.08),
+      transparent 32%
+    ),
+    #07080d;
+
+  color: #f8fafc;
 }
+
+/* =========================================
+   BACKGROUND GRID
+========================================= */
+
+.tailor-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.022) 1px,
+      transparent 1px
+    );
+
+  background-size: 60px 60px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.8) 45%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.8) 45%,
+    transparent 100%
+  );
+}
+
+/* =========================================
+   HEADER
+========================================= */
 
 .tailor-header {
+  position: relative;
+  z-index: 2;
+
+  width: min(900px, 100%);
+
+  margin: 0 auto 32px;
+
   text-align: center;
-  margin-bottom: 40px;
+
+  overflow: visible;
 }
+
+/* =========================================
+   BRAND ROW
+========================================= */
+
+.tailor-brand {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+
+  overflow: visible;
+}
+
+/* =========================================
+   ROBOT ICON
+========================================= */
+
+.tailor-icon {
+  width: 66px;
+  height: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 2.45rem;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(139, 92, 246, 0.20),
+      rgba(168, 85, 247, 0.06)
+    );
+
+  border: 1px solid rgba(167, 139, 250, 0.20);
+
+  box-shadow:
+    0 0 35px rgba(139, 92, 246, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* =========================================
+   TAILOR AI TITLE
+========================================= */
 
 .tailor-header h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
+  position: relative;
+
+  display: inline-block;
+
+  margin: 0;
+
+  /* Extra vertical room prevents glyph clipping */
+  padding: 10px 6px 18px;
+
+  font-size: clamp(2.5rem, 6vw, 4.2rem);
+
+  line-height: 1.25;
+
+  font-weight: 800;
+
+  letter-spacing: -0.045em;
+
+  white-space: nowrap;
+
+  overflow: visible;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 15%,
+      #e9ddff 55%,
+      #c084fc 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
 }
+
+/* =========================================
+   AI STATUS
+========================================= */
+
+.tailor-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 4px;
+
+  color: #9299aa;
+
+  font-size: 0.78rem;
+
+  font-weight: 500;
+}
+
+.tailor-status span {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #a78bfa;
+
+  box-shadow:
+    0 0 8px rgba(167, 139, 250, 0.8),
+    0 0 16px rgba(167, 139, 250, 0.35);
+}
+
+/* =========================================
+   SUBTITLE
+========================================= */
 
 .tailor-header p {
-  color: #cbd5e1;
-  font-size: 1.1rem;
+  margin: 10px 0 0;
+
+  color: #8f96a8;
+
+  font-size: 1rem;
+
+  line-height: 1.6;
+
+  letter-spacing: 0.01em;
 }
+
+/* =========================================
+   CHAT CONTAINER
+========================================= */
 
 .chat-container {
-  max-width: 800px;
+  position: relative;
+  z-index: 1;
+
+  width: min(920px, 100%);
+
+  height: 580px;
+
   margin: 0 auto;
-  background: #1e293b;
-  border-radius: 16px;
-  padding: 25px;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 12px;
+
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.015)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.085);
+
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.55),
+    0 0 90px rgba(124, 58, 237, 0.065);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
+
+/* =========================================
+   CHAT MESSAGES
+========================================= */
 
 .chat-messages {
-  min-height: 400px;
-  padding: 20px;
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 24px 24px 18px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 16px;
+
+  scroll-behavior: smooth;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #363946 transparent;
 }
 
-.ai-message {
-  background: #334155;
-  padding: 15px 20px;
-  border-radius: 12px;
-  max-width: 70%;
-  color: #e2e8f0;
+.chat-messages::-webkit-scrollbar {
+  width: 5px;
 }
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #343743;
+
+  border-radius: 20px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #4a4d5b;
+}
+
+/* =========================================
+   AI MESSAGE
+========================================= */
+
+.ai-message {
+  align-self: flex-start;
+
+  max-width: min(76%, 680px);
+
+  padding: 15px 19px;
+
+  color: #e7e9ef;
+
+  line-height: 1.65;
+
+  font-size: 0.96rem;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(30, 33, 43, 0.96),
+      rgba(19, 21, 28, 0.96)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.075);
+
+  border-radius: 18px 18px 18px 5px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.18);
+
+  animation: messageAppear 0.3s ease;
+}
+
+/* =========================================
+   USER MESSAGE
+========================================= */
+
+.user-message {
+  align-self: flex-end;
+
+  max-width: min(70%, 620px);
+
+  padding: 15px 19px;
+
+  color: #ffffff;
+
+  line-height: 1.65;
+
+  font-size: 0.96rem;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
+  border-radius: 18px 18px 5px 18px;
+
+  box-shadow:
+    0 10px 30px rgba(124, 58, 237, 0.20);
+
+  animation: messageAppear 0.3s ease;
+}
+
+/* =========================================
+   INPUT AREA
+========================================= */
 
 .chat-input {
   display: flex;
-  gap: 12px;
-  border-top: 1px solid #475569;
-  padding-top: 20px;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 7px;
+
+  border-radius: 16px;
+
+  background: rgba(7, 9, 14, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
+
+/* =========================================
+   INPUT
+========================================= */
 
 .chat-input input {
   flex: 1;
-  padding: 14px;
+
+  min-width: 0;
+
+  height: 50px;
+
+  padding: 0 16px;
+
   border: none;
-  border-radius: 8px;
-  background: #0f172a;
-  color: white;
+
   outline: none;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  font-size: 0.96rem;
 }
 
 .chat-input input::placeholder {
-  color: #94a3b8;
+  color: #646b7b;
 }
 
+.chat-input input:focus {
+  color: #ffffff;
+}
+
+/* =========================================
+   SEND BUTTON
+========================================= */
+
 .chat-input button {
-  padding: 14px 25px;
+  height: 50px;
+
+  padding: 0 23px;
+
   border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8b5cf6,
+      #a855f7
+    );
+
+  color: #ffffff;
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .chat-input button:hover {
-  background: #1d4ed8;
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 30px rgba(139, 92, 246, 0.32);
+}
+
+.chat-input button:active {
+  transform: translateY(0);
+}
+
+.chat-input button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+/* =========================================
+   MESSAGE ANIMATION
+========================================= */
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+  .tailor-page {
+    padding: 100px 12px 40px;
+  }
+
+  .tailor-header {
+    margin-bottom: 24px;
+  }
+
+  .tailor-brand {
+    gap: 12px;
+  }
+
+  .tailor-icon {
+    width: 54px;
+    height: 54px;
+
+    font-size: 2rem;
+
+    border-radius: 16px;
+  }
+
+  .tailor-header h1 {
+    font-size: 2.5rem;
+
+    padding: 8px 4px 14px;
+
+    line-height: 1.25;
+  }
+
+  .tailor-header p {
+    font-size: 0.92rem;
+  }
+
+  .chat-container {
+    width: 100%;
+
+    height: 620px;
+
+    padding: 8px;
+
+    border-radius: 20px;
+  }
+
+  .chat-messages {
+    padding: 20px 12px 16px;
+  }
+
+  .ai-message,
+  .user-message {
+    max-width: 88%;
+
+    font-size: 0.92rem;
+  }
+
+  .chat-input {
+    padding: 6px;
+  }
+
+  .chat-input input {
+    height: 46px;
+
+    font-size: 0.9rem;
+  }
+
+  .chat-input button {
+    height: 46px;
+
+    padding: 0 17px;
+  }
+}
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 420px) {
+  .tailor-page {
+    padding-left: 8px;
+
+    padding-right: 8px;
+  }
+
+  .tailor-brand {
+    gap: 9px;
+  }
+
+  .tailor-icon {
+    width: 48px;
+
+    height: 48px;
+
+    font-size: 1.7rem;
+  }
+
+  .tailor-header h1 {
+    font-size: 2.15rem;
+
+    padding: 7px 3px 13px;
+
+    line-height: 1.25;
+
+    letter-spacing: -0.035em;
+  }
+
+  .chat-input button {
+    padding: 0 14px;
+  }
 }

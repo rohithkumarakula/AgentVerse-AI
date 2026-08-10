@@ -1,7 +1,8 @@
 import "./TailorAI.css";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
 
-import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
 type Message = {
@@ -13,6 +14,69 @@ function TailorAI() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [copiedCode, setCopiedCode] = useState("");
+
+    const chatMessagesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const chat = chatMessagesRef.current;
+
+    if (chat) {
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, loading]);
+
+  async function handleCopy(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+
+      setTimeout(() => {
+        setCopiedCode("");
+      }, 2000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  }
+
+  const markdownComponents: Components = {
+    code({ className, children, ...props }) {
+      const code = String(children).replace(/\n$/, "");
+      const isCodeBlock = Boolean(className);
+
+      if (!isCodeBlock) {
+        return (
+          <code className={className} {...props}>
+            {children}
+          </code>
+        );
+      }
+
+      return (
+        <div className="code-block-wrapper">
+          <div className="code-block-header">
+            <span>Code</span>
+
+            <button
+              className="copy-code-btn"
+              onClick={() => handleCopy(code)}
+            >
+              {copiedCode === code ? "✓ Copied" : "📋 Copy"}
+            </button>
+          </div>
+
+          <pre>
+            <code className={className} {...props}>
+              {children}
+            </code>
+          </pre>
+        </div>
+      );
+    },
+  };
 
   async function handleSend() {
     if (input.trim() === "" || loading) return;
@@ -21,7 +85,10 @@ function TailorAI() {
 
     setMessages((prev) => [
       ...prev,
-      { text: userMessage, sender: "user" },
+      {
+        text: userMessage,
+        sender: "user",
+      },
     ]);
 
     setInput("");
@@ -35,15 +102,22 @@ function TailorAI() {
         },
         body: JSON.stringify({
           message: userMessage,
-          history:messages,
+          history: messages,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Backend request failed");
+      }
 
       const data = await response.json();
 
       setMessages((prev) => [
         ...prev,
-        { text: data.reply, sender: "ai" },
+        {
+          text: data.reply,
+          sender: "ai",
+        },
       ]);
     } catch (error) {
       console.error("TailorAI Error:", error);
@@ -62,27 +136,26 @@ function TailorAI() {
 
   return (
     <>
-      <Navbar />
-
       <section className="tailor-page">
         <div className="tailor-header">
-  <div className="tailor-brand">
-    <div className="tailor-icon">🤖</div>
+          <div className="tailor-brand">
+            <div className="tailor-icon">🤖</div>
 
-    <div>
-      <h1>TailorAI</h1>
-      <div className="tailor-status">
-        <span></span>
-        AI Career Assistant
-      </div>
-    </div>
-  </div>
+            <div>
+              <h1>TailorAI</h1>
 
-  <p>Your personal AI career assistant.</p>
-</div>
-        
+              <div className="tailor-status">
+                <span></span>
+                AI Career Assistant
+              </div>
+            </div>
+          </div>
+
+          <p>Your personal AI career assistant.</p>
+        </div>
+
         <div className="chat-container">
-          <div className="chat-messages">
+          <div className="chat-messages" ref={chatMessagesRef}>
             <div className="ai-message">
               👋 Hi! I'm TailorAI. How can I help with your career today?
             </div>
@@ -96,7 +169,13 @@ function TailorAI() {
                     : "ai-message"
                 }
               >
-                {message.text}
+                {message.sender === "ai" ? (
+                  <ReactMarkdown components={markdownComponents}>
+                    {message.text}
+                  </ReactMarkdown>
+                ) : (
+                  message.text
+                )}
               </div>
             ))}
 

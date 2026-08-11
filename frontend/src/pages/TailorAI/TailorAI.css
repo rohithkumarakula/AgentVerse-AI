@@ -615,6 +615,7 @@
   .chat-input button {
     padding: 0 14px;
   }
+}
   /* =========================================
    AI MARKDOWN RESPONSE
 ========================================= */
@@ -913,4 +914,64 @@
   white-space: pre;
   word-break: normal;
 }
+/* =========================================
+   SUGGESTED PROMPTS
+========================================= */
+
+.suggested-prompts {
+  margin-top: 14px;
+}
+
+.suggested-prompts p {
+  margin: 0 0 10px;
+  color: #9ca3af;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.prompt-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prompt-list button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  padding: 9px 13px;
+
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 10px;
+
+  background: rgba(139, 92, 246, 0.10);
+
+  color: #c4b5fd;
+
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.prompt-list button:hover {
+  background: rgba(139, 92, 246, 0.20);
+
+  border-color: rgba(167, 139, 250, 0.45);
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.15);
+}
+
+.prompt-list button:active {
+  transform: translateY(0);
 }

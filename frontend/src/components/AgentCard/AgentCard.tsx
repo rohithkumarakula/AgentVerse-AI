@@ -5,30 +5,52 @@ type AgentCardProps = {
   title: string;
   description: string;
   icon: string;
+  route: string;
+  category: string;
+  status: "online" | "coming-soon";
 };
 
-function AgentCard({ title, description, icon }: AgentCardProps) {
+function AgentCard({
+  title,
+  description,
+  icon,
+  route,
+  category,
+  status,
+}: AgentCardProps) {
   const navigate = useNavigate();
 
   function handleExplore() {
-  if (title === "TailorAI") {
-    navigate("/tailor-ai");
-  } else if (title === "StudyAI") {
-    navigate("/study-ai");
-  } else if (title === "LifeAI") {
-    navigate("/life-ai");
+    if (status === "online") {
+      navigate(route);
+    }
   }
-}
 
   return (
     <div className="agent-card">
-      <div className="agent-icon">{icon}</div>
+      <div className="agent-card-top">
+        <div className="agent-icon">{icon}</div>
+
+        <span className={`agent-status ${status}`}>
+          <span className="status-dot"></span>
+          {status === "online" ? "Online" : "Coming Soon"}
+        </span>
+      </div>
 
       <h3>{title}</h3>
 
+      <span className="agent-category">
+        {category}
+      </span>
+
       <p>{description}</p>
 
-      <button onClick={handleExplore}>Explore</button>
+      <button
+        onClick={handleExplore}
+        disabled={status !== "online"}
+      >
+        {status === "online" ? "Explore" : "Coming Soon"}
+      </button>
     </div>
   );
 }

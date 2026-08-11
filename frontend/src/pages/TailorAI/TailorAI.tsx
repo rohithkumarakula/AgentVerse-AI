@@ -16,7 +16,7 @@ function TailorAI() {
   const [loading, setLoading] = useState(false);
   const [copiedCode, setCopiedCode] = useState("");
 
-    const chatMessagesRef = useRef<HTMLDivElement>(null);
+  const chatMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const chat = chatMessagesRef.current;
@@ -78,10 +78,10 @@ function TailorAI() {
     },
   };
 
-  async function handleSend() {
-    if (input.trim() === "" || loading) return;
+  async function handleSend(prompt?: string) {
+    const userMessage = (prompt ?? input).trim();
 
-    const userMessage = input.trim();
+    if (userMessage === "" || loading) return;
 
     setMessages((prev) => [
       ...prev,
@@ -95,16 +95,19 @@ function TailorAI() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8001/tailor-ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          history: messages,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8001/tailor-ai",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: userMessage,
+            history: messages,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Backend request failed");
@@ -155,9 +158,51 @@ function TailorAI() {
         </div>
 
         <div className="chat-container">
-          <div className="chat-messages" ref={chatMessagesRef}>
+          <div
+            className="chat-messages"
+            ref={chatMessagesRef}
+          >
             <div className="ai-message">
               👋 Hi! I'm TailorAI. How can I help with your career today?
+
+              <div className="suggested-prompts">
+                <p>Try asking TailorAI:</p>
+
+                <div className="prompt-list">
+                  <button
+                    onClick={() =>
+                      handleSend(
+                        "Create a Python developer roadmap"
+                      )
+                    }
+                    disabled={loading}
+                  >
+                    Create a Python developer roadmap
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleSend(
+                        "How can I improve my resume?"
+                      )
+                    }
+                    disabled={loading}
+                  >
+                    How can I improve my resume?
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleSend(
+                        "Prepare me for a technical interview"
+                      )
+                    }
+                    disabled={loading}
+                  >
+                    Prepare me for a technical interview
+                  </button>
+                </div>
+              </div>
             </div>
 
             {messages.map((message, index) => (
@@ -170,7 +215,9 @@ function TailorAI() {
                 }
               >
                 {message.sender === "ai" ? (
-                  <ReactMarkdown components={markdownComponents}>
+                  <ReactMarkdown
+                    components={markdownComponents}
+                  >
                     {message.text}
                   </ReactMarkdown>
                 ) : (
@@ -199,7 +246,10 @@ function TailorAI() {
               }}
             />
 
-            <button onClick={handleSend} disabled={loading}>
+            <button
+              onClick={() => handleSend()}
+              disabled={loading}
+            >
               {loading ? "Sending..." : "Send"}
             </button>
           </div>

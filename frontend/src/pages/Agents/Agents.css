@@ -4,7 +4,6 @@
 
 .agents-page {
   min-height: 100vh;
-
   position: relative;
 
   padding: 120px 6% 90px;
@@ -23,7 +22,7 @@
     ),
     radial-gradient(
       circle at 85% 35%,
-      rgba(168, 85, 247, 0.10),
+      rgba(168, 85, 247, 0.1),
       transparent 26%
     ),
     radial-gradient(
@@ -33,6 +32,7 @@
     ),
     #07080d;
 }
+
 
 /* =========================================
    BACKGROUND GRID
@@ -74,6 +74,7 @@
   );
 }
 
+
 /* =========================================
    AMBIENT GLOW
 ========================================= */
@@ -99,6 +100,7 @@
 
   pointer-events: none;
 }
+
 
 /* =========================================
    PAGE TITLE
@@ -136,6 +138,7 @@
   -webkit-text-fill-color: transparent;
 }
 
+
 /* =========================================
    PAGE DESCRIPTION
 ========================================= */
@@ -156,6 +159,166 @@
 
   letter-spacing: 0.005em;
 }
+
+
+/* =========================================
+   CATEGORY FILTERS
+========================================= */
+
+.category-filters {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin: 0 auto 28px;
+}
+
+.category-filters button {
+  padding: 9px 16px;
+
+  border: 1px solid rgba(139, 92, 246, 0.35);
+
+  border-radius: 999px;
+
+  background: rgba(30, 27, 45, 0.8);
+
+  color: #c4b5fd;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.category-filters button:hover {
+  border-color: #8b5cf6;
+
+  background: rgba(124, 58, 237, 0.15);
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+.category-filters button.active {
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
+  border-color: #7c3aed;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 20px rgba(124, 58, 237, 0.2);
+}
+
+
+/* =========================================
+   AGENT SEARCH
+========================================= */
+
+.agent-search {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+
+  justify-content: center;
+
+  margin: 30px auto 40px;
+
+  width: 100%;
+}
+
+.agent-search input {
+  width: min(600px, 90%);
+
+  padding: 15px 20px;
+
+  border: 1px solid rgba(167, 139, 250, 0.3);
+
+  border-radius: 12px;
+
+  background: rgba(30, 27, 45, 0.8);
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.agent-search input::placeholder {
+  color: #8f8ca3;
+}
+
+.agent-search input:focus {
+  border-color: #8b5cf6;
+
+  box-shadow:
+    0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+
+/* =========================================
+   CLEAR SEARCH BUTTON
+========================================= */
+
+.clear-search {
+  position: absolute;
+
+  right: max(
+    6%,
+    calc((100% - 600px) / 2 + 15px)
+  );
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+  padding: 4px 8px;
+
+  line-height: 1;
+
+  transition: 0.2s ease;
+}
+
+.clear-search:hover {
+  color: #ffffff;
+
+  transform: translateY(-50%) scale(1.1);
+}
+
 
 /* =========================================
    AGENTS GRID
@@ -179,22 +342,16 @@
   align-items: stretch;
 }
 
+
 /* =========================================
    CARD SIZE OVERRIDE
 ========================================= */
-
-/*
-   AgentCard.css normally gives each card
-   a fixed width.
-
-   On the Agents page we want the cards
-   to fill each grid column evenly.
-*/
 
 .agents-grid .agent-card {
   width: 100%;
   height: 100%;
 }
+
 
 /* =========================================
    ENTRANCE ANIMATION
@@ -209,7 +366,7 @@
 }
 
 .agents-grid .agent-card:nth-child(2) {
-  animation-delay: 0.10s;
+  animation-delay: 0.1s;
 }
 
 .agents-grid .agent-card:nth-child(3) {
@@ -217,7 +374,7 @@
 }
 
 .agents-grid .agent-card:nth-child(4) {
-  animation-delay: 0.20s;
+  animation-delay: 0.2s;
 }
 
 .agents-grid .agent-card:nth-child(5) {
@@ -225,7 +382,7 @@
 }
 
 .agents-grid .agent-card:nth-child(6) {
-  animation-delay: 0.30s;
+  animation-delay: 0.3s;
 }
 
 @keyframes agentCardReveal {
@@ -241,6 +398,43 @@
     transform: translateY(0);
   }
 }
+
+
+/* =========================================
+   NO AGENTS
+========================================= */
+
+.no-agents {
+  position: relative;
+  z-index: 1;
+
+  text-align: center;
+
+  margin: 50px auto;
+
+  color: #9ca3af;
+}
+
+.no-agents h3 {
+  color: #ffffff;
+
+  margin-bottom: 8px;
+}
+
+
+/* =========================================
+   KEYBOARD ACCESSIBILITY
+========================================= */
+
+.agent-search input:focus-visible,
+.clear-search:focus-visible,
+.agent-card button:focus-visible,
+.category-filters button:focus-visible {
+  outline: 2px solid #a78bfa;
+
+  outline-offset: 3px;
+}
+
 
 /* =========================================
    TABLET
@@ -258,6 +452,7 @@
     gap: 24px;
   }
 }
+
 
 /* =========================================
    MOBILE
@@ -280,6 +475,26 @@
     font-size: 0.95rem;
   }
 
+  .category-filters {
+    gap: 8px;
+
+    margin-bottom: 24px;
+  }
+
+  .category-filters button {
+    padding: 8px 13px;
+
+    font-size: 0.78rem;
+  }
+
+  .agent-search {
+    margin: 25px auto 35px;
+  }
+
+  .agent-search input {
+    width: 100%;
+  }
+
   .agents-grid {
     grid-template-columns: 1fr;
 
@@ -289,6 +504,7 @@
   }
 }
 
+
 /* =========================================
    VERY SMALL PHONES
 ========================================= */
@@ -296,10 +512,27 @@
 @media (max-width: 420px) {
   .agents-page {
     padding-left: 12px;
+
     padding-right: 12px;
   }
 
   .agents-page h1 {
     font-size: 2.25rem;
+  }
+
+  .agent-search input {
+    padding: 13px 16px;
+
+    font-size: 15px;
+  }
+
+  .category-filters {
+    gap: 7px;
+  }
+
+  .category-filters button {
+    padding: 7px 11px;
+
+    font-size: 0.75rem;
   }
 }

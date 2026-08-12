@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 /* =========================================
    AGENT CARD — PREMIUM UI
 ========================================= */
@@ -36,20 +40,56 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
+  overflow: hidden;
+
   transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
+
+/* =========================================
+   HOVER EFFECT
+========================================= */
 
 .agent-card:hover {
   transform: translateY(-8px);
 
-  border-color: rgba(139, 92, 246, 0.45);
+  border-color: rgba(139, 92, 246, 0.5);
 
   box-shadow:
     0 25px 60px rgba(0, 0, 0, 0.35),
-    0 0 35px rgba(139, 92, 246, 0.08);
+    0 0 40px rgba(139, 92, 246, 0.12);
+}
+
+/* Subtle top glow */
+
+.agent-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -100px;
+  left: 50%;
+
+  width: 220px;
+  height: 180px;
+
+  transform: translateX(-50%);
+
+  background: rgba(139, 92, 246, 0.12);
+
+  filter: blur(70px);
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  transition: opacity 0.3s ease;
+}
+
+.agent-card:hover::before {
+  opacity: 1;
 }
 
 /* =========================================
@@ -93,6 +133,18 @@
 
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.agent-card:hover .agent-icon {
+  transform: scale(1.06);
+
+  box-shadow:
+    0 0 25px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* =========================================
@@ -140,10 +192,27 @@
 
   box-shadow:
     0 0 8px rgba(167, 139, 250, 0.8);
+
+  animation: onlinePulse 1.8s infinite;
 }
 
 .agent-status.coming-soon .status-dot {
   background: #64748b;
+}
+
+/* Online indicator animation */
+
+@keyframes onlinePulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.75);
+  }
 }
 
 /* =========================================
@@ -159,6 +228,12 @@
   letter-spacing: -0.025em;
 
   color: #ffffff;
+
+  transition: color 0.25s ease;
+}
+
+.agent-card:hover h3 {
+  color: #e9ddff;
 }
 
 /* =========================================
@@ -230,10 +305,10 @@
 }
 
 .agent-card button:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 
   box-shadow:
-    0 10px 25px rgba(124, 58, 237, 0.25);
+    0 10px 25px rgba(124, 58, 237, 0.3);
 }
 
 .agent-card button:active:not(:disabled) {
@@ -274,5 +349,20 @@
 
   .agent-card h3 {
     font-size: 1.3rem;
+  }
+}
+
+/* =========================================
+   REDUCE MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-card,
+  .agent-icon,
+  .agent-card button,
+  .agent-card::before,
+  .agent-status.online .status-dot {
+    animation: none;
+    transition: none;
   }
 }

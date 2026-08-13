@@ -96,7 +96,8 @@ function TailorAI() {
 
     try {
       const response = await fetch(
-        "http://localhost:8001/tailor-ai",
+  "http://127.0.0.1:8000/tailor-ai",
+      
         {
           method: "POST",
           headers: {

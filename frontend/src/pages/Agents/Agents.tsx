@@ -78,6 +78,7 @@ function Agents() {
               route={agent.route}
               category={agent.category}
               status={agent.status}
+              suggestedPrompts={agent.suggestedPrompts}
             />
           ))}
         </div>

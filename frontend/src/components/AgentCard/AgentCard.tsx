@@ -8,6 +8,7 @@ type AgentCardProps = {
   route: string;
   category: string;
   status: "online" | "coming-soon";
+  suggestedPrompts: string[];
 };
 
 function AgentCard({
@@ -17,6 +18,7 @@ function AgentCard({
   route,
   category,
   status,
+  suggestedPrompts = [],
 }: AgentCardProps) {
   const navigate = useNavigate();
 
@@ -44,6 +46,12 @@ function AgentCard({
       </span>
 
       <p>{description}</p>
+
+      <div className="agent-prompts">
+        {suggestedPrompts.map((prompt) => (
+          <span key={prompt}>{prompt}</span>
+        ))}
+      </div>
 
       <button
         onClick={handleExplore}

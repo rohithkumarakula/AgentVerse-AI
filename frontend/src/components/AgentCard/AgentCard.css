@@ -365,4 +365,23 @@
     animation: none;
     transition: none;
   }
+.agent-prompts {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.agent-prompts span {
+  padding: 8px 10px;
+  border-radius: 8px;
+
+  color: #a1a1aa;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
 }

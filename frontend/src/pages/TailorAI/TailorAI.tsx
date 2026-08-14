@@ -42,6 +42,11 @@ function TailorAI() {
     }
   }
 
+  function handleClearChat() {
+    setMessages([]);
+    setInput("");
+  }
+
   const markdownComponents: Components = {
     code({ className, children, ...props }) {
       const code = String(children).replace(/\n$/, "");
@@ -96,8 +101,7 @@ function TailorAI() {
 
     try {
       const response = await fetch(
-  "http://127.0.0.1:8000/tailor-ai",
-      
+        "http://127.0.0.1:8000/tailor-ai",
         {
           method: "POST",
           headers: {
@@ -156,6 +160,14 @@ function TailorAI() {
           </div>
 
           <p>Your personal AI career assistant.</p>
+
+          <button
+            className="clear-chat-btn"
+            onClick={handleClearChat}
+            disabled={messages.length === 0 || loading}
+          >
+            🗑️ Clear Chat
+          </button>
         </div>
 
         <div className="chat-container">
@@ -227,11 +239,13 @@ function TailorAI() {
               </div>
             ))}
 
-            {loading && (
-              <div className="ai-message">
-                TailorAI is thinking...
-              </div>
-            )}
+           {loading && (
+  <div className="ai-message typing-message">
+    <span className="typing-dot"></span>
+    <span className="typing-dot"></span>
+    <span className="typing-dot"></span>
+  </div>
+)} 
           </div>
 
           <div className="chat-input">

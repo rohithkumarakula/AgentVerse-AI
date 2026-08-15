@@ -20,6 +20,12 @@ function Navbar() {
         </li>
 
         <li>
+          <NavLink to="/career-profile">
+            Career Profile
+          </NavLink>
+        </li>
+
+        <li>
           <a href="#">About</a>
         </li>
       </ul>

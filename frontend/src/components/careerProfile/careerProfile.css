@@ -1,0 +1,125 @@
+.career-profile {
+  width: min(900px, 100%);
+  margin: 0 auto 20px;
+  padding: 22px;
+
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 16px;
+
+  background: rgba(15, 16, 24, 0.9);
+}
+
+.career-profile-header {
+  margin-bottom: 20px;
+}
+
+.career-profile-header h2 {
+  margin: 0 0 6px;
+
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.career-profile-header p {
+  margin: 0;
+
+  color: #9299aa;
+  font-size: 13px;
+}
+
+.career-profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.profile-field label {
+  color: #c4b5fd;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.profile-field input,
+.profile-field select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 13px;
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 9px;
+
+  outline: none;
+
+  background: rgba(30, 27, 45, 0.75);
+  color: #ffffff;
+
+  font-size: 13px;
+}
+
+.profile-field input::placeholder {
+  color: #777386;
+}
+
+.profile-field input:focus,
+.profile-field select:focus {
+  border-color: #8b5cf6;
+
+  box-shadow:
+    0 0 15px rgba(139, 92, 246, 0.12);
+}
+
+.profile-field select {
+  cursor: pointer;
+}
+
+.save-profile-btn {
+  grid-column: 1 / -1;
+
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #9333ea
+  );
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.save-profile-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(124, 58, 237, 0.25);
+}
+
+@media (max-width: 650px) {
+  .career-profile {
+    padding: 18px;
+  }
+
+  .career-profile-form {
+    grid-template-columns: 1fr;
+  }
+
+  .save-profile-btn {
+    grid-column: auto;
+  }
+}

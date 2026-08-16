@@ -1,0 +1,984 @@
+/* =========================================
+   STUDY AI PAGE
+========================================= */
+
+.study-page {
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px 60px;
+  background: #0f1017;
+  color: #f5f5f7;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.study-header {
+  width: min(1100px, 100%);
+  margin: 0 auto 28px;
+  text-align: center;
+  position: relative;
+}
+
+.study-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.study-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #a855f7
+  );
+
+  box-shadow:
+    0 0 25px rgba(139, 92, 246, 0.35);
+}
+
+.study-brand h1 {
+  margin: 0;
+
+  font-size: 32px;
+  font-weight: 800;
+
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #c084fc
+  );
+
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.study-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  margin-top: 4px;
+
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.study-status span {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  box-shadow:
+    0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+.study-header > p {
+  margin: 12px 0 18px;
+
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+
+/* =========================================
+   CLEAR CHAT
+========================================= */
+
+.clear-chat-btn {
+  padding: 9px 18px;
+
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: 10px;
+
+  background: rgba(124, 58, 237, 0.08);
+  color: #c084fc;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border 0.2s ease,
+    transform 0.2s ease;
+}
+
+.clear-chat-btn:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.18);
+  border-color: #a855f7;
+
+  transform: translateY(-1px);
+}
+
+.clear-chat-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   CHAT CONTAINER
+========================================= */
+
+.study-chat-container {
+  width: min(1100px, 100%);
+  height: 680px;
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 20px;
+
+  background: #15151f;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================================
+   CHAT MESSAGES
+========================================= */
+
+.study-chat-messages {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 28px;
+
+  scroll-behavior: smooth;
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+.study-chat-messages::-webkit-scrollbar {
+  width: 7px;
+}
+
+.study-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.study-chat-messages::-webkit-scrollbar-thumb {
+  background: #302746;
+  border-radius: 10px;
+}
+
+.study-chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #4c3575;
+}
+
+
+/* =========================================
+   AI MESSAGE
+========================================= */
+
+.ai-message {
+  width: fit-content;
+  max-width: 82%;
+
+  margin-bottom: 18px;
+  padding: 17px 20px;
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 16px 16px 16px 5px;
+
+  background: #1b1a27;
+
+  color: #e5e7eb;
+
+  line-height: 1.7;
+  font-size: 15px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================
+   USER MESSAGE
+========================================= */
+
+.user-message {
+  width: fit-content;
+  max-width: 75%;
+
+  margin-left: auto;
+  margin-bottom: 18px;
+
+  padding: 14px 18px;
+
+  border-radius: 16px 16px 5px 16px;
+
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #9333ea
+  );
+
+  color: white;
+
+  line-height: 1.6;
+  font-size: 15px;
+
+  box-shadow:
+    0 8px 25px rgba(124, 58, 237, 0.18);
+}
+
+
+/* =========================================
+   MARKDOWN
+========================================= */
+
+.ai-message p {
+  margin: 0 0 12px;
+}
+
+.ai-message p:last-child {
+  margin-bottom: 0;
+}
+
+.ai-message h1,
+.ai-message h2,
+.ai-message h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+
+  color: #ffffff;
+}
+
+.ai-message h1 {
+  font-size: 24px;
+}
+
+.ai-message h2 {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.ai-message h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #c084fc;
+}
+
+.ai-message strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.ai-message ul,
+.ai-message ol {
+  margin: 10px 0;
+  padding-left: 24px;
+}
+
+.ai-message li {
+  margin-bottom: 6px;
+}
+
+.ai-message blockquote {
+  margin: 14px 0;
+
+  padding: 10px 15px;
+
+  border-left: 3px solid #a855f7;
+
+  background: rgba(168, 85, 247, 0.08);
+
+  color: #c4b5fd;
+}
+
+
+/* =========================================
+   INLINE CODE
+========================================= */
+
+.ai-message code:not(pre code) {
+  padding: 3px 7px;
+
+  border-radius: 6px;
+
+  background: #27233a;
+  color: #c084fc;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   CODE BLOCK
+========================================= */
+
+.code-block-wrapper {
+  margin: 18px 0;
+
+  overflow: hidden;
+
+  border: 1px solid #302746;
+  border-radius: 12px;
+
+  background: #0b0b10;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 12px;
+
+  border-bottom: 1px solid #302746;
+
+  background: #171520;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.copy-code-btn {
+  padding: 5px 10px;
+
+  border: 1px solid #4c3575;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #c084fc;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.copy-code-btn:hover {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: #a855f7;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+
+  padding: 16px;
+
+  overflow-x: auto;
+}
+
+.code-block-wrapper pre code {
+  color: #e5e7eb;
+
+  font-family:
+    "Fira Code",
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   SUGGESTED PROMPTS
+========================================= */
+
+.suggested-prompts {
+  margin-top: 22px;
+  padding-top: 16px;
+
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.suggested-prompts p {
+  margin-bottom: 10px;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.prompt-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.prompt-list button {
+  padding: 9px 13px;
+
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 9px;
+
+  background: rgba(124, 58, 237, 0.08);
+
+  color: #c4b5fd;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.prompt-list button:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: #8b5cf6;
+
+  transform: translateY(-1px);
+}
+
+.prompt-list button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   QUIZ MODE
+========================================= */
+
+.quiz-container {
+  width: min(100%, 760px);
+
+  padding: 22px 24px;
+
+  border: 1px solid rgba(139, 92, 246, 0.35);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(124, 58, 237, 0.08),
+      rgba(27, 26, 39, 0.98)
+    );
+
+  box-shadow:
+    0 12px 35px rgba(124, 58, 237, 0.12);
+}
+
+
+/* =========================================
+   QUIZ HEADER
+========================================= */
+
+.quiz-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.quiz-header strong {
+  color: #c084fc;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  text-transform: capitalize;
+}
+
+.quiz-header span {
+  color: #9ca3af;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   QUIZ QUESTION
+========================================= */
+
+.quiz-question {
+  margin-bottom: 22px;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================
+   QUIZ OPTIONS
+========================================= */
+
+.quiz-options {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.quiz-options button {
+  width: 100%;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+
+  border-radius: 10px;
+
+  background: #22202f;
+
+  color: #e5e7eb;
+
+  text-align: left;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.quiz-options button strong {
+  color: #c084fc;
+
+  margin-right: 5px;
+}
+
+.quiz-options button:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.18);
+
+  border-color: #8b5cf6;
+
+  transform: translateX(3px);
+
+  box-shadow:
+    0 5px 18px rgba(124, 58, 237, 0.12);
+}
+
+.quiz-options button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   QUIZ FEEDBACK
+========================================= */
+
+.quiz-feedback {
+  margin-top: 18px;
+
+  padding: 14px 16px;
+
+  border-radius: 10px;
+
+  border: 1px solid rgba(168, 85, 247, 0.22);
+
+  background: rgba(124, 58, 237, 0.08);
+
+  color: #d1d5db;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================
+   QUIZ SCORE
+========================================= */
+
+.quiz-score {
+  margin-top: 12px;
+
+  padding: 10px 14px;
+
+  border-radius: 9px;
+
+  background: rgba(34, 197, 94, 0.08);
+
+  border: 1px solid rgba(34, 197, 94, 0.2);
+
+  color: #86efac;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   QUIZ RESULT CARD
+========================================= */
+
+.ai-message:has(h2) {
+  border-color: rgba(168, 85, 247, 0.35);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(124, 58, 237, 0.08),
+      rgba(27, 26, 39, 0.98)
+    );
+
+  box-shadow:
+    0 12px 35px rgba(124, 58, 237, 0.12);
+}
+
+.ai-message:has(h2) h2 {
+  margin-top: 0;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.ai-message:has(h2) h3 {
+  margin-top: 24px;
+}
+
+.ai-message:has(h2) h3:last-of-type {
+  color: #fbbf24;
+}
+
+
+/* =========================================
+   TYPING ANIMATION
+========================================= */
+
+.typing-message {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  min-width: 58px;
+
+  padding: 15px 18px;
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #a855f7;
+
+  animation: typing 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+
+/* =========================================
+   INPUT AREA
+========================================= */
+
+.study-chat-input {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 16px 18px;
+
+  border-top: 1px solid rgba(139, 92, 246, 0.18);
+
+  background: #12121a;
+}
+
+.study-chat-input input {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 13px 15px;
+
+  border: 1px solid #302746;
+  border-radius: 11px;
+
+  outline: none;
+
+  background: #1b1a27;
+  color: #ffffff;
+
+  font-size: 14px;
+
+  transition:
+    border 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.study-chat-input input::placeholder {
+  color: #6b7280;
+}
+
+.study-chat-input input:focus {
+  border-color: #8b5cf6;
+
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.study-chat-input input:disabled {
+  opacity: 0.5;
+}
+
+
+/* =========================================
+   SEND BUTTON
+========================================= */
+
+.study-chat-input button {
+  padding: 13px 22px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #9333ea
+  );
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.study-chat-input button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 7px 20px rgba(124, 58, 237, 0.3);
+}
+
+.study-chat-input button:disabled {
+  opacity: 0.4;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .study-page {
+    padding: 25px 12px 40px;
+  }
+
+  .study-brand h1 {
+    font-size: 27px;
+  }
+
+  .study-chat-container {
+    height: calc(100vh - 230px);
+
+    min-height: 500px;
+
+    border-radius: 15px;
+  }
+
+  .study-chat-messages {
+    padding: 18px 14px;
+  }
+
+  .ai-message,
+  .user-message {
+    max-width: 90%;
+
+    font-size: 14px;
+  }
+
+  .study-chat-input {
+    padding: 12px;
+  }
+
+  .study-chat-input input {
+    font-size: 13px;
+  }
+
+  .study-chat-input button {
+    padding: 12px 15px;
+  }
+
+  .prompt-list {
+    flex-direction: column;
+  }
+
+  .prompt-list button {
+    width: 100%;
+  }
+
+  /* Quiz mobile */
+
+  .quiz-container {
+    width: 100%;
+
+    padding: 18px;
+  }
+
+  .quiz-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 5px;
+  }
+
+  .quiz-question {
+    font-size: 15px;
+  }
+
+  .quiz-options button {
+    font-size: 13px;
+
+    padding: 12px 13px;
+  }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+  .study-page {
+    padding: 20px 8px 30px;
+  }
+
+  .study-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .study-brand h1 {
+    font-size: 24px;
+  }
+
+  .study-header > p {
+    font-size: 13px;
+  }
+
+  .study-chat-container {
+    height: calc(100vh - 210px);
+  }
+
+  .study-chat-input {
+    gap: 7px;
+  }
+
+  .study-chat-input button {
+    padding: 12px;
+
+    font-size: 12px;
+  }
+
+  .quiz-container {
+    padding: 15px;
+  }
+
+  .quiz-header strong {
+    font-size: 16px;
+  }
+
+  .quiz-question {
+    font-size: 14px;
+  }
+
+  .quiz-options button {
+    padding: 11px 12px;
+
+    font-size: 13px;
+  }
+
+  .quiz-feedback {
+    font-size: 13px;
+  }
+}

@@ -5,6 +5,7 @@ import Agents from "./pages/Agents/Agents";
 import Features from "./pages/Features/Features";
 import NotFound from "./pages/NotFound/NotFound";
 import TailorAI from "./pages/TailorAI/TailorAI";
+import StudyAI from "./pages/studyAI/studyAI";
 import CareerProfile from "./components/careerProfile/careerProfile";
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
       <Route path="/features" element={<Features />} />
 
       <Route path="/tailor-ai" element={<TailorAI />} />
+
+      <Route path="/study-ai" element={<StudyAI />} />
 
       <Route
         path="/career-profile"

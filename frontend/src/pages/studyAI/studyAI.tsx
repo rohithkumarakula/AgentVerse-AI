@@ -26,9 +26,27 @@ type QuizState = {
 const CHAT_STORAGE_KEY = "agentverse-study-chat";
 const SESSION_STORAGE_KEY = "agentverse-study-session";
 
+/*
+ * Backend API URL
+ *
+ * Development:
+ *   http://127.0.0.1:8000
+ *
+ * Production:
+ *   Set VITE_API_URL in your frontend .env file
+ *
+ * Example:
+ *   VITE_API_URL=https://your-backend-url.com
+ */
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+const STUDY_AI_URL = `${API_BASE_URL}/study-ai`;
+
 function getSessionId(): string {
-  const existingSessionId =
-    localStorage.getItem(SESSION_STORAGE_KEY);
+  const existingSessionId = localStorage.getItem(
+    SESSION_STORAGE_KEY
+  );
 
   if (existingSessionId) {
     return existingSessionId;
@@ -48,8 +66,9 @@ function StudyAI() {
   const [input, setInput] = useState("");
 
   const [messages, setMessages] = useState<Message[]>(() => {
-    const savedChat =
-      localStorage.getItem(CHAT_STORAGE_KEY);
+    const savedChat = localStorage.getItem(
+      CHAT_STORAGE_KEY
+    );
 
     if (!savedChat) {
       return [];
@@ -78,7 +97,9 @@ function StudyAI() {
         error
       );
 
-      localStorage.removeItem(CHAT_STORAGE_KEY);
+      localStorage.removeItem(
+        CHAT_STORAGE_KEY
+      );
 
       return [];
     }
@@ -195,7 +216,8 @@ function StudyAI() {
      * Create a new session so an old quiz
      * session cannot interfere with a new chat.
      */
-    const newSessionId = crypto.randomUUID();
+    const newSessionId =
+      crypto.randomUUID();
 
     localStorage.setItem(
       SESSION_STORAGE_KEY,
@@ -208,7 +230,11 @@ function StudyAI() {
   // =========================================
 
   const markdownComponents: Components = {
-    code({ className, children, ...props }) {
+    code({
+      className,
+      children,
+      ...props
+    }) {
       const code = String(children).replace(
         /\n$/,
         ""
@@ -378,14 +404,18 @@ function StudyAI() {
       );
 
       setQuiz({
-        quiz_id: quiz?.quiz_id ?? "",
-        topic: quiz?.topic ?? "",
+        quiz_id:
+          quiz?.quiz_id ?? "",
+        topic:
+          quiz?.topic ?? "",
         question_number:
           data.question_number,
         total_questions:
           data.total_questions,
-        question: data.question,
-        options: data.options,
+        question:
+          data.question,
+        options:
+          data.options,
       });
 
       return;
@@ -536,12 +566,14 @@ function StudyAI() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/study-ai",
+        STUDY_AI_URL,
         {
           method: "POST",
 
           headers: {
             "Content-Type":
+              "application/json",
+            Accept:
               "application/json",
           },
 
@@ -554,8 +586,25 @@ function StudyAI() {
       );
 
       if (!response.ok) {
+        let errorMessage =
+          `Backend request failed: ${response.status}`;
+
+        try {
+          const errorData =
+            await response.json();
+
+          if (
+            errorData?.detail
+          ) {
+            errorMessage =
+              errorData.detail;
+          }
+        } catch {
+          // Ignore JSON parsing error
+        }
+
         throw new Error(
-          `Backend request failed: ${response.status}`
+          errorMessage
         );
       }
 
@@ -570,7 +619,9 @@ function StudyAI() {
       );
 
       addAIMessage(
-        "Sorry, I couldn't connect to the backend."
+        error instanceof Error
+          ? `Sorry, ${error.message}`
+          : "Sorry, I couldn't connect to the backend."
       );
     } finally {
       setLoading(false);
@@ -599,12 +650,14 @@ function StudyAI() {
       ];
 
       const response = await fetch(
-        "http://127.0.0.1:8000/study-ai",
+        STUDY_AI_URL,
         {
           method: "POST",
 
           headers: {
             "Content-Type":
+              "application/json",
+            Accept:
               "application/json",
           },
 
@@ -617,8 +670,25 @@ function StudyAI() {
       );
 
       if (!response.ok) {
+        let errorMessage =
+          `Quiz request failed: ${response.status}`;
+
+        try {
+          const errorData =
+            await response.json();
+
+          if (
+            errorData?.detail
+          ) {
+            errorMessage =
+              errorData.detail;
+          }
+        } catch {
+          // Ignore JSON parsing error
+        }
+
         throw new Error(
-          `Quiz request failed: ${response.status}`
+          errorMessage
         );
       }
 
@@ -633,7 +703,9 @@ function StudyAI() {
       );
 
       setQuizFeedback(
-        "Sorry, something went wrong while checking your answer."
+        error instanceof Error
+          ? error.message
+          : "Sorry, something went wrong while checking your answer."
       );
     } finally {
       setLoading(false);
@@ -849,16 +921,20 @@ function StudyAI() {
 
             {quiz && (
               <div className="ai-message quiz-container">
-               <div className="quiz-header">
-  <strong>
-    {quiz.topic}
-  </strong>
 
-  <span>
-    Question {quiz.question_number}/{quiz.total_questions}
-  </span>
-</div>
-                
+                <div className="quiz-header">
+
+                  <strong>
+                    {quiz.topic}
+                  </strong>
+
+                  <span>
+                    Question{" "}
+                    {quiz.question_number}/
+                    {quiz.total_questions}
+                  </span>
+
+                </div>
 
                 <div className="quiz-question">
                   {quiz.question}

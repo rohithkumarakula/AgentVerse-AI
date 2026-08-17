@@ -13,17 +13,44 @@ const agents = [
   {
     icon: "🤖",
     title: "TailorAI",
-    description: "Your personal AI assistant for everyday tasks.",
+    description:
+      "Your personal AI assistant for career and professional growth.",
+    route: "/tailor-ai",
+    category: "Career",
+    status: "online" as const,
+    suggestedPrompts: [
+      "Improve my resume",
+      "Prepare for interviews",
+      "Career guidance",
+    ],
   },
   {
     icon: "📚",
     title: "StudyAI",
-    description: "Learn smarter with AI-powered study assistance.",
+    description:
+      "Learn smarter with AI-powered study assistance.",
+    route: "/study-ai",
+    category: "Education",
+    status: "online" as const,
+    suggestedPrompts: [
+      "Explain a topic",
+      "Create a study plan",
+      "Take a quiz",
+    ],
   },
   {
     icon: "🧠",
     title: "LifeAI",
-    description: "Organize your goals, habits and productivity.",
+    description:
+      "Organize your goals, habits and productivity.",
+    route: "/life-ai",
+    category: "Productivity",
+    status: "coming-soon" as const,
+    suggestedPrompts: [
+      "Set my goals",
+      "Build a routine",
+      "Track my habits",
+    ],
   },
 ];
 
@@ -31,13 +58,13 @@ function Home() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-  async function loadData() {
-    const data = await getWelcomeMessage();
-    setMessage(data.message);
-  }
+    async function loadData() {
+      const data = await getWelcomeMessage();
+      setMessage(data.message);
+    }
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
   return (
     <>
@@ -46,14 +73,14 @@ function Home() {
       <>
         <h2
           style={{
-             textAlign: "center",
-             color: "#38bdf8",
-             marginTop: "20px",
-             fontSize: "28px",
-             fontWeight: "bold",
-           }}
+            textAlign: "center",
+            color: "#38bdf8",
+            marginTop: "20px",
+            fontSize: "28px",
+            fontWeight: "bold",
+          }}
         >
-         {message}
+          {message}
         </h2>
 
         <Hero />
@@ -69,6 +96,10 @@ function Home() {
               icon={agent.icon}
               title={agent.title}
               description={agent.description}
+              route={agent.route}
+              category={agent.category}
+              status={agent.status}
+              suggestedPrompts={agent.suggestedPrompts}
             />
           ))}
         </div>

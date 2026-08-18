@@ -45,7 +45,7 @@ const agents = [
       "Organize your goals, habits and productivity.",
     route: "/life-ai",
     category: "Productivity",
-    status: "coming-soon" as const,
+    status: "online" as const,
     suggestedPrompts: [
       "Set my goals",
       "Build a routine",

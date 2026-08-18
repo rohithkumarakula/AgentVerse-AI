@@ -263,7 +263,7 @@ def tailor_ai(request: TailorRequest):
     try:
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.7,
             max_tokens=700
@@ -526,7 +526,7 @@ STRICT REQUIREMENTS:
 """
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
 
         messages=[
             {
@@ -664,7 +664,7 @@ Required structure:
 """
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
 
         messages=[
             {
@@ -1260,7 +1260,7 @@ def study_ai(request: StudyRequest):
     try:
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.5,
             max_tokens=1000
@@ -1284,5 +1284,183 @@ def study_ai(request: StudyRequest):
             status_code=500,
             detail=(
                 "StudyAI could not generate a response."
+            )
+
+        )
+# =========================================
+# LIFE AI
+# =========================================
+
+class LifeRequest(BaseModel):
+    message: str
+    history: list[Message] = Field(default_factory=list)
+
+
+@app.post("/life-ai")
+def life_ai(request: LifeRequest):
+
+    message = request.message.strip()
+
+    if not message:
+        raise HTTPException(
+            status_code=400,
+            detail="Please enter a message."
+        )
+
+    system_prompt = (
+        "You are LifeAI, a practical and friendly personal "
+        "productivity assistant.\n\n"
+
+        "YOUR PURPOSE:\n"
+        "Help users set meaningful goals, create routines, "
+        "build habits, manage tasks, improve productivity, "
+        "and organize their personal life.\n\n"
+
+        "IMPORTANT CONVERSATION RULE:\n"
+        "Talk to the user like a helpful personal assistant, "
+        "not like a textbook or an article.\n"
+        "Do NOT dump long frameworks, lectures, or generic "
+        "goal-setting explanations unless the user specifically "
+        "asks for them.\n\n"
+
+        "GOAL SETTING:\n"
+        "When a user wants help setting goals, have a short "
+        "conversation first.\n"
+        "Ask only 1-3 useful questions at a time.\n"
+        "Useful information may include:\n"
+        "- What they want to achieve\n"
+        "- Why it matters\n"
+        "- Their desired timeline\n"
+        "- Their available time\n"
+        "- Their current situation\n\n"
+
+        "Once you have enough information:\n"
+        "1. Create a clear main goal.\n"
+        "2. Make it specific and measurable.\n"
+        "3. Break it into realistic milestones.\n"
+        "4. Give practical next actions.\n"
+        "5. Suggest a simple way to track progress.\n\n"
+
+        "ROUTINES:\n"
+        "When the user wants a routine, first understand "
+        "their schedule and priorities when necessary.\n"
+        "Then create a realistic routine with priorities, "
+        "time blocks, and reasonable breaks.\n"
+        "Do not create an unrealistic schedule packed with tasks.\n\n"
+
+        "HABITS:\n"
+        "When the user wants to build or track habits, help "
+        "them choose a small number of realistic habits.\n"
+        "Suggest clear frequency and tracking methods.\n"
+        "Focus on consistency rather than perfection.\n\n"
+
+        "TASKS AND PRODUCTIVITY:\n"
+        "Help users prioritize tasks based on importance, "
+        "urgency, effort, and available time.\n"
+        "Give clear next actions rather than vague advice.\n\n"
+
+        "CONVERSATION MEMORY:\n"
+        "Use the conversation history when relevant.\n"
+        "Remember goals, timelines, routines, habits, tasks, "
+        "and preferences mentioned earlier in the conversation.\n"
+        "If the user refers to something previously discussed, "
+        "use the available history instead of asking them "
+        "to repeat it.\n\n"
+
+        "RESPONSE STYLE:\n"
+        "- Be friendly, practical, and encouraging.\n"
+        "- Keep responses concise unless the user asks for detail.\n"
+        "- Prefer short paragraphs and bullet points.\n"
+        "- Use Markdown when it improves readability.\n"
+        "- Avoid unnecessary repetition.\n"
+        "- Do not ask many questions at once.\n"
+        "- Ask a question only when the answer is useful for "
+        "personalizing the next step.\n"
+        "- Always move the conversation forward.\n"
+        "- Do not pretend to know information the user has not provided.\n"
+        "- Never promise guaranteed results.\n\n"
+
+        "EXAMPLE BEHAVIOR:\n"
+        "If the user says 'Help me set my goals', do NOT respond "
+        "with a long explanation of goal-setting frameworks.\n"
+        "Instead, respond naturally with something like:\n"
+        "'Absolutely. Let's keep it simple. What's the main "
+        "thing you'd like to achieve in the next 6-12 months?'\n"
+        "Then continue the conversation based on their answer.\n\n"
+
+        "FINAL PRINCIPLE:\n"
+        "Your job is not just to give advice. Help the user turn "
+        "their ideas into realistic actions and keep the conversation "
+        "focused on progress."
+    )
+
+    messages = [
+        {
+            "role": "system",
+            "content": system_prompt
+        }
+    ]
+
+    # -----------------------------------------
+    # ADD CONVERSATION HISTORY
+    # -----------------------------------------
+
+    for history_message in request.history:
+
+        role = (
+            "user"
+            if history_message.sender == "user"
+            else "assistant"
+        )
+
+        messages.append(
+            {
+                "role": role,
+                "content": history_message.text
+            }
+        )
+
+    # -----------------------------------------
+    # CURRENT MESSAGE
+    # -----------------------------------------
+
+    messages.append(
+        {
+            "role": "user",
+            "content": message
+        }
+    )
+
+    # -----------------------------------------
+    # GENERATE LIFEAI RESPONSE
+    # -----------------------------------------
+
+    try:
+
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=messages,
+            temperature=0.6,
+            max_tokens=700
+        )
+
+        reply = response.choices[0].message.content
+
+        return {
+            "type": "normal",
+            "reply": reply
+        }
+
+    except Exception as error:
+
+        print(
+            "LifeAI Error:",
+            error
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "LifeAI could not generate a response."
             )
         )

@@ -1,7 +1,9 @@
 import "./TailorAI.css";
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
+import Navbar from "../../components/Navbar/Navbar";
 import CareerProfile from "../../components/careerProfile/careerProfile";
 import Footer from "../../components/Footer/Footer";
 
@@ -21,45 +23,35 @@ type CareerProfileData = {
 const CHAT_STORAGE_KEY = "agentverse-tailor-chat";
 const PROFILE_STORAGE_KEY = "agentverse-career-profile";
 
+function cleanMarkdown(text: string): string {
+  if (!text) return "";
+  return text
+    // Convert raw <br>, <br/>, <br /> tags into markdown newlines
+    .replace(/<br\s*\/?>/gi, "\n\n")
+    // Normalize escaped newlines
+    .replace(/\\n/g, "\n");
+}
+
 function TailorAI() {
   const [input, setInput] = useState("");
-
-  const [messages, setMessages] = useState<Message[]>(() => {
-    const savedChat = localStorage.getItem(CHAT_STORAGE_KEY);
-
-    if (!savedChat) {
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(savedChat);
-
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-
-      return [];
-    } catch {
-      localStorage.removeItem(CHAT_STORAGE_KEY);
-      return [];
-    }
-  });
-
+  // Start with a fresh conversation on every page load/visit
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [copiedCode, setCopiedCode] = useState("");
 
   const chatMessagesRef = useRef<HTMLDivElement>(null);
 
   // =========================================
-  // SAVE CHAT HISTORY
+  // CLEAN LEGACY STORED CHAT ON MOUNT & UNMOUNT
   // =========================================
 
   useEffect(() => {
-    localStorage.setItem(
-      CHAT_STORAGE_KEY,
-      JSON.stringify(messages)
-    );
-  }, [messages]);
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+
+    return () => {
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+    };
+  }, []);
 
   // =========================================
   // AUTO SCROLL
@@ -174,10 +166,17 @@ function TailorAI() {
   }
 
   // =========================================
-  // MARKDOWN
+  // MARKDOWN COMPONENTS
   // =========================================
 
   const markdownComponents: Components = {
+    table({ children }) {
+      return (
+        <div className="table-wrapper">
+          <table>{children}</table>
+        </div>
+      );
+    },
     code({ className, children, ...props }) {
       const code = String(children).replace(/\n$/, "");
       const isCodeBlock = Boolean(className);
@@ -198,6 +197,7 @@ function TailorAI() {
             <button
               className="copy-code-btn"
               onClick={() => handleCopy(code)}
+              type="button"
             >
               {copiedCode === code ? "Copied" : "Copy"}
             </button>
@@ -225,7 +225,6 @@ function TailorAI() {
     }
 
     const careerProfile = getCareerProfile();
-
     const previousMessages = [...messages];
 
     setMessages((prev) => [
@@ -279,7 +278,7 @@ function TailorAI() {
         ...prev,
         {
           text:
-            "Sorry, I couldn't connect to the backend.",
+            "Sorry, I couldn't connect to the backend. Please make sure the backend server is running.",
           sender: "ai",
         },
       ]);
@@ -294,31 +293,30 @@ function TailorAI() {
 
   return (
     <>
+      <Navbar />
+
       <section className="tailor-page">
 
-        <CareerProfile />
-
+        {/* HEADER */}
         <div className="tailor-header">
 
           <div className="tailor-brand">
-
             <div className="tailor-icon">
-              AI
+              🤖
             </div>
 
-            <div>
+            <div className="tailor-title-block">
               <h1>TailorAI</h1>
 
               <div className="tailor-status">
-                <span></span>
+                <span className="status-dot"></span>
                 AI Career Assistant
               </div>
             </div>
-
           </div>
 
           <p>
-            Your personal AI career assistant.
+            Your personal AI assistant for career guidance, roadmaps, and interview preparation.
           </p>
 
           <button
@@ -333,6 +331,7 @@ function TailorAI() {
 
         </div>
 
+        {/* CHAT CONTAINER */}
         <div className="chat-container">
 
           <div
@@ -341,20 +340,17 @@ function TailorAI() {
           >
 
             {messages.length === 0 && (
-              <div className="ai-message">
-
-                Hi! I'm TailorAI. How can I help
-                with your career today?
+              <div className="ai-message welcome-ai-message">
+                <p>
+                  Hi! I'm <strong>TailorAI</strong>, your personal career and placement assistant. How can I help you today?
+                </p>
 
                 <div className="suggested-prompts">
-
-                  <p>
-                    Try asking TailorAI:
-                  </p>
+                  <p>Try asking TailorAI:</p>
 
                   <div className="prompt-list">
-
                     <button
+                      type="button"
                       onClick={() =>
                         handleSend(
                           "Create a Python developer roadmap"
@@ -362,10 +358,11 @@ function TailorAI() {
                       }
                       disabled={loading}
                     >
-                      Create a Python developer roadmap
+                      🚀 Create a Python developer roadmap
                     </button>
 
                     <button
+                      type="button"
                       onClick={() =>
                         handleSend(
                           "How can I improve my resume?"
@@ -373,10 +370,11 @@ function TailorAI() {
                       }
                       disabled={loading}
                     >
-                      How can I improve my resume?
+                      📄 How can I improve my resume?
                     </button>
 
                     <button
+                      type="button"
                       onClick={() =>
                         handleSend(
                           "Prepare me for a technical interview"
@@ -384,13 +382,10 @@ function TailorAI() {
                       }
                       disabled={loading}
                     >
-                      Prepare me for a technical interview
+                      🎯 Prepare me for a technical interview
                     </button>
-
                   </div>
-
                 </div>
-
               </div>
             )}
 
@@ -405,9 +400,10 @@ function TailorAI() {
               >
                 {message.sender === "ai" ? (
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
                     components={markdownComponents}
                   >
-                    {message.text}
+                    {cleanMarkdown(message.text)}
                   </ReactMarkdown>
                 ) : (
                   message.text
@@ -426,10 +422,9 @@ function TailorAI() {
           </div>
 
           <div className="chat-input">
-
             <input
               type="text"
-              placeholder="Ask TailorAI anything..."
+              placeholder="Ask TailorAI anything about your career..."
               value={input}
               onChange={(e) =>
                 setInput(e.target.value)
@@ -450,9 +445,13 @@ function TailorAI() {
             >
               {loading ? "Sending..." : "Send"}
             </button>
-
           </div>
 
+        </div>
+
+        {/* CAREER PROFILE EMBEDDED SECTION */}
+        <div className="tailor-profile-section">
+          <CareerProfile />
         </div>
 
       </section>

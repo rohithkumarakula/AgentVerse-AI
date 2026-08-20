@@ -29,7 +29,7 @@ export const agents: Agent[] = [
     description: "AI-powered learning assistant for students.",
     route: "/study-ai",
     category: "Education",
-    status: "coming-soon",
+    status: "online",
     suggestedPrompts: [
       "Create a study plan",
       "Explain this topic simply",
@@ -43,7 +43,7 @@ export const agents: Agent[] = [
     description: "Manage habits, goals and productivity.",
     route: "/life-ai",
     category: "Productivity",
-    status: "coming-soon",
+    status: "online",
     suggestedPrompts: [
       "Create a daily routine",
       "Help me set my goals",

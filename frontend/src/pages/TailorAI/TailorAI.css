@@ -4,8 +4,11 @@
 
 .tailor-page {
   min-height: 100vh;
-  padding: 120px 20px 80px;
+  padding: 40px 20px 80px;
   color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   background:
     radial-gradient(
@@ -27,8 +30,11 @@
 
 .tailor-header {
   width: min(900px, 100%);
-  margin: 0 auto 30px;
+  margin: 0 auto 28px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .tailor-brand {
@@ -51,16 +57,22 @@
   background: rgba(124, 58, 237, 0.15);
   border: 1px solid rgba(139, 92, 246, 0.3);
 
-  font-size: 25px;
+  font-size: 26px;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15);
+}
+
+.tailor-title-block {
+  text-align: left;
 }
 
 .tailor-header h1 {
   margin: 0;
 
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2rem, 5vw, 2.75rem);
   font-weight: 800;
 
   letter-spacing: -0.04em;
+  line-height: 1.1;
 
   background: linear-gradient(
     135deg,
@@ -77,16 +89,16 @@
 .tailor-status {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 7px;
 
   margin-top: 4px;
 
-  color: #9ca3af;
+  color: #a78bfa;
   font-size: 13px;
+  font-weight: 500;
 }
 
-.tailor-status span {
+.status-dot {
   width: 7px;
   height: 7px;
 
@@ -94,14 +106,28 @@
 
   background: #22c55e;
 
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+  animation: tailorPulse 1.8s infinite;
+}
+
+@keyframes tailorPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
 }
 
 .tailor-header > p {
-  margin: 14px 0 0;
+  margin: 12px 0 0;
+  max-width: 580px;
 
   color: #9299aa;
   font-size: 15px;
+  line-height: 1.55;
 }
 
 /* =========================================
@@ -109,11 +135,11 @@
 ========================================= */
 
 .clear-chat-btn {
-  margin-top: 16px;
+  margin-top: 14px;
 
-  padding: 9px 16px;
+  padding: 8px 16px;
 
-  border: 1px solid rgba(139, 92, 246, 0.45);
+  border: 1px solid rgba(139, 92, 246, 0.35);
   border-radius: 9px;
 
   background: rgba(124, 58, 237, 0.12);
@@ -135,15 +161,10 @@
 
 .clear-chat-btn:hover:not(:disabled) {
   background: rgba(124, 58, 237, 0.25);
-
   border-color: #8b5cf6;
-
   color: #ffffff;
-
   transform: translateY(-1px);
-
-  box-shadow:
-    0 8px 20px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.2);
 }
 
 .clear-chat-btn:active:not(:disabled) {
@@ -161,7 +182,9 @@
 
 .chat-container {
   width: min(900px, 100%);
-  height: 650px;
+  height: 620px;
+  min-height: 520px;
+  max-height: 75vh;
 
   margin: 0 auto;
 
@@ -170,14 +193,14 @@
 
   overflow: hidden;
 
-  border: 1px solid rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 18px;
 
-  background: rgba(15, 16, 24, 0.9);
+  background: rgba(15, 16, 24, 0.92);
 
   box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(124, 58, 237, 0.04);
+    0 25px 80px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(124, 58, 237, 0.05);
 }
 
 /* =========================================
@@ -188,7 +211,7 @@
   flex: 1;
   min-height: 0;
 
-  padding: 28px;
+  padding: 26px;
 
   overflow-y: auto;
 
@@ -222,21 +245,23 @@
 
 .ai-message {
   width: fit-content;
-  max-width: 82%;
+  max-width: 86%;
 
-  padding: 15px 18px;
+  padding: 16px 20px;
 
-  border: 1px solid rgba(139, 92, 246, 0.14);
-  border-radius: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 16px;
 
-  background: rgba(30, 27, 45, 0.65);
+  background: rgba(26, 24, 40, 0.85);
 
-  color: #e5e7eb;
+  color: #e2e8f0;
 
-  line-height: 1.65;
+  line-height: 1.7;
   font-size: 15px;
 
   overflow-wrap: break-word;
+  word-break: break-word;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* =========================================
@@ -246,11 +271,11 @@
 .user-message {
   align-self: flex-end;
 
-  max-width: 75%;
+  max-width: 78%;
 
-  padding: 13px 17px;
+  padding: 14px 18px;
 
-  border-radius: 14px 14px 4px 14px;
+  border-radius: 16px 16px 4px 16px;
 
   background: linear-gradient(
     135deg,
@@ -264,7 +289,7 @@
   font-size: 15px;
 
   box-shadow:
-    0 8px 20px rgba(124, 58, 237, 0.15);
+    0 8px 24px rgba(124, 58, 237, 0.2);
 
   overflow-wrap: break-word;
 }
@@ -273,8 +298,14 @@
    SUGGESTED PROMPTS
 ========================================= */
 
+.welcome-ai-message p {
+  margin: 0 0 12px;
+}
+
 .suggested-prompts {
-  margin-top: 20px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(139, 92, 246, 0.18);
 }
 
 .suggested-prompts > p {
@@ -295,18 +326,19 @@
 .prompt-list button {
   width: 100%;
 
-  padding: 10px 13px;
+  padding: 10px 14px;
 
-  border: 1px solid rgba(139, 92, 246, 0.22);
-  border-radius: 9px;
+  border: 1px solid rgba(139, 92, 246, 0.24);
+  border-radius: 10px;
 
-  background: rgba(124, 58, 237, 0.07);
+  background: rgba(124, 58, 237, 0.08);
 
   color: #c4b5fd;
 
   text-align: left;
 
-  font-size: 13px;
+  font-size: 13.5px;
+  font-weight: 500;
 
   cursor: pointer;
 
@@ -314,13 +346,10 @@
 }
 
 .prompt-list button:hover:not(:disabled) {
-  border-color: rgba(139, 92, 246, 0.55);
-
-  background: rgba(124, 58, 237, 0.15);
-
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(124, 58, 237, 0.2);
   color: #ffffff;
-
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 
 .prompt-list button:disabled {
@@ -340,7 +369,7 @@
 
   padding: 16px;
 
-  border-top: 1px solid rgba(139, 92, 246, 0.12);
+  border-top: 1px solid rgba(139, 92, 246, 0.16);
 
   background: rgba(10, 11, 17, 0.95);
 }
@@ -350,10 +379,10 @@
 
   min-width: 0;
 
-  padding: 13px 16px;
+  padding: 14px 18px;
 
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 11px;
 
   outline: none;
 
@@ -361,7 +390,7 @@
 
   color: #ffffff;
 
-  font-size: 14px;
+  font-size: 14.5px;
 
   transition: 0.2s ease;
 }
@@ -374,16 +403,17 @@
   border-color: #8b5cf6;
 
   box-shadow:
-    0 0 18px rgba(139, 92, 246, 0.12);
+    0 0 0 3px rgba(139, 92, 246, 0.12),
+    0 0 20px rgba(139, 92, 246, 0.18);
 }
 
 .chat-input button {
   flex-shrink: 0;
 
-  padding: 0 20px;
+  padding: 0 24px;
 
   border: none;
-  border-radius: 10px;
+  border-radius: 11px;
 
   background: linear-gradient(
     135deg,
@@ -393,7 +423,8 @@
 
   color: #ffffff;
 
-  font-weight: 600;
+  font-weight: 650;
+  font-size: 14.5px;
 
   cursor: pointer;
 
@@ -404,7 +435,7 @@
   transform: translateY(-1px);
 
   box-shadow:
-    0 8px 20px rgba(124, 58, 237, 0.25);
+    0 8px 22px rgba(124, 58, 237, 0.3);
 }
 
 .chat-input button:disabled {
@@ -413,68 +444,174 @@
 }
 
 /* =========================================
-   MARKDOWN
+   MARKDOWN & AI RESPONSE TYPOGRAPHY
 ========================================= */
+
+.ai-message p {
+  margin: 10px 0;
+  line-height: 1.7;
+}
+
+.ai-message p:first-child {
+  margin-top: 0;
+}
+
+.ai-message p:last-child {
+  margin-bottom: 0;
+}
 
 .ai-message h1,
 .ai-message h2,
-.ai-message h3 {
-  margin-top: 16px;
-  margin-bottom: 8px;
-
+.ai-message h3,
+.ai-message h4 {
   color: #ffffff;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  line-height: 1.35;
+  font-weight: 700;
 }
 
 .ai-message h1:first-child,
 .ai-message h2:first-child,
-.ai-message h3:first-child {
+.ai-message h3:first-child,
+.ai-message h4:first-child {
   margin-top: 0;
 }
 
-.ai-message p {
-  margin: 8px 0;
+.ai-message h1 {
+  font-size: 1.35rem;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.25);
+  padding-bottom: 6px;
 }
 
-.ai-message ul,
-.ai-message ol {
-  margin: 10px 0;
-  padding-left: 22px;
+.ai-message h2 {
+  font-size: 1.2rem;
+  color: #e9ddff;
 }
 
-.ai-message li {
-  margin: 5px 0;
+.ai-message h3 {
+  font-size: 1.08rem;
+  color: #c4b5fd;
+}
+
+.ai-message h4 {
+  font-size: 0.98rem;
+  color: #a78bfa;
 }
 
 .ai-message strong {
   color: #ffffff;
+  font-weight: 700;
 }
 
-.ai-message code {
-  padding: 2px 5px;
+.ai-message em {
+  color: #cbd5e1;
+  font-style: italic;
+}
 
-  border-radius: 5px;
+.ai-message ul,
+.ai-message ol {
+  margin: 10px 0 14px;
+  padding-left: 24px;
+}
 
-  background: rgba(124, 58, 237, 0.12);
+.ai-message li {
+  margin: 6px 0;
+  line-height: 1.65;
+  color: #cbd5e1;
+}
 
-  color: #c4b5fd;
+.ai-message li::marker {
+  color: #a78bfa;
+}
 
-  font-size: 13px;
+.ai-message li > p {
+  margin: 4px 0;
+}
+
+.ai-message blockquote {
+  margin: 14px 0;
+  padding: 10px 16px;
+  border-left: 3px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 0 8px 8px 0;
+  color: #cbd5e1;
+}
+
+.ai-message hr {
+  margin: 18px 0;
+  border: none;
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 /* =========================================
-   CODE BLOCK
+   RESPONSIVE MARKDOWN TABLES
 ========================================= */
+
+.ai-message .table-wrapper {
+  width: 100%;
+  margin: 16px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(15, 16, 24, 0.85);
+}
+
+.ai-message table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.ai-message th {
+  padding: 12px 15px;
+  background: rgba(124, 58, 237, 0.2);
+  color: #ffffff;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.28);
+  white-space: nowrap;
+}
+
+.ai-message td {
+  padding: 11px 15px;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.14);
+  vertical-align: top;
+  line-height: 1.55;
+}
+
+.ai-message tr:last-child td {
+  border-bottom: none;
+}
+
+.ai-message tr:hover td {
+  background: rgba(139, 92, 246, 0.06);
+}
+
+/* =========================================
+   INLINE & BLOCK CODE
+========================================= */
+
+.ai-message code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  font-size: 13.5px;
+}
 
 .code-block-wrapper {
   width: 100%;
-
   margin: 14px 0;
-
   overflow: hidden;
-
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.22);
   border-radius: 10px;
-
   background: #0b0c12;
 }
 
@@ -482,65 +619,42 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 8px 12px;
-
-  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-
-  background: rgba(124, 58, 237, 0.06);
-
+  border-bottom: 1px solid rgba(139, 92, 246, 0.16);
+  background: rgba(124, 58, 237, 0.08);
   color: #a78bfa;
-
   font-size: 12px;
   font-weight: 600;
 }
 
 .copy-code-btn {
-  padding: 5px 9px;
-
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  padding: 5px 10px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: 6px;
-
-  background: rgba(124, 58, 237, 0.08);
-
+  background: rgba(124, 58, 237, 0.1);
   color: #c4b5fd;
-
-  font-size: 11px;
-
+  font-size: 11.5px;
   cursor: pointer;
-
   transition: 0.2s ease;
 }
 
 .copy-code-btn:hover {
-  background: rgba(124, 58, 237, 0.2);
-
+  background: rgba(124, 58, 237, 0.25);
   color: #ffffff;
-
   border-color: #8b5cf6;
 }
 
 .code-block-wrapper pre {
   margin: 0;
-
-  padding: 15px;
-
+  padding: 16px;
   overflow-x: auto;
 }
 
 .code-block-wrapper pre code {
   padding: 0;
-
   background: transparent;
-
+  border: none;
   color: #e5e7eb;
-
-  font-family:
-    "Cascadia Code",
-    "Fira Code",
-    Consolas,
-    monospace;
-
   font-size: 13px;
   line-height: 1.6;
 }
@@ -555,7 +669,7 @@
   gap: 5px;
 
   min-width: 55px;
-  min-height: 22px;
+  min-height: 24px;
 }
 
 .typing-dot {
@@ -578,17 +692,28 @@
 }
 
 @keyframes typingBounce {
-  0%,
-  60%,
-  100% {
+  0%, 60%, 100% {
     opacity: 0.35;
     transform: translateY(0);
   }
-
   30% {
     opacity: 1;
     transform: translateY(-4px);
   }
+}
+
+/* =========================================
+   EMBEDDED CAREER PROFILE SECTION
+========================================= */
+
+.tailor-profile-section {
+  width: min(900px, 100%);
+  margin-top: 50px;
+}
+
+.tailor-profile-section .career-profile {
+  margin: 0;
+  width: 100%;
 }
 
 /* =========================================
@@ -605,30 +730,20 @@
 }
 
 /* =========================================
-   MOBILE
+   MOBILE & TABLET RESPONSIVENESS
 ========================================= */
 
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .tailor-page {
-    padding: 95px 12px 60px;
-  }
-
-  .tailor-brand {
-    gap: 10px;
-  }
-
-  .tailor-icon {
-    width: 45px;
-    height: 45px;
-    font-size: 21px;
+    padding: 30px 16px 60px;
   }
 
   .tailor-header h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .chat-container {
-    height: 600px;
+    height: 560px;
     border-radius: 14px;
   }
 
@@ -638,51 +753,46 @@
 
   .ai-message,
   .user-message {
-    max-width: 90%;
+    max-width: 92%;
     font-size: 14px;
-  }
-
-  .chat-input {
-    padding: 12px;
-  }
-
-  .chat-input input {
-    padding: 12px;
-  }
-
-  .chat-input button {
-    padding: 0 15px;
-  }
-
-  .clear-chat-btn {
-    font-size: 12px;
-    padding: 8px 13px;
   }
 }
 
-/* =========================================
-   VERY SMALL PHONES
-========================================= */
-
-@media (max-width: 420px) {
+@media (max-width: 500px) {
   .tailor-page {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 24px 10px 50px;
+  }
+
+  .tailor-brand {
+    gap: 10px;
+  }
+
+  .tailor-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .tailor-header h1 {
+    font-size: 1.85rem;
   }
 
   .chat-container {
-    height: 570px;
+    height: 520px;
   }
 
   .chat-input {
-    gap: 7px;
-  }
-
-  .chat-input button {
-    padding: 0 13px;
+    padding: 12px;
+    gap: 8px;
   }
 
   .chat-input input {
-    font-size: 13px;
+    padding: 11px 14px;
+    font-size: 13.5px;
   }
-}
+
+  .chat-input button {
+    padding: 0 16px;
+    font-size: 13.5px;
+  }
+}

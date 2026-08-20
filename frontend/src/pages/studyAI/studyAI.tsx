@@ -2,6 +2,7 @@ import "./studyAI.css";
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Footer from "../../components/Footer/Footer";
 
 type Message = {
@@ -9,37 +10,52 @@ type Message = {
   sender: "user" | "ai";
 };
 
-type QuizState = {
+type QuizQuestion = {
   quiz_id: string;
   topic: string;
   question_number: number;
   total_questions: number;
   question: string;
+
   options: {
     A: string;
     B: string;
     C: string;
     D: string;
   };
+
+  selectedAnswer?: "A" | "B" | "C" | "D";
+  correctAnswer?: string;
+  feedback?: string;
+  explanation?: string;
+
+  answered: boolean;
+};
+
+type QuizResult = {
+  score: number;
+  total: number;
+  percentage: number;
+
+  results: Array<{
+    question: number;
+    status: string;
+  }>;
+
+  incorrectAnswers: Array<{
+    question: number;
+    selected: string;
+    correct: string;
+    explanation: string;
+  }>;
 };
 
 const CHAT_STORAGE_KEY = "agentverse-study-chat";
 const SESSION_STORAGE_KEY = "agentverse-study-session";
 
-/*
- * Backend API URL
- *
- * Development:
- *   http://127.0.0.1:8000
- *
- * Production:
- *   Set VITE_API_URL in your frontend .env file
- *
- * Example:
- *   VITE_API_URL=https://your-backend-url.com
- */
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  import.meta.env.VITE_API_URL ||
+  "http://127.0.0.1:8000";
 
 const STUDY_AI_URL = `${API_BASE_URL}/study-ai`;
 
@@ -81,7 +97,7 @@ function StudyAI() {
         return [];
       }
 
-      const validMessages = parsed.filter(
+      return parsed.filter(
         (message): message is Message =>
           message &&
           typeof message === "object" &&
@@ -89,8 +105,6 @@ function StudyAI() {
           (message.sender === "user" ||
             message.sender === "ai")
       );
-
-      return validMessages;
     } catch (error) {
       console.error(
         "StudyAI chat history parsing failed:",
@@ -110,14 +124,24 @@ function StudyAI() {
   const [copiedCode, setCopiedCode] =
     useState("");
 
-  const [quiz, setQuiz] =
-    useState<QuizState | null>(null);
-
-  const [quizFeedback, setQuizFeedback] =
-    useState("");
+  /*
+   * Store every quiz question.
+   */
+  const [quizQuestions, setQuizQuestions] =
+    useState<QuizQuestion[]>([]);
 
   const [quizScore, setQuizScore] =
     useState<number | null>(null);
+
+  const [quizTopic, setQuizTopic] =
+    useState("");
+
+  /*
+   * Quiz result is stored separately from
+   * normal chat messages.
+   */
+  const [quizResult, setQuizResult] =
+    useState<QuizResult | null>(null);
 
   const chatMessagesRef =
     useRef<HTMLDivElement>(null);
@@ -125,7 +149,7 @@ function StudyAI() {
   const sessionId = getSessionId();
 
   // =========================================
-  // SAVE CHAT HISTORY
+  // SAVE CHAT
   // =========================================
 
   useEffect(() => {
@@ -134,6 +158,7 @@ function StudyAI() {
         localStorage.removeItem(
           CHAT_STORAGE_KEY
         );
+
         return;
       }
 
@@ -154,21 +179,24 @@ function StudyAI() {
   // =========================================
 
   useEffect(() => {
-    const chat = chatMessagesRef.current;
+    const chat =
+      chatMessagesRef.current;
 
     if (!chat) {
       return;
     }
 
-    chat.scrollTo({
-      top: chat.scrollHeight,
-      behavior: "smooth",
+    requestAnimationFrame(() => {
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: "smooth",
+      });
     });
   }, [
     messages,
+    quizQuestions,
+    quizResult,
     loading,
-    quiz,
-    quizFeedback,
   ]);
 
   // =========================================
@@ -204,18 +232,16 @@ function StudyAI() {
     setMessages([]);
     setInput("");
     setCopiedCode("");
-    setQuiz(null);
-    setQuizFeedback("");
+
+    setQuizQuestions([]);
     setQuizScore(null);
+    setQuizTopic("");
+    setQuizResult(null);
 
     localStorage.removeItem(
       CHAT_STORAGE_KEY
     );
 
-    /*
-     * Create a new session so an old quiz
-     * session cannot interfere with a new chat.
-     */
     const newSessionId =
       crypto.randomUUID();
 
@@ -243,6 +269,9 @@ function StudyAI() {
       const isCodeBlock =
         Boolean(className);
 
+      /*
+       * Inline code
+       */
       if (!isCodeBlock) {
         return (
           <code
@@ -254,6 +283,9 @@ function StudyAI() {
         );
       }
 
+      /*
+       * Code block
+       */
       return (
         <div className="code-block-wrapper">
           <div className="code-block-header">
@@ -300,7 +332,131 @@ function StudyAI() {
   }
 
   // =========================================
-  // HANDLE BACKEND RESPONSE
+  // ADD QUIZ QUESTION
+  // =========================================
+
+  function addQuizQuestion(data: any) {
+    if (
+      !data ||
+      !data.question ||
+      !data.options
+    ) {
+      return;
+    }
+
+    const newQuestion: QuizQuestion = {
+      quiz_id: String(
+        data.quiz_id || ""
+      ),
+
+      topic: String(
+        data.topic ||
+        quizTopic ||
+        "Quiz"
+      ),
+
+      question_number:
+        Number(
+          data.question_number
+        ),
+
+      total_questions:
+        Number(
+          data.total_questions
+        ),
+
+      question:
+        String(data.question),
+
+      options: {
+        A: String(
+          data.options.A ?? ""
+        ),
+
+        B: String(
+          data.options.B ?? ""
+        ),
+
+        C: String(
+          data.options.C ?? ""
+        ),
+
+        D: String(
+          data.options.D ?? ""
+        ),
+      },
+
+      answered: false,
+    };
+
+    setQuizTopic(
+      String(
+        data.topic ||
+        quizTopic ||
+        "Quiz"
+      )
+    );
+
+    /*
+     * Do not replace previous questions.
+     * Add each question only once.
+     */
+    setQuizQuestions((prev) => {
+      const alreadyExists =
+        prev.some(
+          (question) =>
+            question.quiz_id ===
+            newQuestion.quiz_id &&
+            question.question_number ===
+            newQuestion.question_number
+        );
+
+      if (alreadyExists) {
+        return prev;
+      }
+
+      return [
+        ...prev,
+        newQuestion,
+      ].sort(
+        (a, b) =>
+          a.question_number -
+          b.question_number
+      );
+    });
+  }
+
+  // =========================================
+  // UPDATE ANSWERED QUESTION
+  // =========================================
+
+  function updateQuizQuestion(
+    questionNumber: number,
+    answer: "A" | "B" | "C" | "D",
+    correctAnswer: string,
+    feedback: string,
+    explanation: string
+  ) {
+    setQuizQuestions((prev) =>
+      prev.map((question) =>
+        question.question_number ===
+          questionNumber
+          ? {
+            ...question,
+            selectedAnswer:
+              answer,
+            correctAnswer,
+            feedback,
+            explanation,
+            answered: true,
+          }
+          : question
+      )
+    );
+  }
+
+  // =========================================
+  // BACKEND RESPONSE
   // =========================================
 
   function handleBackendResponse(
@@ -313,12 +469,13 @@ function StudyAI() {
     }
 
     // =======================================
-    // NORMAL AI RESPONSE
+    // NORMAL RESPONSE
     // =======================================
 
     if (data.type === "normal") {
       if (
-        typeof data.reply !== "string"
+        typeof data.reply !==
+        "string"
       ) {
         throw new Error(
           "Invalid normal response received."
@@ -337,12 +494,13 @@ function StudyAI() {
     if (
       data.type === "quiz_setup"
     ) {
-      setQuiz(null);
-      setQuizFeedback("");
+      setQuizQuestions([]);
       setQuizScore(null);
+      setQuizResult(null);
 
       if (
-        typeof data.message === "string"
+        typeof data.message ===
+        "string"
       ) {
         addAIMessage(data.message);
       }
@@ -358,65 +516,76 @@ function StudyAI() {
       data.type === "quiz" &&
       data.status === "active"
     ) {
-      setQuiz({
-        quiz_id: data.quiz_id,
-        topic: data.topic,
-        question_number:
-          data.question_number,
-        total_questions:
-          data.total_questions,
-        question: data.question,
-        options: data.options,
-      });
-
-      setQuizFeedback("");
+      addQuizQuestion(data);
 
       return;
     }
 
     // =======================================
-    // QUIZ ANSWER RECEIVED
+    // ANSWER RECEIVED
     // =======================================
 
     if (
       data.type === "quiz" &&
       data.status ===
-        "answer_received"
+      "answer_received"
     ) {
+      const questionNumber =
+        Number(
+          data.question_number
+        );
+
+      const selectedAnswer =
+        data.selected_answer as
+        | "A"
+        | "B"
+        | "C"
+        | "D";
+
+      const correctAnswer =
+        String(
+          data.correct_answer ||
+          ""
+        );
+
       const feedback = data.correct
-        ? `Correct. The answer is ${data.correct_answer}.`
-        : `Incorrect. You selected ${data.selected_answer}, but the correct answer is ${data.correct_answer}.`;
+        ? `Correct! The answer is ${correctAnswer}.`
+        : `Incorrect. You selected ${selectedAnswer}, but the correct answer is ${correctAnswer}.`;
 
       const explanation =
         typeof data.explanation ===
-        "string"
-          ? `\n\n${data.explanation}`
+          "string"
+          ? data.explanation
           : "";
 
-      setQuizFeedback(
-        feedback + explanation
+      updateQuizQuestion(
+        questionNumber,
+        selectedAnswer,
+        correctAnswer,
+        feedback,
+        explanation
       );
 
-      setQuizScore(
-        typeof data.score === "number"
-          ? data.score
-          : null
-      );
+      if (
+        typeof data.score ===
+        "number"
+      ) {
+        setQuizScore(
+          data.score
+        );
+      }
 
-      setQuiz({
-        quiz_id:
-          quiz?.quiz_id ?? "",
-        topic:
-          quiz?.topic ?? "",
-        question_number:
-          data.question_number,
-        total_questions:
-          data.total_questions,
-        question:
-          data.question,
-        options:
-          data.options,
-      });
+      /*
+       * If backend sends the next question
+       * together with answer_received,
+       * add it.
+       */
+      if (
+        data.question &&
+        data.options
+      ) {
+        addQuizQuestion(data);
+      }
 
       return;
     }
@@ -429,62 +598,94 @@ function StudyAI() {
       data.type === "quiz" &&
       data.status === "complete"
     ) {
-      setQuiz(null);
-      setQuizScore(data.score);
+      const score =
+        typeof data.score ===
+          "number"
+          ? data.score
+          : 0;
 
-      let resultText =
-        "## Quiz Complete\n\n";
+      const total =
+        typeof data.total ===
+          "number"
+          ? data.total
+          : 5;
 
-      resultText +=
-        `**Score:** ${data.score}/${data.total}\n\n`;
+      const percentage =
+        typeof data.percentage ===
+          "number"
+          ? data.percentage
+          : total > 0
+            ? Math.round(
+              (score / total) *
+              100
+            )
+            : 0;
 
-      resultText +=
-        `**Percentage:** ${data.percentage}%\n\n`;
+      setQuizScore(score);
 
-      resultText +=
-        "### Results\n\n";
+      /*
+       * Store the final result separately.
+       * It will render below all questions.
+       */
 
-      if (
-        Array.isArray(data.results)
-      ) {
-        data.results.forEach(
-          (result: any) => {
-            resultText +=
-              `- Question ${result.question}: ${result.status}\n`;
-          }
-        );
-      }
+      const results =
+        Array.isArray(
+          data.results
+        )
+          ? data.results.map(
+            (result: any) => ({
+              question:
+                Number(
+                  result.question
+                ),
 
-      resultText +=
-        "\n### Incorrect Answers\n\n";
+              status:
+                String(
+                  result.status
+                ),
+            })
+          )
+          : [];
 
-      if (
+      const incorrectAnswers =
         Array.isArray(
           data.incorrect_answers
-        ) &&
-        data.incorrect_answers.length > 0
-      ) {
-        data.incorrect_answers.forEach(
-          (item: any) => {
-            resultText +=
-              `**Question ${item.question}**\n\n`;
+        )
+          ? data.incorrect_answers.map(
+            (item: any) => ({
+              question:
+                Number(
+                  item.question
+                ),
 
-            resultText +=
-              `- Your answer: ${item.selected}\n`;
+              selected:
+                String(
+                  item.selected ??
+                  "-"
+                ),
 
-            resultText +=
-              `- Correct answer: ${item.correct}\n`;
+              correct:
+                String(
+                  item.correct ??
+                  "-"
+                ),
 
-            resultText +=
-              `- Explanation: ${item.explanation}\n\n`;
-          }
-        );
-      } else {
-        resultText +=
-          "Perfect score. You got all 5 questions correct.";
-      }
+              explanation:
+                String(
+                  item.explanation ??
+                  ""
+                ),
+            })
+          )
+          : [];
 
-      addAIMessage(resultText);
+      setQuizResult({
+        score,
+        total,
+        percentage,
+        results,
+        incorrectAnswers,
+      });
 
       return;
     }
@@ -496,22 +697,23 @@ function StudyAI() {
     if (
       data.type === "quiz" &&
       data.status ===
-        "waiting_for_answer"
+      "waiting_for_answer"
     ) {
-      setQuizFeedback(
+      addAIMessage(
         data.message ||
-          "Please answer with A, B, C, or D."
+        "Please answer with A, B, C, or D."
       );
 
       return;
     }
 
     // =======================================
-    // UNKNOWN RESPONSE
+    // FALLBACK
     // =======================================
 
     if (
-      typeof data.reply === "string"
+      typeof data.reply ===
+      "string"
     ) {
       addAIMessage(data.reply);
 
@@ -519,9 +721,12 @@ function StudyAI() {
     }
 
     if (
-      typeof data.message === "string"
+      typeof data.message ===
+      "string"
     ) {
-      addAIMessage(data.message);
+      addAIMessage(
+        data.message
+      );
 
       return;
     }
@@ -573,14 +778,20 @@ function StudyAI() {
           headers: {
             "Content-Type":
               "application/json",
+
             Accept:
               "application/json",
           },
 
           body: JSON.stringify({
-            message: userMessage,
-            history: previousMessages,
-            session_id: sessionId,
+            message:
+              userMessage,
+
+            history:
+              previousMessages,
+
+            session_id:
+              sessionId,
           }),
         }
       );
@@ -633,11 +844,16 @@ function StudyAI() {
   // =========================================
 
   async function handleQuizAnswer(
-    answer: "A" | "B" | "C" | "D"
+    question: QuizQuestion,
+    answer:
+      | "A"
+      | "B"
+      | "C"
+      | "D"
   ) {
     if (
       loading ||
-      !quiz
+      question.answered
     ) {
       return;
     }
@@ -657,14 +873,19 @@ function StudyAI() {
           headers: {
             "Content-Type":
               "application/json",
+
             Accept:
               "application/json",
           },
 
           body: JSON.stringify({
             message: answer,
-            history: previousMessages,
-            session_id: sessionId,
+
+            history:
+              previousMessages,
+
+            session_id:
+              sessionId,
           }),
         }
       );
@@ -684,7 +905,7 @@ function StudyAI() {
               errorData.detail;
           }
         } catch {
-          // Ignore JSON parsing error
+          // Ignore
         }
 
         throw new Error(
@@ -702,10 +923,10 @@ function StudyAI() {
         error
       );
 
-      setQuizFeedback(
+      addAIMessage(
         error instanceof Error
           ? error.message
-          : "Sorry, something went wrong while checking your answer."
+          : "Something went wrong while checking your answer."
       );
     } finally {
       setLoading(false);
@@ -721,14 +942,18 @@ function StudyAI() {
       return;
     }
 
-    const quizPrompt =
-      "Start a quiz. First ask me which subject or topic I want to be tested on.";
+    setQuizQuestions([]);
+    setQuizScore(null);
+    setQuizTopic("");
+    setQuizResult(null);
 
-    handleSend(quizPrompt);
+    handleSend(
+      "Start a quiz. Ask me which subject or topic I want to be tested on. Create exactly 5 different multiple-choice questions. Do not repeat questions. Each question must have four options A, B, C, and D."
+    );
   }
 
   // =========================================
-  // STUDY PLAN MODE
+  // STUDY PLAN
   // =========================================
 
   function handleStudyPlan() {
@@ -736,11 +961,20 @@ function StudyAI() {
       return;
     }
 
-    const studyPlanPrompt =
-      "Create a personalized study plan for me. First ask me what subject or topic I want to study, my current level, how many days I have, and how many hours I can study each day. Then create a practical day-by-day study plan.";
-
-    handleSend(studyPlanPrompt);
+    handleSend(
+      "Create a personalized study plan for me. First ask me what subject or topic I want to study, my current level, how many days I have, and how many hours I can study each day. Then create a practical day-by-day study plan."
+    );
   }
+
+  // =========================================
+  // CHECK ACTIVE QUESTION
+  // =========================================
+
+  const hasUnansweredQuestion =
+    quizQuestions.some(
+      (question) =>
+        !question.answered
+    );
 
   // =========================================
   // UI
@@ -760,13 +994,17 @@ function StudyAI() {
               AI
             </div>
 
-            <div>
-              <h1>StudyAI</h1>
+            <div className="study-brand-text">
+
+              <h1>
+                StudyAI
+              </h1>
 
               <div className="study-status">
                 <span></span>
                 AI Study Assistant
               </div>
+
             </div>
 
           </div>
@@ -781,7 +1019,13 @@ function StudyAI() {
               handleClearChat
             }
             disabled={
-              messages.length === 0 ||
+              (
+                messages.length ===
+                0 &&
+                quizQuestions.length ===
+                0 &&
+                quizResult === null
+              ) ||
               loading
             }
             type="button"
@@ -804,11 +1048,18 @@ function StudyAI() {
 
             {/* EMPTY STATE */}
 
-            {messages.length === 0 &&
-              !quiz && (
+            {messages.length ===
+              0 &&
+              quizQuestions.length ===
+              0 &&
+              quizResult ===
+              null && (
+
                 <div className="ai-message">
 
-                  Hi! I'm StudyAI. How can I help you study today?
+                  <div className="ai-markdown">
+                    Hi! I'm StudyAI. How can I help you study today?
+                  </div>
 
                   <div className="suggested-prompts">
 
@@ -824,7 +1075,9 @@ function StudyAI() {
                             "Create a study plan for me"
                           )
                         }
-                        disabled={loading}
+                        disabled={
+                          loading
+                        }
                         type="button"
                       >
                         Create a study plan
@@ -836,7 +1089,9 @@ function StudyAI() {
                             "Explain this topic in simple terms"
                           )
                         }
-                        disabled={loading}
+                        disabled={
+                          loading
+                        }
                         type="button"
                       >
                         Explain a topic
@@ -848,7 +1103,9 @@ function StudyAI() {
                             "Give me practice questions"
                           )
                         }
-                        disabled={loading}
+                        disabled={
+                          loading
+                        }
                         type="button"
                       >
                         Practice questions
@@ -858,7 +1115,9 @@ function StudyAI() {
                         onClick={
                           handleQuizMode
                         }
-                        disabled={loading}
+                        disabled={
+                          loading
+                        }
                         type="button"
                       >
                         Quiz Mode
@@ -868,7 +1127,9 @@ function StudyAI() {
                         onClick={
                           handleStudyPlan
                         }
-                        disabled={loading}
+                        disabled={
+                          loading
+                        }
                         type="button"
                       >
                         Study Plan
@@ -881,34 +1142,51 @@ function StudyAI() {
                 </div>
               )}
 
-            {/* MESSAGES */}
+            {/* NORMAL MESSAGES */}
 
             {messages.map(
               (
                 message,
                 index
               ) => (
+
                 <div
                   key={`${message.sender}-${index}`}
                   className={
                     message.sender ===
-                    "user"
+                      "user"
                       ? "user-message"
                       : "ai-message"
                   }
                 >
 
                   {message.sender ===
-                  "ai" ? (
-                    <ReactMarkdown
-                      components={
-                        markdownComponents
-                      }
-                    >
-                      {
-                        message.text
-                      }
-                    </ReactMarkdown>
+                    "ai" ? (
+
+                    /*
+                     * IMPORTANT:
+                     * Wrapper allows CSS to control
+                     * Markdown alignment without
+                     * affecting the whole message.
+                     */
+
+                    <div className="ai-markdown">
+
+                      <ReactMarkdown
+                        remarkPlugins={[
+                          remarkGfm,
+                        ]}
+                        components={
+                          markdownComponents
+                        }
+                      >
+                        {
+                          message.text
+                        }
+                      </ReactMarkdown>
+
+                    </div>
+
                   ) : (
                     message.text
                   )}
@@ -917,112 +1195,388 @@ function StudyAI() {
               )
             )}
 
-            {/* QUIZ */}
+            {/* =====================================
+                QUIZ QUESTIONS
+                ===================================== */}
 
-            {quiz && (
-              <div className="ai-message quiz-container">
+            {quizQuestions.length >
+              0 && (
 
-                <div className="quiz-header">
+                <div className="quiz-container">
 
-                  <strong>
-                    {quiz.topic}
-                  </strong>
+                  {/* QUIZ HEADER */}
 
-                  <span>
-                    Question{" "}
-                    {quiz.question_number}/
-                    {quiz.total_questions}
-                  </span>
+                  <div className="quiz-main-header">
 
-                </div>
+                    <div>
 
-                <div className="quiz-question">
-                  {quiz.question}
-                </div>
+                      <span className="quiz-label">
+                        QUIZ MODE
+                      </span>
 
-                <div className="quiz-options">
+                      <h2>
+                        {quizTopic}
+                      </h2>
 
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                      handleQuizAnswer(
-                        "A"
-                      )
-                    }
-                  >
-                    <strong>
-                      A)
-                    </strong>{" "}
-                    {quiz.options.A}
-                  </button>
+                    </div>
 
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                      handleQuizAnswer(
-                        "B"
-                      )
-                    }
-                  >
-                    <strong>
-                      B)
-                    </strong>{" "}
-                    {quiz.options.B}
-                  </button>
+                    <div className="quiz-progress">
+                      {
+                        quizQuestions.length
+                      }{" "}
+                      / 5 questions
+                    </div>
 
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                      handleQuizAnswer(
-                        "C"
-                      )
-                    }
-                  >
-                    <strong>
-                      C)
-                    </strong>{" "}
-                    {quiz.options.C}
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                      handleQuizAnswer(
-                        "D"
-                      )
-                    }
-                  >
-                    <strong>
-                      D)
-                    </strong>{" "}
-                    {quiz.options.D}
-                  </button>
-
-                </div>
-
-                {quizFeedback && (
-                  <div className="quiz-feedback">
-                    {quizFeedback}
                   </div>
-                )}
 
-                {quizScore !== null && (
-                  <div className="quiz-score">
-                    Current Score:{" "}
-                    {quizScore}
-                  </div>
-                )}
+                  {/* QUESTIONS */}
 
-              </div>
-            )}
+                  {quizQuestions.map(
+                    (
+                      question
+                    ) => (
 
-            {/* TYPING INDICATOR */}
+                      <div
+                        key={`${question.quiz_id}-${question.question_number}`}
+                        className={`quiz-question-card ${question.answered
+                            ? "quiz-question-answered"
+                            : "quiz-question-active"
+                          }`}
+                      >
+
+                        {/* QUESTION HEADER */}
+
+                        <div className="quiz-question-top">
+
+                          <span className="quiz-question-number">
+                            Question{" "}
+                            {
+                              question.question_number
+                            }
+                          </span>
+
+                          <span className="quiz-total">
+                            {" "}
+                            /{" "}
+                            {
+                              question.total_questions
+                            }
+                          </span>
+
+                        </div>
+
+                        {/* QUESTION */}
+
+                        <div className="quiz-question-text">
+                          {
+                            question.question
+                          }
+                        </div>
+
+                        {/* OPTIONS */}
+
+                        <div className="quiz-options">
+
+                          {(
+                            [
+                              "A",
+                              "B",
+                              "C",
+                              "D",
+                            ] as const
+                          ).map(
+                            (
+                              option
+                            ) => {
+
+                              const isSelected =
+                                question.selectedAnswer ===
+                                option;
+
+                              return (
+
+                                <button
+                                  key={
+                                    option
+                                  }
+                                  type="button"
+                                  disabled={
+                                    loading ||
+                                    question.answered
+                                  }
+                                  className={
+                                    isSelected
+                                      ? "quiz-option selected"
+                                      : "quiz-option"
+                                  }
+                                  onClick={() =>
+                                    handleQuizAnswer(
+                                      question,
+                                      option
+                                    )
+                                  }
+                                >
+
+                                  <span className="quiz-option-letter">
+                                    {option})
+                                  </span>
+
+                                  <span className="quiz-option-text">
+                                    {
+                                      question
+                                        .options[
+                                      option
+                                      ]
+                                    }
+                                  </span>
+
+                                </button>
+
+                              );
+                            }
+                          )}
+
+                        </div>
+
+                        {/* FEEDBACK */}
+
+                        {question.answered &&
+                          question.feedback && (
+
+                            <div className="quiz-feedback">
+
+                              <strong>
+                                {
+                                  question.feedback
+                                }
+                              </strong>
+
+                              {question.explanation && (
+                                <p>
+                                  {
+                                    question.explanation
+                                  }
+                                </p>
+                              )}
+
+                            </div>
+
+                          )}
+
+                      </div>
+
+                    )
+                  )}
+
+                  {/* =================================
+                    FINAL QUIZ RESULT
+                    ================================= */}
+
+                  {quizResult !==
+                    null && (
+
+                      <div className="quiz-result-card">
+
+                        <div className="quiz-result-title">
+                          🎉 Quiz Complete
+                        </div>
+
+                        <div className="quiz-result-divider"></div>
+
+                        <div className="quiz-result-score">
+
+                          <span>
+                            Score
+                          </span>
+
+                          <strong>
+                            {
+                              quizResult.score
+                            }
+                            /
+                            {
+                              quizResult.total
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="quiz-result-percentage">
+
+                          <span>
+                            Percentage
+                          </span>
+
+                          <strong>
+                            {
+                              quizResult.percentage
+                            }%
+                          </strong>
+
+                        </div>
+
+                        {/* RESULTS */}
+
+                        {quizResult.results.length >
+                          0 && (
+
+                            <div className="quiz-result-section">
+
+                              <h3>
+                                Results
+                              </h3>
+
+                              <div className="quiz-results-list">
+
+                                {quizResult.results.map(
+                                  (
+                                    result,
+                                    index
+                                  ) => (
+
+                                    <div
+                                      key={`${result.question}-${index}`}
+                                      className="quiz-result-row"
+                                    >
+
+                                      <span>
+                                        Question{" "}
+                                        {
+                                          result.question
+                                        }
+                                      </span>
+
+                                      <strong>
+                                        {
+                                          result.status
+                                        }
+                                      </strong>
+
+                                    </div>
+
+                                  )
+                                )}
+
+                              </div>
+
+                            </div>
+
+                          )}
+
+                        {/* INCORRECT ANSWERS */}
+
+                        <div className="quiz-result-section">
+
+                          <h3>
+                            Incorrect Answers
+                          </h3>
+
+                          {quizResult
+                            .incorrectAnswers
+                            .length >
+                            0 ? (
+
+                            <div className="quiz-incorrect-list">
+
+                              {quizResult.incorrectAnswers.map(
+                                (
+                                  item,
+                                  index
+                                ) => (
+
+                                  <div
+                                    key={`${item.question}-${index}`}
+                                    className="quiz-incorrect-item"
+                                  >
+
+                                    <strong>
+                                      Question{" "}
+                                      {
+                                        item.question
+                                      }
+                                    </strong>
+
+                                    <p>
+                                      <strong>
+                                        Your answer:
+                                      </strong>{" "}
+                                      {
+                                        item.selected
+                                      }
+                                    </p>
+
+                                    <p>
+                                      <strong>
+                                        Correct answer:
+                                      </strong>{" "}
+                                      {
+                                        item.correct
+                                      }
+                                    </p>
+
+                                    {item.explanation && (
+                                      <p>
+                                        <strong>
+                                          Explanation:
+                                        </strong>{" "}
+                                        {
+                                          item.explanation
+                                        }
+                                      </p>
+                                    )}
+
+                                  </div>
+
+                                )
+                              )}
+
+                            </div>
+
+                          ) : (
+
+                            <div className="quiz-perfect-score">
+                              Perfect score! You got all questions correct. 🎯
+                            </div>
+
+                          )}
+
+                        </div>
+
+                      </div>
+
+                    )}
+
+                  {/* CURRENT SCORE */}
+
+                  {quizScore !==
+                    null &&
+                    quizResult ===
+                    null && (
+
+                      <div className="quiz-score">
+
+                        <span>
+                          Current Score
+                        </span>
+
+                        <strong>
+                          {
+                            quizScore
+                          }
+                        </strong>
+
+                      </div>
+
+                    )}
+
+                </div>
+
+              )}
+
+            {/* TYPING */}
 
             {loading && (
+
               <div className="ai-message typing-message">
 
                 <span className="typing-dot"></span>
@@ -1030,6 +1584,7 @@ function StudyAI() {
                 <span className="typing-dot"></span>
 
               </div>
+
             )}
 
           </div>
@@ -1041,7 +1596,7 @@ function StudyAI() {
             <input
               type="text"
               placeholder={
-                quiz
+                hasUnansweredQuestion
                   ? "Choose an option above..."
                   : "Ask StudyAI anything..."
               }
@@ -1052,18 +1607,23 @@ function StudyAI() {
                 )
               }
               onKeyDown={(e) => {
+
                 if (
-                  e.key === "Enter" &&
+                  e.key ===
+                  "Enter" &&
                   !e.shiftKey
                 ) {
+
                   e.preventDefault();
 
                   handleSend();
+
                 }
+
               }}
               disabled={
                 loading ||
-                Boolean(quiz)
+                hasUnansweredQuestion
               }
             />
 
@@ -1073,8 +1633,9 @@ function StudyAI() {
               }
               disabled={
                 loading ||
-                input.trim() === "" ||
-                Boolean(quiz)
+                input.trim() ===
+                "" ||
+                hasUnansweredQuestion
               }
               type="button"
             >

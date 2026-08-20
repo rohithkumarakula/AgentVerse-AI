@@ -16,7 +16,9 @@ export type CareerProfileData = {
   salaryGoal: string;
 };
 
-export async function saveCareerProfile(profile: CareerProfileData) {
+export async function saveCareerProfile(
+  profile: CareerProfileData
+) {
   const response = await fetch(`${API_URL}/career-profile`, {
     method: "POST",
     headers: {
@@ -27,6 +29,26 @@ export async function saveCareerProfile(profile: CareerProfileData) {
 
   if (!response.ok) {
     throw new Error("Failed to save career profile");
+  }
+
+  return response.json();
+}
+
+export async function getCareerAIAnalysis(
+  profile: CareerProfileData
+) {
+  const response = await fetch(`${API_URL}/career-ai`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      profile,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to generate career analysis");
   }
 
   return response.json();

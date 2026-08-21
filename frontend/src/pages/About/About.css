@@ -1,0 +1,316 @@
+/* =========================================
+   AGENTVERSE AI — ABOUT PAGE
+========================================= */
+
+.about-page {
+    min-height: calc(100vh - 80px);
+
+    padding: 80px 30px;
+
+    box-sizing: border-box;
+
+    background:
+        radial-gradient(circle at 50% 0%,
+            rgba(124, 58, 237, 0.18),
+            transparent 45%),
+        #0b0c12;
+
+    color: #f8fafc;
+
+    text-align: center;
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.about-container {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.about-icon {
+    width: 76px;
+    height: 76px;
+
+    margin: 0 auto 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 22px;
+
+    font-size: 38px;
+
+    background:
+        linear-gradient(135deg,
+            #7c3aed,
+            #a855f7);
+
+    box-shadow:
+        0 0 35px rgba(139, 92, 246, 0.35);
+}
+
+
+/* =========================================
+   MAIN HEADING
+========================================= */
+
+.about-container>h1 {
+    margin: 0 0 20px;
+
+    font-size: 52px;
+
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    letter-spacing: -1.5px;
+
+    background:
+        linear-gradient(90deg,
+            #ffffff,
+            #c084fc);
+
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* =========================================
+   INTRO
+========================================= */
+
+.about-intro {
+    width: 100%;
+    max-width: 750px;
+
+    margin: 0 auto 65px;
+
+    color: #9ca3af;
+
+    font-size: 18px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   AGENT CARDS
+========================================= */
+
+.about-cards {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: stretch;
+
+    gap: 25px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 70px;
+}
+
+
+.about-card {
+    flex: 1 1 280px;
+
+    max-width: 330px;
+
+    padding: 35px 28px;
+
+    box-sizing: border-box;
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(139, 92, 246, 0.18);
+
+    background:
+        linear-gradient(145deg,
+            #182033,
+            #131722);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.about-card:hover {
+    transform: translateY(-7px);
+
+    border-color:
+        rgba(168, 85, 247, 0.55);
+
+    box-shadow:
+        0 20px 50px rgba(124, 58, 237, 0.18);
+}
+
+
+/* =========================================
+   CARD ICON
+========================================= */
+
+.about-card-icon {
+    font-size: 48px;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================
+   CARD HEADING
+========================================= */
+
+.about-card h2 {
+    margin: 0 0 15px;
+
+    color: #38bdf8;
+
+    font-size: 25px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   CARD TEXT
+========================================= */
+
+.about-card p {
+    margin: 0;
+
+    color: #b6c0d4;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   MISSION
+========================================= */
+
+.about-mission {
+    max-width: 800px;
+
+    margin: 0 auto;
+
+    padding: 40px 30px;
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(139, 92, 246, 0.18);
+
+    background:
+        rgba(18, 20, 30, 0.8);
+}
+
+
+.about-mission h2 {
+    margin: 0 0 15px;
+
+    color: #ffffff;
+
+    font-size: 30px;
+
+    font-weight: 700;
+}
+
+
+.about-mission p {
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================
+   TAGLINE
+========================================= */
+
+.about-tagline {
+    margin-top: 45px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    background:
+        linear-gradient(90deg,
+            #8b5cf6,
+            #c084fc);
+
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .about-page {
+        padding: 55px 18px;
+    }
+
+    .about-container>h1 {
+        font-size: 36px;
+    }
+
+    .about-intro {
+        font-size: 16px;
+
+        margin-bottom: 45px;
+    }
+
+    .about-cards {
+        gap: 18px;
+
+        margin-bottom: 45px;
+    }
+
+    .about-card {
+        max-width: 100%;
+
+        padding: 30px 22px;
+    }
+
+    .about-mission {
+        padding: 30px 20px;
+    }
+
+    .about-mission h2 {
+        font-size: 25px;
+    }
+
+    .about-tagline {
+        font-size: 17px;
+    }
+}

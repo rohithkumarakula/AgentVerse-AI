@@ -84,20 +84,25 @@ function LifeAI() {
 
   return (
     <div className="life-ai-page">
-      <div className="life-ai-container">
 
-        {/* ================= HEADER ================= */}
+      {/* ================= LIFE AI HEADER ================= */}
+      {/* This is OUTSIDE the chat box, like StudyAI and TailorAI */}
 
-        <div className="life-ai-header">
-          <div className="life-ai-icon">🧠</div>
+      <div className="life-ai-header">
+        <div className="life-ai-icon">🧠</div>
 
-          <div>
-            <h1>LifeAI</h1>
-            <p>
-              Your AI assistant for goals, habits and productivity.
-            </p>
-          </div>
+        <div>
+          <h1>LifeAI</h1>
+
+          <p>
+            Your AI assistant for goals, habits and productivity.
+          </p>
         </div>
+      </div>
+
+      {/* ================= CHAT CONTAINER ================= */}
+
+      <div className="life-ai-container">
 
         {/* ================= CONTENT ================= */}
 
@@ -107,6 +112,7 @@ function LifeAI() {
 
           {messages.length === 0 && (
             <div className="life-ai-welcome">
+
               <div className="welcome-icon">✨</div>
 
               <h2>How can I help you today?</h2>
@@ -119,34 +125,41 @@ function LifeAI() {
               <div className="life-ai-prompts">
 
                 <button
+                  type="button"
                   onClick={() =>
                     sendMessage("Help me set my goals")
                   }
+                  disabled={loading}
                 >
                   🎯 Set my goals
                 </button>
 
                 <button
+                  type="button"
                   onClick={() =>
                     sendMessage(
                       "Help me build a productive daily routine"
                     )
                   }
+                  disabled={loading}
                 >
                   📅 Build a routine
                 </button>
 
                 <button
+                  type="button"
                   onClick={() =>
                     sendMessage(
                       "Help me create a habit tracking plan"
                     )
                   }
+                  disabled={loading}
                 >
                   🔥 Track my habits
                 </button>
 
               </div>
+
             </div>
           )}
 
@@ -157,11 +170,10 @@ function LifeAI() {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`life-ai-message ${
-                  msg.sender === "user"
+                className={`life-ai-message ${msg.sender === "user"
                     ? "user-message"
                     : "ai-message"
-                }`}
+                  }`}
               >
 
                 <div className="message-label">
@@ -169,13 +181,17 @@ function LifeAI() {
                 </div>
 
                 <div className="message-text">
+
                   {msg.sender === "ai" ? (
-                    <ReactMarkdown  remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                    >
                       {msg.text}
                     </ReactMarkdown>
                   ) : (
                     msg.text
                   )}
+
                 </div>
 
               </div>
@@ -198,6 +214,7 @@ function LifeAI() {
             )}
 
           </div>
+
         </div>
 
         {/* ================= INPUT ================= */}
@@ -232,6 +249,7 @@ function LifeAI() {
         </div>
 
       </div>
+
     </div>
   );
 }

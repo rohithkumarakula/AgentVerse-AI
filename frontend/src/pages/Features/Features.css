@@ -1,49 +1,179 @@
+/* =========================================
+   AGENTVERSE AI — FEATURES PAGE
+========================================= */
+
 .features-page {
   min-height: 100vh;
+  box-sizing: border-box;
+
   background: #0f172a;
   color: white;
-  padding: 120px 80px 60px;
+
+  padding: 100px 80px 80px;
+
   text-align: center;
 }
 
+/* =========================================
+   PAGE TITLE
+========================================= */
+
 .features-page h1 {
   font-size: 3rem;
-  margin-bottom: 15px;
+  margin: 0 0 15px;
+
+  font-weight: 700;
+  color: #f8fafc;
 }
 
-.features-page p {
+.features-page>p {
   color: #cbd5e1;
-  margin-bottom: 50px;
+
+  margin: 0 0 55px;
+
+  font-size: 1.05rem;
 }
+
+/* =========================================
+   FEATURES GRID
+========================================= */
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+  /* EXACTLY 3 CARDS PER ROW */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
   gap: 30px;
+
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto;
 }
 
+/* =========================================
+   FEATURE CARD
+========================================= */
+
 .feature-card {
+  box-sizing: border-box;
+
+  min-height: 275px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
   background: #1e293b;
-  padding: 30px;
+
+  padding: 30px 25px;
+
   border-radius: 16px;
-  transition: 0.3s;
+
+  border: 1px solid rgba(148, 163, 184, 0.08);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
+
+/* =========================================
+   CARD HOVER
+========================================= */
 
 .feature-card:hover {
   transform: translateY(-8px);
+
+  border-color: rgba(56, 189, 248, 0.25);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.25);
 }
+
+/* =========================================
+   FEATURE ICON
+========================================= */
 
 .feature-icon {
   font-size: 3rem;
+
+  line-height: 1;
+
   margin-bottom: 20px;
 }
 
+/* =========================================
+   FEATURE TITLE
+========================================= */
+
 .feature-card h3 {
-  margin-bottom: 15px;
+  margin: 0 0 15px;
+
   color: #38bdf8;
+
+  font-size: 1.35rem;
+
+  font-weight: 700;
 }
 
+/* =========================================
+   FEATURE DESCRIPTION
+========================================= */
+
 .feature-card p {
+  margin: 0;
+
   color: #cbd5e1;
+
   line-height: 1.6;
+
+  font-size: 1rem;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+  .features-page {
+    padding: 90px 40px 60px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+  .features-page {
+    padding: 70px 20px 50px;
+  }
+
+  .features-page h1 {
+    font-size: 2.2rem;
+  }
+
+  .features-page>p {
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+  .feature-card {
+    min-height: 250px;
+
+    padding: 28px 22px;
+  }
 }

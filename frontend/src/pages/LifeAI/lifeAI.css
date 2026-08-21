@@ -1,220 +1,716 @@
+/* =========================================================
+   LIFE AI PAGE
+   ========================================================= */
+
 .life-ai-page {
   min-height: 100vh;
-  background: #0b1224;
-  color: #ffffff;
-  padding: 40px 20px;
+  width: 100%;
+  background: #0b0b12;
+  color: #f5f3ff;
+  padding: 30px;
   box-sizing: border-box;
 }
 
+/* =========================================================
+   MAIN CONTAINER
+   ========================================================= */
+
 .life-ai-container {
   width: 100%;
-  max-width: 1000px;
-  min-height: 85vh;
+  max-width: 1500px;
   margin: 0 auto;
-  background: #151e32;
-  border: 1px solid #2d3953;
-  border-radius: 24px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
 }
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .life-ai-header {
+  width: 100%;
+  min-height: 250px;
+
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 18px;
-  padding: 28px 32px;
-  border-bottom: 1px solid #2d3953;
-  background: #182239;
+  justify-content: center;
+
+  text-align: center;
+
+  background: #101017;
+
+  padding: 40px 20px 45px;
+
+  box-sizing: border-box;
+
+  /*
+   * IMPORTANT
+   * Completely remove every possible line/border.
+   */
+  border: none !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+
+  outline: none !important;
+
+  box-shadow: none !important;
+
+  position: relative;
 }
 
+/*
+ * Remove any pseudo-element that could create
+ * a horizontal line.
+ */
+
+.life-ai-header::before,
+.life-ai-header::after {
+  content: none !important;
+  display: none !important;
+
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   HEADER ICON
+   ========================================================= */
+
 .life-ai-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  background: #30245c;
+  width: 72px;
+  height: 72px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+
+  background: linear-gradient(135deg,
+      #7c3aed,
+      #a855f7);
+
+  border-radius: 18px;
+
+  font-size: 38px;
+
+  margin-bottom: 18px;
+
+  box-shadow:
+    0 0 25px rgba(139, 92, 246, 0.35);
+
+  border: none;
 }
+
+/* =========================================================
+   HEADER TITLE
+   ========================================================= */
 
 .life-ai-header h1 {
   margin: 0;
-  font-size: 30px;
+
+  font-size: 46px;
+  font-weight: 800;
+
+  line-height: 1.1;
+
+  color: #e9d5ff;
+
+  letter-spacing: -1.5px;
 }
+
+/* =========================================================
+   HEADER DESCRIPTION
+   ========================================================= */
 
 .life-ai-header p {
-  margin: 6px 0 0;
-  color: #9ca8bd;
-  font-size: 15px;
+  margin: 10px 0 0;
+
+  font-size: 18px;
+
+  line-height: 1.6;
+
+  color: #9ca3af;
 }
+
+/* =========================================================
+   CHAT CONTENT BOX
+   ========================================================= */
 
 .life-ai-content {
-  flex: 1;
-  padding: 35px;
-  overflow-y: auto;
+  width: 100%;
+  max-width: 1380px;
+
+  height: 500px;
+
+  margin: 8px auto 0;
+
+  background: #14141d;
+
+  box-sizing: border-box;
+
+  border: 1px solid #34245c;
+
+  border-radius: 24px;
+
+  overflow: hidden;
+
+  position: relative;
+
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.15);
 }
+
+/*
+ * Make sure there is no extra top border
+ * coming from the content itself.
+ */
+
+.life-ai-content::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* =========================================================
+   WELCOME SECTION
+   ========================================================= */
 
 .life-ai-welcome {
+  width: 100%;
+  min-height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
   text-align: center;
-  max-width: 700px;
-  margin: 70px auto 40px;
+
+  padding: 50px 30px;
+
+  box-sizing: border-box;
 }
+
+/* =========================================================
+   WELCOME ICON
+   ========================================================= */
 
 .welcome-icon {
-  font-size: 45px;
-  margin-bottom: 15px;
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #171326;
+
+  border: 1px solid #4c2b85;
+
+  border-radius: 20px;
+
+  font-size: 40px;
+
+  margin-bottom: 24px;
+
+  box-shadow:
+    0 0 25px rgba(124, 58, 237, 0.18);
 }
+
+/* =========================================================
+   WELCOME HEADING
+   ========================================================= */
 
 .life-ai-welcome h2 {
-  font-size: 28px;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
+
+  font-size: 34px;
+
+  font-weight: 800;
+
+  color: #ffffff;
+
+  letter-spacing: -0.8px;
 }
 
+/* =========================================================
+   WELCOME DESCRIPTION
+   ========================================================= */
+
 .life-ai-welcome p {
-  color: #9ca8bd;
+  max-width: 750px;
+
+  margin: 0 auto 30px;
+
+  font-size: 17px;
+
   line-height: 1.7;
-  margin-bottom: 30px;
+
+  color: #9ca3af;
 }
+
+/* =========================================================
+   PROMPT BUTTONS
+   ========================================================= */
 
 .life-ai-prompts {
   display: flex;
+
+  align-items: center;
   justify-content: center;
+
   gap: 12px;
+
   flex-wrap: wrap;
 }
 
 .life-ai-prompts button {
-  background: #202b43;
-  border: 1px solid #3a4660;
-  color: #ffffff;
-  padding: 13px 18px;
+  padding: 13px 20px;
+
   border-radius: 12px;
+
+  border: 1px solid #4c2b85;
+
+  background: #171326;
+
+  color: #c4b5fd;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .life-ai-prompts button:hover {
-  background: #303d5d;
+  background: #21183a;
+
+  border-color: #7c3aed;
+
   transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(124, 58, 237, 0.15);
 }
 
+.life-ai-prompts button:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
 .life-ai-messages {
+  height: 100%;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
   display: flex;
+
   flex-direction: column;
+
   gap: 18px;
 }
 
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
 .life-ai-message {
   max-width: 80%;
+
   padding: 16px 18px;
+
   border-radius: 16px;
+
   line-height: 1.6;
+
+  font-size: 15px;
+
+  box-sizing: border-box;
 }
 
-.user-message {
+/* =========================================================
+   USER MESSAGE
+   ========================================================= */
+
+.life-ai-message.user-message {
   align-self: flex-end;
-  background: #7c3aed;
+
+  background: #34205f;
+
+  border: 1px solid #5b3b91;
+
+  color: #f5f3ff;
+
+  border-bottom-right-radius: 5px;
 }
 
-.ai-message {
+/* =========================================================
+   AI MESSAGE
+   ========================================================= */
+
+.life-ai-message.ai-message {
   align-self: flex-start;
-  background: #202b43;
-  border: 1px solid #34415d;
+
+  background: #1a1923;
+
+  border: 1px solid #35274f;
+
+  color: #e5e7eb;
+
+  border-bottom-left-radius: 5px;
 }
+
+/* =========================================================
+   MESSAGE LABEL
+   ========================================================= */
 
 .message-label {
-  font-size: 12px;
+  font-size: 13px;
+
   font-weight: 700;
-  opacity: 0.7;
-  margin-bottom: 6px;
+
+  color: #a78bfa;
+
+  margin-bottom: 7px;
 }
+
+/* =========================================================
+   MESSAGE TEXT
+   ========================================================= */
 
 .message-text {
-  white-space: pre-wrap;
+  font-size: 15px;
+
+  line-height: 1.7;
+
+  color: #e5e7eb;
 }
+
+.message-text p {
+  margin: 0 0 10px;
+}
+
+.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+.message-text ul,
+.message-text ol {
+  margin: 10px 0;
+
+  padding-left: 22px;
+}
+
+.message-text li {
+  margin-bottom: 5px;
+}
+
+.message-text strong {
+  color: #ffffff;
+}
+
+.message-text code {
+  background: #0f0f16;
+
+  color: #c4b5fd;
+
+  padding: 3px 6px;
+
+  border-radius: 5px;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   TYPING
+   ========================================================= */
 
 .typing {
-  color: #aeb8ca;
-  font-style: italic;
+  color: #9ca3af;
+
+  font-size: 14px;
+
+  animation: lifeTyping 1.4s infinite ease-in-out;
 }
 
-.life-ai-input-area {
-  display: flex;
-  gap: 12px;
-  padding: 22px;
-  border-top: 1px solid #2d3953;
-  background: #151e32;
+@keyframes lifeTyping {
+
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
+
+/* =========================================================
+   INPUT AREA
+   ========================================================= */
+
+.life-ai-input-area {
+  width: 100%;
+  max-width: 1380px;
+
+  margin: 18px auto 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
 
 .life-ai-input-area input {
   flex: 1;
-  background: #202b43;
-  border: 1px solid #3a4660;
-  color: #ffffff;
-  padding: 15px 18px;
-  border-radius: 12px;
-  outline: none;
-  font-size: 15px;
-}
 
-.life-ai-input-area input:focus {
-  border-color: #8b5cf6;
+  height: 62px;
+
+  padding: 0 20px;
+
+  box-sizing: border-box;
+
+  border-radius: 14px;
+
+  border: 1px solid #34245c;
+
+  background: #181721;
+
+  color: #ffffff;
+
+  outline: none;
+
+  font-size: 16px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .life-ai-input-area input::placeholder {
-  color: #7f8ba2;
+  color: #6b7280;
 }
+
+.life-ai-input-area input:focus {
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
 
 .send-button {
+  height: 62px;
+
+  min-width: 100px;
+
+  padding: 0 24px;
+
   border: none;
-  background: linear-gradient(135deg, #7c3aed, #9333ea);
-  color: white;
-  padding: 0 25px;
-  border-radius: 12px;
+
+  border-radius: 14px;
+
+  background: linear-gradient(135deg,
+      #7c3aed,
+      #9333ea);
+
+  color: #ffffff;
+
+  font-size: 16px;
+
   font-weight: 700;
+
   cursor: pointer;
-  font-size: 15px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.send-button:hover {
-  opacity: 0.9;
+.send-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 22px rgba(124, 58, 237, 0.3);
+}
+
+.send-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .send-button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
+
   cursor: not-allowed;
 }
 
-@media (max-width: 700px) {
-  .life-ai-page {
-    padding: 15px;
-  }
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
 
-  .life-ai-container {
-    min-height: 90vh;
+.life-ai-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.life-ai-messages::-webkit-scrollbar-track {
+  background: #111118;
+}
+
+.life-ai-messages::-webkit-scrollbar-thumb {
+  background: #3b2461;
+
+  border-radius: 10px;
+}
+
+.life-ai-messages::-webkit-scrollbar-thumb:hover {
+  background: #5b3b91;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .life-ai-page {
+    padding: 20px;
   }
 
   .life-ai-header {
-    padding: 20px;
+    min-height: 220px;
+
+    padding: 35px 20px 40px;
+
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .life-ai-header h1 {
+    font-size: 40px;
+  }
+
+  .life-ai-header p {
+    font-size: 16px;
   }
 
   .life-ai-content {
-    padding: 20px;
+    height: 500px;
   }
 
   .life-ai-message {
     max-width: 90%;
   }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .life-ai-page {
+    padding: 12px;
+  }
+
+  .life-ai-header {
+    min-height: 200px;
+
+    padding: 30px 15px 35px;
+
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .life-ai-icon {
+    width: 62px;
+    height: 62px;
+
+    font-size: 32px;
+  }
+
+  .life-ai-header h1 {
+    font-size: 34px;
+  }
+
+  .life-ai-header p {
+    font-size: 14px;
+  }
+
+  .life-ai-content {
+    height: 480px;
+
+    border-radius: 18px;
+  }
+
+  .life-ai-welcome {
+    padding: 30px 18px;
+  }
+
+  .welcome-icon {
+    width: 65px;
+    height: 65px;
+
+    font-size: 32px;
+  }
+
+  .life-ai-welcome h2 {
+    font-size: 26px;
+  }
+
+  .life-ai-welcome p {
+    font-size: 14px;
+  }
+
+  .life-ai-prompts {
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+  .life-ai-prompts button {
+    width: 100%;
+  }
 
   .life-ai-input-area {
-    padding: 15px;
+    gap: 8px;
+  }
+
+  .life-ai-input-area input {
+    height: 54px;
+
+    font-size: 14px;
   }
 
   .send-button {
-    padding: 0 18px;
+    height: 54px;
+
+    min-width: 80px;
+
+    padding: 0 16px;
+
+    font-size: 14px;
   }
 }

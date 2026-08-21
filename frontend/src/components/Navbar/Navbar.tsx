@@ -1,7 +1,9 @@
 import "./Navbar.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
+
   return (
     <nav className="navbar">
       <h1 className="logo">🚀 AgentVerse AI</h1>
@@ -26,11 +28,16 @@ function Navbar() {
         </li>
 
         <li>
-          <a href="#">About</a>
+          <NavLink to="/about">About</NavLink>
         </li>
       </ul>
 
-      <button className="login-btn">Get Started</button>
+      <button
+        className="login-btn"
+        onClick={() => navigate("/agents")}
+      >
+        Get Started
+      </button>
     </nav>
   );
 }

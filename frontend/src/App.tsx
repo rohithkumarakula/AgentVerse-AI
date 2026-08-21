@@ -8,6 +8,7 @@ import TailorAI from "./pages/TailorAI/TailorAI";
 import StudyAI from "./pages/studyAI/studyAI";
 import LifeAI from "./pages/LifeAI/LifeAI";
 import CareerProfile from "./components/careerProfile/careerProfile";
+import About from "./pages/About/about.tsx";
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
         path="/career-profile"
         element={<CareerProfile />}
       />
+
+      <Route path="/about" element={<About />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

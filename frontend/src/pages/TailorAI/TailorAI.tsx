@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
+
 import Navbar from "../../components/Navbar/Navbar";
-import CareerProfile from "../../components/careerProfile/careerProfile";
 import Footer from "../../components/Footer/Footer";
 
 type Message = {
@@ -25,16 +25,14 @@ const PROFILE_STORAGE_KEY = "agentverse-career-profile";
 
 function cleanMarkdown(text: string): string {
   if (!text) return "";
+
   return text
-    // Convert raw <br>, <br/>, <br /> tags into markdown newlines
     .replace(/<br\s*\/?>/gi, "\n\n")
-    // Normalize escaped newlines
     .replace(/\\n/g, "\n");
 }
 
 function TailorAI() {
   const [input, setInput] = useState("");
-  // Start with a fresh conversation on every page load/visit
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [copiedCode, setCopiedCode] = useState("");
@@ -42,7 +40,7 @@ function TailorAI() {
   const chatMessagesRef = useRef<HTMLDivElement>(null);
 
   // =========================================
-  // CLEAN LEGACY STORED CHAT ON MOUNT & UNMOUNT
+  // CLEAN OLD CHAT ON PAGE LOAD / UNMOUNT
   // =========================================
 
   useEffect(() => {
@@ -177,6 +175,7 @@ function TailorAI() {
         </div>
       );
     },
+
     code({ className, children, ...props }) {
       const code = String(children).replace(/\n$/, "");
       const isCodeBlock = Boolean(className);
@@ -297,33 +296,43 @@ function TailorAI() {
 
       <section className="tailor-page">
 
-        {/* HEADER */}
+        {/* =========================================
+            TAILOR AI HEADER
+        ========================================= */}
+
         <div className="tailor-header">
 
           <div className="tailor-brand">
+
             <div className="tailor-icon">
               🤖
             </div>
 
             <div className="tailor-title-block">
+
               <h1>TailorAI</h1>
 
               <div className="tailor-status">
                 <span className="status-dot"></span>
                 AI Career Assistant
               </div>
+
             </div>
+
           </div>
 
           <p>
-            Your personal AI assistant for career guidance, roadmaps, and interview preparation.
+            Your personal AI assistant for career guidance,
+            roadmaps, and interview preparation.
           </p>
 
           <button
+            type="button"
             className="clear-chat-btn"
             onClick={handleClearChat}
             disabled={
-              messages.length === 0 || loading
+              loading ||
+              (messages.length === 0 && input.trim() === "")
             }
           >
             Clear Chat
@@ -331,24 +340,43 @@ function TailorAI() {
 
         </div>
 
-        {/* CHAT CONTAINER */}
+        {/* =========================================
+            CHAT CONTAINER
+        ========================================= */}
+
         <div className="chat-container">
+
+          {/* =========================================
+              CHAT MESSAGES
+          ========================================= */}
 
           <div
             className="chat-messages"
             ref={chatMessagesRef}
           >
 
+            {/* =========================================
+                WELCOME MESSAGE
+            ========================================= */}
+
             {messages.length === 0 && (
               <div className="ai-message welcome-ai-message">
+
                 <p>
-                  Hi! I'm <strong>TailorAI</strong>, your personal career and placement assistant. How can I help you today?
+                  Hi! I'm{" "}
+                  <strong>TailorAI</strong>, your personal
+                  career and placement assistant. How can I
+                  help you today?
                 </p>
 
                 <div className="suggested-prompts">
-                  <p>Try asking TailorAI:</p>
+
+                  <p>
+                    Try asking TailorAI:
+                  </p>
 
                   <div className="prompt-list">
+
                     <button
                       type="button"
                       onClick={() =>
@@ -384,10 +412,17 @@ function TailorAI() {
                     >
                       🎯 Prepare me for a technical interview
                     </button>
+
                   </div>
+
                 </div>
+
               </div>
             )}
+
+            {/* =========================================
+                CHAT MESSAGES
+            ========================================= */}
 
             {messages.map((message, index) => (
               <div
@@ -398,6 +433,7 @@ function TailorAI() {
                     : "ai-message"
                 }
               >
+
                 {message.sender === "ai" ? (
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -408,8 +444,13 @@ function TailorAI() {
                 ) : (
                   message.text
                 )}
+
               </div>
             ))}
+
+            {/* =========================================
+                TYPING INDICATOR
+            ========================================= */}
 
             {loading && (
               <div className="ai-message typing-message">
@@ -421,7 +462,12 @@ function TailorAI() {
 
           </div>
 
+          {/* =========================================
+              CHAT INPUT
+          ========================================= */}
+
           <div className="chat-input">
+
             <input
               type="text"
               placeholder="Ask TailorAI anything about your career..."
@@ -438,6 +484,7 @@ function TailorAI() {
             />
 
             <button
+              type="button"
               onClick={() => handleSend()}
               disabled={
                 loading || input.trim() === ""
@@ -445,13 +492,9 @@ function TailorAI() {
             >
               {loading ? "Sending..." : "Send"}
             </button>
+
           </div>
 
-        </div>
-
-        {/* CAREER PROFILE EMBEDDED SECTION */}
-        <div className="tailor-profile-section">
-          <CareerProfile />
         </div>
 
       </section>

@@ -11,23 +11,23 @@ function Agents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const filteredAgents = agents.filter((agent) => {
-  const search = searchTerm.toLowerCase();
-  const categoryMatch =
-  selectedCategory === "All" ||
-  agent.category === selectedCategory;
+    const search = searchTerm.toLowerCase();
+    const categoryMatch =
+      selectedCategory === "All" ||
+      agent.category === selectedCategory;
 
-  return (
-  categoryMatch &&
-  (
-    agent.title.toLowerCase().includes(search) ||
-    agent.category.toLowerCase().includes(search) ||
-    agent.description.toLowerCase().includes(search) ||
-    agent.suggestedPrompts.some((prompt) =>
-      prompt.toLowerCase().includes(search)
-    )
-  )
-);
-});
+    return (
+      categoryMatch &&
+      (
+        agent.title.toLowerCase().includes(search) ||
+        agent.category.toLowerCase().includes(search) ||
+        agent.description.toLowerCase().includes(search) ||
+        agent.suggestedPrompts.some((prompt) =>
+          prompt.toLowerCase().includes(search)
+        )
+      )
+    );
+  });
 
   return (
     <>
@@ -38,18 +38,18 @@ function Agents() {
 
         <p>Choose an AI agent based on your needs.</p>
         <div className="category-filters">
-  {["All", ...new Set(agents.map((agent) => agent.category))].map(
-    (category) => (
-      <button
-        key={category}
-        className={selectedCategory === category ? "active" : ""}
-        onClick={() => setSelectedCategory(category)}
-      >
-        {category}
-      </button>
-    )
-  )}
-</div>
+          {["All", ...new Set(agents.map((agent) => agent.category))].map(
+            (category) => (
+              <button
+                key={category}
+                className={selectedCategory === category ? "active" : ""}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            )
+          )}
+        </div>
         <div className="agent-search">
           <input
             type="text"
@@ -58,14 +58,14 @@ function Agents() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
-    <button
-      className="clear-search"
-      onClick={() => setSearchTerm("")}
-      aria-label="Clear search"
-    >
-      ×
-    </button>
-  )}
+            <button
+              className="clear-search"
+              onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
         </div>
 
         <div className="agents-grid">
@@ -78,7 +78,7 @@ function Agents() {
               route={agent.route}
               category={agent.category}
               status={agent.status}
-              suggestedPrompts={agent.suggestedPrompts}
+
             />
           ))}
         </div>

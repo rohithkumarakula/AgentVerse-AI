@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
@@ -8,6 +8,7 @@ from uuid import uuid4
 import json
 import re
 import os
+import base64
 
 
 # =========================================
@@ -66,6 +67,9 @@ class CareerProfile(BaseModel):
     experience: str
     timeline: str
     salaryGoal: str
+    
+class CareerAIRequest(BaseModel):
+    profile: CareerProfile
 
 
 class TailorRequest(BaseModel):
@@ -115,169 +119,369 @@ def save_career_profile(profile: CareerProfile):
         "profile": profile.model_dump()
     }
 
+# =========================================
+# CAREER AI
+# =========================================
+
+@app.post("/career-ai")
+def career_ai(request: CareerAIRequest):
+
+    profile = request.profile
+
+    system_prompt = (
+        "You are CareerAI, an expert career planning and "
+        "skill-gap analysis assistant.\n\n"
+
+        "Your job is to analyze the user's career profile "
+        "and provide practical, personalized career guidance.\n\n"
+
+        "CAREER PROFILE:\n"
+        f"Current Skills: {profile.skills}\n"
+        f"Target Role: {profile.targetRole}\n"
+        f"Experience Level: {profile.experience}\n"
+        f"Timeline: {profile.timeline}\n"
+        f"Target Salary: {profile.salaryGoal}\n\n"
+
+        "ANALYSIS REQUIREMENTS:\n"
+        "1. Assess the user's current position.\n"
+        "2. Identify important skills they already have.\n"
+        "3. Identify missing skills required for the target role.\n"
+        "4. Separate must-have skills from optional skills.\n"
+        "5. Create a realistic learning roadmap.\n"
+        "6. Recommend practical projects.\n"
+        "7. Suggest interview preparation areas.\n"
+        "8. Give clear next steps.\n\n"
+
+        "RESPONSE FORMAT:\n"
+        "Use clear headings and bullet points.\n"
+        "Include these sections:\n"
+        "- Career Assessment\n"
+        "- Current Strengths\n"
+        "- Skill Gaps\n"
+        "- Recommended Roadmap\n"
+        "- Project Recommendations\n"
+        "- Interview Preparation\n"
+        "- Next Steps\n\n"
+
+        "RESPONSE STYLE:\n"
+        "Be practical, realistic, beginner-friendly, "
+        "and personalized to the user's profile.\n"
+        "Do not recommend unnecessary technologies."
+    )
+
+    try:
+
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "Analyze my career profile and create "
+                        "a personalized career plan."
+                    )
+                }
+            ],
+            temperature=0.5,
+            max_tokens=1500
+        )
+
+        reply = response.choices[0].message.content
+
+        return {
+            "type": "career-analysis",
+            "reply": reply
+        }
+
+    except Exception as error:
+
+        print("CareerAI Error:", error)
+
+        raise HTTPException(
+            status_code=500,
+            detail="CareerAI could not generate a response."
+        )
 
 # =========================================
 # TAILOR AI
 # =========================================
 
 @app.post("/tailor-ai")
-def tailor_ai(request: TailorRequest):
+async def tailor_ai(request: Request):
+    """
+    TailorAI supports both:
+    1. JSON requests from the normal text chat.
+    2. multipart/form-data requests when an image is attached.
 
-    system_prompt = (
-        "You are TailorAI, an AI career and placement assistant for "
-        "students, fresh graduates, and early-career professionals.\n\n"
+    Text-only requests continue using GPT-OSS 120B.
+    Image requests use Groq's vision-capable Qwen 3.6 27B model.
+    """
 
-        "PRIMARY ROLE:\n"
-        "Help users achieve their career goals, especially in software, "
-        "technology, programming, and professional development.\n\n"
+    content_type = request.headers.get("content-type", "").lower()
 
-        "AREAS YOU CAN HELP WITH:\n"
-        "- Career guidance and career decisions\n"
-        "- Programming and technical skills\n"
-        "- Learning roadmaps\n"
-        "- Projects and GitHub portfolios\n"
-        "- Resume and LinkedIn improvement\n"
-        "- Technical and HR interview preparation\n"
-        "- Job and placement preparation\n"
-        "- Study plans and learning schedules\n"
-        "- Salary and job-role guidance\n"
-        "- Skill-gap analysis\n\n"
+    try:
+        # -----------------------------------------
+        # READ REQUEST
+        # -----------------------------------------
 
-        "PERSONALIZATION:\n"
-        "Use the user's career profile whenever it is provided.\n"
-        "Do not ignore the career profile.\n"
-        "Use it to personalize recommendations, roadmaps, skill-gap "
-        "analysis, project suggestions, interview preparation, and "
-        "career advice.\n\n"
+        image_data_url = None
 
-        "CAREER PROFILE RULES:\n"
-        "The profile may contain:\n"
-        "- Current skills\n"
-        "- Target role\n"
-        "- Experience level\n"
-        "- Learning timeline\n"
-        "- Target salary\n\n"
+        if "multipart/form-data" in content_type:
+            form = await request.form()
 
-        "When a career profile is available, treat it as the user's "
-        "current career information.\n"
-        "Do not repeatedly ask the user for information already present "
-        "in the profile.\n"
-        "If the user asks about their career, goals, skills, roadmap, "
-        "or what they should learn next, use the profile information "
-        "to answer.\n\n"
+            message = str(form.get("message") or "").strip()
 
-        "ROADMAP RULES:\n"
-        "When creating a roadmap:\n"
-        "1. Start from the user's current level.\n"
-        "2. Identify the target role.\n"
-        "3. Organize skills in a logical order.\n"
-        "4. Include practical projects.\n"
-        "5. Include interview and placement preparation when relevant.\n"
-        "6. Consider the user's timeline.\n"
-        "7. Clearly separate must-have skills from optional skills.\n\n"
+            history_raw = form.get("history") or "[]"
+            profile_raw = form.get("profile")
 
-        "CONVERSATION MEMORY:\n"
-        "Use the conversation history to understand previous messages.\n"
-        "If the user says 'my goal', 'my skills', 'what should I learn "
-        "next', or similar phrases, use the career profile and relevant "
-        "conversation history when available.\n\n"
+            try:
+                history_data = json.loads(str(history_raw))
+            except json.JSONDecodeError:
+                history_data = []
 
-        "GENERAL QUESTIONS:\n"
-        "Answer the user's actual question directly, even when it is a "
-        "simple general knowledge or everyday question.\n"
-        "Do not unnecessarily redirect general questions back to career topics.\n\n"
+            if not isinstance(history_data, list):
+                history_data = []
 
-        "RESPONSE STYLE:\n"
-        "1. Be practical and actionable.\n"
-        "2. Keep explanations beginner-friendly when appropriate.\n"
-        "3. Use headings, bullets, tables, or numbered steps when useful.\n"
-        "4. Avoid unnecessary repetition.\n"
-        "5. Be honest about difficulty, timelines, and job requirements.\n"
-        "6. Do not promise jobs or guaranteed salaries.\n"
-        "7. Keep answers focused on the user's actual question or goal.\n"
-        "8. Keep simple questions concise.\n"
-        "9. Ask a clarifying question only when the request is genuinely unclear."
-    )
+            profile_data = None
+            if profile_raw:
+                try:
+                    profile_data = json.loads(str(profile_raw))
+                except json.JSONDecodeError:
+                    profile_data = None
 
-    messages = [
-        {
-            "role": "system",
-            "content": system_prompt
-        }
-    ]
+            # Support either "image" or "file" as the frontend field name.
+            uploaded_image = form.get("image") or form.get("file")
 
-    # -----------------------------------------
-    # ADD CAREER PROFILE
-    # -----------------------------------------
+            if isinstance(uploaded_image, UploadFile):
+                if uploaded_image.content_type and not uploaded_image.content_type.startswith("image/"):
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Only image files are supported."
+                    )
 
-    if request.profile:
+                image_bytes = await uploaded_image.read()
 
-        profile = request.profile
+                # Prevent unnecessarily large requests.
+                if len(image_bytes) > 10 * 1024 * 1024:
+                    raise HTTPException(
+                        status_code=413,
+                        detail="Image is too large. Please upload an image under 10 MB."
+                    )
 
-        profile_context = (
-            "\n\nUSER CAREER PROFILE:\n"
-            f"Current Skills: {profile.skills}\n"
-            f"Target Role: {profile.targetRole}\n"
-            f"Experience Level: {profile.experience}\n"
-            f"Timeline: {profile.timeline}\n"
-            f"Target Salary: {profile.salaryGoal}\n\n"
-            "Use this profile when answering the user's current request."
+                mime_type = uploaded_image.content_type or "image/jpeg"
+                encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+                image_data_url = f"data:{mime_type};base64,{encoded_image}"
+
+        else:
+            # Keep the existing JSON API fully compatible with the current frontend.
+            payload = await request.json()
+            tailor_request = TailorRequest.model_validate(payload)
+
+            message = tailor_request.message.strip()
+            history_data = [item.model_dump() for item in tailor_request.history]
+            profile_data = (
+                tailor_request.profile.model_dump()
+                if tailor_request.profile
+                else None
+            )
+
+        if not message:
+            raise HTTPException(
+                status_code=400,
+                detail="Please enter a message."
+            )
+
+        # -----------------------------------------
+        # SYSTEM PROMPT
+        # -----------------------------------------
+
+        system_prompt = (
+            "You are TailorAI, an AI career and placement assistant for "
+            "students, fresh graduates, and early-career professionals.\n\n"
+
+            "PRIMARY ROLE:\n"
+            "Help users achieve their career goals, especially in software, "
+            "technology, programming, and professional development.\n\n"
+
+            "AREAS YOU CAN HELP WITH:\n"
+            "- Career guidance and career decisions\n"
+            "- Programming and technical skills\n"
+            "- Learning roadmaps\n"
+            "- Projects and GitHub portfolios\n"
+            "- Resume and LinkedIn improvement\n"
+            "- Technical and HR interview preparation\n"
+            "- Job and placement preparation\n"
+            "- Study plans and learning schedules\n"
+            "- Salary and job-role guidance\n"
+            "- Skill-gap analysis\n\n"
+
+            "PERSONALIZATION:\n"
+            "Use the user's career profile whenever it is provided.\n"
+            "Do not ignore the career profile.\n"
+            "Use it to personalize recommendations, roadmaps, skill-gap "
+            "analysis, project suggestions, interview preparation, and "
+            "career advice.\n\n"
+
+            "CAREER PROFILE RULES:\n"
+            "The profile may contain:\n"
+            "- Current skills\n"
+            "- Target role\n"
+            "- Experience level\n"
+            "- Learning timeline\n"
+            "- Target salary\n\n"
+
+            "When a career profile is available, treat it as the user's "
+            "current career information.\n"
+            "Do not repeatedly ask the user for information already present "
+            "in the profile.\n"
+            "If the user asks about their career, goals, skills, roadmap, "
+            "or what they should learn next, use the profile information "
+            "to answer.\n\n"
+
+            "ROADMAP RULES:\n"
+            "When creating a roadmap:\n"
+            "1. Start from the user's current level.\n"
+            "2. Identify the target role.\n"
+            "3. Organize skills in a logical order.\n"
+            "4. Include practical projects.\n"
+            "5. Include interview and placement preparation when relevant.\n"
+            "6. Consider the user's timeline.\n"
+            "7. Clearly separate must-have skills from optional skills.\n\n"
+
+            "CONVERSATION MEMORY:\n"
+            "Use the conversation history to understand previous messages.\n"
+            "If the user says 'my goal', 'my skills', 'what should I learn "
+            "next', or similar phrases, use the career profile and relevant "
+            "conversation history when available.\n\n"
+
+            "GENERAL QUESTIONS:\n"
+            "Answer the user's actual question directly, even when it is a "
+            "simple general knowledge or everyday question.\n"
+            "Do not unnecessarily redirect general questions back to career topics.\n\n"
+
+            "RESPONSE STYLE:\n"
+            "1. Be practical and actionable.\n"
+            "2. Keep explanations beginner-friendly when appropriate.\n"
+            "3. Use headings, bullets, tables, or numbered steps when useful.\n"
+            "4. Avoid unnecessary repetition.\n"
+            "5. Be honest about difficulty, timelines, and job requirements.\n"
+            "6. Do not promise jobs or guaranteed salaries.\n"
+            "7. Keep answers focused on the user's actual question or goal.\n"
+            "8. Keep simple questions concise.\n"
+            "9. Ask a clarifying question only when the request is genuinely unclear."
         )
 
-        messages[0]["content"] += profile_context
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
+            }
+        ]
 
-    # -----------------------------------------
-    # ADD HISTORY
-    # -----------------------------------------
+        # -----------------------------------------
+        # ADD CAREER PROFILE
+        # -----------------------------------------
 
-    for message in request.history:
+        if profile_data:
+            profile = profile_data
 
-        role = (
-            "user"
-            if message.sender == "user"
-            else "assistant"
-        )
+            profile_context = (
+                "\n\nUSER CAREER PROFILE:\n"
+                f"Current Skills: {profile.get('skills', '')}\n"
+                f"Target Role: {profile.get('targetRole', '')}\n"
+                f"Experience Level: {profile.get('experience', '')}\n"
+                f"Timeline: {profile.get('timeline', '')}\n"
+                f"Target Salary: {profile.get('salaryGoal', '')}\n\n"
+                "Use this profile when answering the user's current request."
+            )
+
+            messages[0]["content"] += profile_context
+
+        # -----------------------------------------
+        # ADD HISTORY
+        # -----------------------------------------
+
+        for history_message in history_data:
+            if not isinstance(history_message, dict):
+                continue
+
+            role = (
+                "user"
+                if history_message.get("sender") == "user"
+                else "assistant"
+            )
+
+            text = str(history_message.get("text") or "")
+
+            if text:
+                messages.append(
+                    {
+                        "role": role,
+                        "content": text
+                    }
+                )
+
+        # -----------------------------------------
+        # CURRENT MESSAGE
+        # -----------------------------------------
+
+        if image_data_url:
+            # Groq vision models accept a multimodal content array.
+            current_content = [
+                {
+                    "type": "text",
+                    "text": message
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": image_data_url
+                    }
+                }
+            ]
+        else:
+            current_content = message
 
         messages.append(
             {
-                "role": role,
-                "content": message.text
+                "role": "user",
+                "content": current_content
             }
         )
 
-    # -----------------------------------------
-    # CURRENT MESSAGE
-    # -----------------------------------------
+        # -----------------------------------------
+        # CALL GROQ
+        # -----------------------------------------
 
-    messages.append(
-        {
-            "role": "user",
-            "content": request.message
-        }
-    )
-
-    # -----------------------------------------
-    # CALL GROQ
-    # -----------------------------------------
-
-    try:
+        model = (
+            "qwen/qwen3.6-27b"
+            if image_data_url
+            else "openai/gpt-oss-120b"
+        )
 
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model=model,
             messages=messages,
             temperature=0.7,
-            max_tokens=700
+            max_tokens=1000 if image_data_url else 700
         )
 
         reply = response.choices[0].message.content
 
         return {
-            "reply": reply
+            "reply": reply,
+            "has_image": bool(image_data_url)
         }
 
-    except Exception as error:
+    except HTTPException:
+        raise
 
-        print("TailorAI Error:", error)
+    except Exception as error:
+        print("TailorAI Error:", repr(error))
 
         raise HTTPException(
             status_code=500,

@@ -1,31 +1,94 @@
-.footer{
+/* =========================================
+   AGENTVERSE AI — FOOTER
+   BLACK + ORANGE DESIGN
+========================================= */
 
-    background:#020617;
+.footer {
+    width: 100%;
 
-    color:white;
+    box-sizing: border-box;
 
-    text-align:center;
+    padding: 60px 20px 45px;
 
-    padding:60px 20px;
+    text-align: center;
 
-    border-top:1px solid #1e293b;
+    background: #080808;
+
+    color: #ffffff;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.footer h3{
 
-    color:#38bdf8;
+/* =========================================
+   FOOTER BRAND
+========================================= */
 
-    margin-bottom:15px;
+.footer h3 {
+    margin: 0 0 15px;
+
+    color: #ff7135;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+    letter-spacing: -0.03em;
 }
 
-.footer p{
 
-    color:#94a3b8;
+/* =========================================
+   DESCRIPTION
+========================================= */
 
-    margin-bottom:25px;
+.footer p {
+    margin: 0 0 25px;
+
+    color: #8a8a8a;
+
+    font-size: 0.92rem;
+
+    line-height: 1.6;
 }
 
-.footer small{
 
-    color:#64748b;
+/* =========================================
+   COPYRIGHT
+========================================= */
+
+.footer small {
+    color: #555555;
+
+    font-size: 0.78rem;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+    .footer {
+        padding: 45px 18px 35px;
+    }
+
+    .footer h3 {
+        font-size: 1.15rem;
+    }
+
+    .footer p {
+        font-size: 0.85rem;
+    }
+
+    .footer small {
+        font-size: 0.72rem;
+    }
 }

@@ -1,83 +1,69 @@
-/* =========================================
+/* =========================================================
    AGENTVERSE AI — AGENTS PAGE
-========================================= */
+   ORANGE THEME
+   ========================================================= */
 
 .agents-page {
-  min-height: 100vh;
   position: relative;
 
-  padding: 120px 6% 90px;
+  min-height: 100vh;
+
+  padding: 90px 6% 100px;
+
+  overflow: hidden;
 
   text-align: center;
 
-  color: #f8fafc;
-
-  overflow-x: hidden;
+  color: #f5f5f7;
 
   background:
-    radial-gradient(
-      circle at 15% 15%,
-      rgba(124, 58, 237, 0.16),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 85% 35%,
-      rgba(168, 85, 247, 0.1),
-      transparent 26%
-    ),
-    radial-gradient(
-      circle at 50% 100%,
-      rgba(99, 102, 241, 0.08),
-      transparent 32%
-    ),
+    radial-gradient(circle at 15% 10%,
+      rgba(255, 107, 44, 0.13),
+      transparent 30%),
+    radial-gradient(circle at 85% 25%,
+      rgba(255, 90, 31, 0.08),
+      transparent 28%),
     #07080d;
 }
 
 
-/* =========================================
+/* =========================================================
    BACKGROUND GRID
-========================================= */
+   ========================================================= */
 
 .agents-page::before {
   content: "";
 
   position: absolute;
+
   inset: 0;
 
   pointer-events: none;
 
   background-image:
-    linear-gradient(
-      rgba(255, 255, 255, 0.022) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.022) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px),
+    linear-gradient(90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px);
 
   background-size: 60px 60px;
 
-  mask-image: linear-gradient(
-    to bottom,
-    black 0%,
-    rgba(0, 0, 0, 0.8) 60%,
-    transparent 100%
-  );
+  mask-image:
+    linear-gradient(to bottom,
+      black,
+      transparent 90%);
 
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 0%,
-    rgba(0, 0, 0, 0.8) 60%,
-    transparent 100%
-  );
+  -webkit-mask-image:
+    linear-gradient(to bottom,
+      black,
+      transparent 90%);
 }
 
 
-/* =========================================
-   AMBIENT GLOW
-========================================= */
+/* =========================================================
+   TOP AMBIENT GLOW
+   ========================================================= */
 
 .agents-page::after {
   content: "";
@@ -87,265 +73,311 @@
   width: 500px;
   height: 500px;
 
-  top: 80px;
+  top: -180px;
   left: 50%;
 
   transform: translateX(-50%);
 
   border-radius: 50%;
 
-  background: rgba(124, 58, 237, 0.06);
+  background: rgba(255, 107, 44, 0.08);
 
-  filter: blur(100px);
+  filter: blur(110px);
 
   pointer-events: none;
 }
 
 
-/* =========================================
+/* =========================================================
    PAGE TITLE
-========================================= */
+   ========================================================= */
 
 .agents-page h1 {
   position: relative;
-  z-index: 1;
 
-  display: inline-block;
+  z-index: 1;
 
   margin: 0 0 14px;
 
-  padding: 5px 4px 10px;
+  font-size: clamp(2.7rem,
+      6vw,
+      4.5rem);
 
-  font-size: clamp(2.7rem, 6vw, 4.5rem);
-
-  line-height: 1.15;
+  line-height: 1.1;
 
   font-weight: 800;
 
   letter-spacing: -0.05em;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #ffffff 15%,
-      #e9ddff 55%,
-      #c084fc 100%
-    );
+      #ffe1d4 55%,
+      #ff7135 100%);
+
+  background-clip: text;
 
   -webkit-background-clip: text;
-  background-clip: text;
 
   -webkit-text-fill-color: transparent;
 }
 
 
-/* =========================================
-   PAGE DESCRIPTION
-========================================= */
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
 
-.agents-page > p {
+.agents-page>p {
   position: relative;
+
   z-index: 1;
 
-  max-width: 600px;
+  width: min(600px, 100%);
 
-  margin: 0 auto 55px;
+  margin: 0 auto 40px;
 
   color: #9299aa;
 
-  font-size: 1.05rem;
+  font-size: 1rem;
 
   line-height: 1.7;
-
-  letter-spacing: 0.005em;
 }
 
 
-/* =========================================
+/* =========================================================
    CATEGORY FILTERS
-========================================= */
+   ========================================================= */
 
 .category-filters {
   position: relative;
+
   z-index: 2;
 
   display: flex;
 
+  align-items: center;
   justify-content: center;
 
   flex-wrap: wrap;
 
-  gap: 10px;
+  gap: 9px;
 
-  margin: 0 auto 28px;
+  margin-bottom: 24px;
 }
+
 
 .category-filters button {
   padding: 9px 16px;
 
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  border: 1px solid rgba(255,
+      107,
+      44,
+      0.25);
 
   border-radius: 999px;
 
-  background: rgba(30, 27, 45, 0.8);
+  background: rgba(255,
+      255,
+      255,
+      0.035);
 
-  color: #c4b5fd;
+  color: #a1a1aa;
 
-  font-size: 0.85rem;
+  font-size: 0.83rem;
 
   font-weight: 600;
 
   cursor: pointer;
 
   transition:
-    border-color 0.2s ease,
     background 0.2s ease,
+    border-color 0.2s ease,
     color 0.2s ease,
     transform 0.2s ease;
 }
 
-.category-filters button:hover {
-  border-color: #8b5cf6;
 
-  background: rgba(124, 58, 237, 0.15);
+.category-filters button:hover {
+  transform: translateY(-1px);
 
   color: #ffffff;
 
-  transform: translateY(-1px);
+  border-color:
+    rgba(255, 107, 44, 0.5);
+
+  background:
+    rgba(255, 107, 44, 0.1);
 }
+
 
 .category-filters button.active {
-  background:
-    linear-gradient(
-      135deg,
-      #7c3aed,
-      #9333ea
-    );
-
-  border-color: #7c3aed;
-
   color: #ffffff;
 
+  border-color: #ff6b2c;
+
+  background:
+    linear-gradient(135deg,
+      #ff7135,
+      #ff5a1f);
+
   box-shadow:
-    0 8px 20px rgba(124, 58, 237, 0.2);
+    0 8px 22px rgba(255, 90, 31, 0.2);
 }
 
 
-/* =========================================
-   AGENT SEARCH
-========================================= */
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
 .agent-search {
   position: relative;
+
   z-index: 2;
 
-  display: flex;
+  width: min(600px, 100%);
 
-  justify-content: center;
-
-  margin: 30px auto 40px;
-
-  width: 100%;
+  margin: 0 auto 45px;
 }
 
+
 .agent-search input {
-  width: min(600px, 90%);
+  width: 100%;
 
-  padding: 15px 20px;
+  height: 52px;
 
-  border: 1px solid rgba(167, 139, 250, 0.3);
+  padding: 0 48px 0 18px;
 
-  border-radius: 12px;
+  box-sizing: border-box;
 
-  background: rgba(30, 27, 45, 0.8);
+  border: 1px solid rgba(255,
+      107,
+      44,
+      0.22);
 
-  color: #ffffff;
-
-  font-size: 16px;
+  border-radius: 13px;
 
   outline: none;
 
-  transition: 0.2s ease;
+  background:
+    rgba(255,
+      255,
+      255,
+      0.035);
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
+
 
 .agent-search input::placeholder {
-  color: #8f8ca3;
+  color: #6b7280;
 }
+
 
 .agent-search input:focus {
-  border-color: #8b5cf6;
+  border-color: #ff6b2c;
+
+  background:
+    rgba(255,
+      255,
+      255,
+      0.045);
 
   box-shadow:
-    0 0 20px rgba(139, 92, 246, 0.2);
+    0 0 0 3px rgba(255, 107, 44, 0.1);
 }
 
 
-/* =========================================
-   CLEAR SEARCH BUTTON
-========================================= */
+/* =========================================================
+   CLEAR SEARCH
+   ========================================================= */
 
 .clear-search {
   position: absolute;
 
-  right: max(
-    6%,
-    calc((100% - 600px) / 2 + 15px)
-  );
-
   top: 50%;
+  right: 12px;
 
   transform: translateY(-50%);
 
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
   border: none;
+
+  border-radius: 8px;
 
   background: transparent;
 
-  color: #9ca3af;
+  color: #71717a;
 
-  font-size: 24px;
-
-  cursor: pointer;
-
-  padding: 4px 8px;
+  font-size: 22px;
 
   line-height: 1;
 
-  transition: 0.2s ease;
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
 }
+
 
 .clear-search:hover {
   color: #ffffff;
 
-  transform: translateY(-50%) scale(1.1);
+  background:
+    rgba(255,
+      255,
+      255,
+      0.06);
 }
 
 
-/* =========================================
+/* =========================================================
    AGENTS GRID
-========================================= */
+   ========================================================= */
 
 .agents-grid {
   position: relative;
+
   z-index: 1;
 
-  width: min(1050px, 100%);
+  width: min(1120px,
+      100%);
 
   margin: 0 auto;
 
   display: grid;
 
   grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+    repeat(3,
+      minmax(0, 1fr));
 
-  gap: 28px;
+  gap: 24px;
 
   align-items: stretch;
 }
 
 
-/* =========================================
-   CARD SIZE OVERRIDE
-========================================= */
+/* =========================================================
+   CARD SIZE
+   ========================================================= */
 
 .agents-grid .agent-card {
   width: 100%;
@@ -353,114 +385,151 @@
 }
 
 
-/* =========================================
-   ENTRANCE ANIMATION
-========================================= */
+/* =========================================================
+   CARD ENTRANCE ANIMATION
+   ========================================================= */
 
 .agents-grid .agent-card {
-  animation: agentCardReveal 0.5s ease both;
+  animation:
+    agentCardReveal 0.45s ease both;
 }
 
+
 .agents-grid .agent-card:nth-child(1) {
-  animation-delay: 0.05s;
+  animation-delay: 0.03s;
 }
 
 .agents-grid .agent-card:nth-child(2) {
-  animation-delay: 0.1s;
+  animation-delay: 0.08s;
 }
 
 .agents-grid .agent-card:nth-child(3) {
-  animation-delay: 0.15s;
+  animation-delay: 0.13s;
 }
 
 .agents-grid .agent-card:nth-child(4) {
-  animation-delay: 0.2s;
+  animation-delay: 0.18s;
 }
 
 .agents-grid .agent-card:nth-child(5) {
-  animation-delay: 0.25s;
+  animation-delay: 0.23s;
 }
 
 .agents-grid .agent-card:nth-child(6) {
-  animation-delay: 0.3s;
+  animation-delay: 0.28s;
 }
+
 
 @keyframes agentCardReveal {
   from {
     opacity: 0;
 
-    transform: translateY(18px);
+    transform:
+      translateY(15px);
   }
 
   to {
     opacity: 1;
 
-    transform: translateY(0);
+    transform:
+      translateY(0);
   }
 }
 
 
-/* =========================================
-   NO AGENTS
-========================================= */
+/* =========================================================
+   NO RESULTS
+   ========================================================= */
 
 .no-agents {
   position: relative;
+
   z-index: 1;
 
-  text-align: center;
+  width: min(500px,
+      100%);
 
-  margin: 50px auto;
+  margin: 60px auto;
+
+  padding: 35px 25px;
+
+  border: 1px solid rgba(255,
+      255,
+      255,
+      0.08);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255,
+      255,
+      255,
+      0.025);
 
   color: #9ca3af;
 }
 
+
 .no-agents h3 {
+  margin: 0 0 8px;
+
   color: #ffffff;
 
-  margin-bottom: 8px;
+  font-size: 1.2rem;
 }
 
 
-/* =========================================
-   KEYBOARD ACCESSIBILITY
-========================================= */
+.no-agents p {
+  margin: 0;
+
+  color: #71717a;
+
+  font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
 
 .agent-search input:focus-visible,
 .clear-search:focus-visible,
-.agent-card button:focus-visible,
-.category-filters button:focus-visible {
-  outline: 2px solid #a78bfa;
+.category-filters button:focus-visible,
+.agent-card button:focus-visible {
+  outline: 2px solid #ff6b2c;
 
   outline-offset: 3px;
 }
 
 
-/* =========================================
+/* =========================================================
    TABLET
-========================================= */
+   ========================================================= */
 
 @media (max-width: 950px) {
   .agents-page {
-    padding: 110px 5% 80px;
+    padding:
+      75px 5% 80px;
   }
 
   .agents-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(2,
+        minmax(0, 1fr));
 
-    gap: 24px;
+    gap: 22px;
   }
 }
 
 
-/* =========================================
+/* =========================================================
    MOBILE
-========================================= */
+   ========================================================= */
 
 @media (max-width: 650px) {
   .agents-page {
-    padding: 95px 16px 65px;
+    padding:
+      65px 16px 65px;
   }
 
   .agents-page h1 {
@@ -469,50 +538,50 @@
     letter-spacing: -0.04em;
   }
 
-  .agents-page > p {
-    margin-bottom: 38px;
+  .agents-page>p {
+    margin-bottom: 32px;
 
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 
   .category-filters {
-    gap: 8px;
+    gap: 7px;
 
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .category-filters button {
     padding: 8px 13px;
 
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .agent-search {
-    margin: 25px auto 35px;
+    margin-bottom: 32px;
   }
 
   .agent-search input {
-    width: 100%;
+    height: 50px;
   }
 
   .agents-grid {
     grid-template-columns: 1fr;
 
-    gap: 20px;
+    gap: 18px;
 
-    width: min(360px, 100%);
+    width: min(380px,
+        100%);
   }
 }
 
 
-/* =========================================
-   VERY SMALL PHONES
-========================================= */
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
 
 @media (max-width: 420px) {
   .agents-page {
     padding-left: 12px;
-
     padding-right: 12px;
   }
 
@@ -520,19 +589,29 @@
     font-size: 2.25rem;
   }
 
-  .agent-search input {
-    padding: 13px 16px;
-
-    font-size: 15px;
-  }
-
-  .category-filters {
-    gap: 7px;
+  .agents-page>p {
+    font-size: 0.88rem;
   }
 
   .category-filters button {
     padding: 7px 11px;
 
-    font-size: 0.75rem;
+    font-size: 0.72rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .agents-grid .agent-card {
+    animation: none;
+  }
+
+  .category-filters button,
+  .clear-search {
+    transition: none;
   }
 }

@@ -1,41 +1,34 @@
-* {
-  box-sizing: border-box;
-}
-
-/* =========================================
-   AGENT CARD — PREMIUM UI
-========================================= */
+/* =========================================================
+   AGENTVERSE AI — AGENT CARD
+========================================================= */
 
 .agent-card {
   position: relative;
 
   width: 100%;
-  max-width: 340px;
-  min-height: 330px;
+  max-width: 360px;
+  min-height: 340px;
 
   padding: 28px;
 
   display: flex;
   flex-direction: column;
-  align-items: center;
 
-  text-align: center;
+  text-align: left;
 
-  color: #f8fafc;
+  color: #f5f5f7;
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.065),
-      rgba(255, 255, 255, 0.025)
-    );
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018));
 
   border: 1px solid rgba(255, 255, 255, 0.09);
 
-  border-radius: 22px;
+  border-radius: 20px;
 
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.25);
+    0 18px 45px rgba(0, 0, 0, 0.25);
 
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -43,47 +36,38 @@
   overflow: hidden;
 
   transition:
-    transform 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-/* =========================================
-   HOVER EFFECT
-========================================= */
 
-.agent-card:hover {
-  transform: translateY(-8px);
-
-  border-color: rgba(139, 92, 246, 0.5);
-
-  box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.35),
-    0 0 40px rgba(139, 92, 246, 0.12);
-}
-
-/* Subtle top glow */
+/* =========================================================
+   ORANGE TOP GLOW
+========================================================= */
 
 .agent-card::before {
   content: "";
 
   position: absolute;
 
+  width: 220px;
+  height: 160px;
+
   top: -100px;
   left: 50%;
 
-  width: 220px;
-  height: 180px;
-
   transform: translateX(-50%);
 
-  background: rgba(139, 92, 246, 0.12);
+  border-radius: 50%;
+
+  background: rgba(255, 107, 44, 0.14);
 
   filter: blur(70px);
 
-  pointer-events: none;
-
   opacity: 0;
+
+  pointer-events: none;
 
   transition: opacity 0.3s ease;
 }
@@ -92,93 +76,130 @@
   opacity: 1;
 }
 
-/* =========================================
-   TOP SECTION
-========================================= */
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.agent-card:hover {
+  transform: translateY(-6px);
+
+  border-color: rgba(255, 107, 44, 0.42);
+
+  box-shadow:
+    0 25px 55px rgba(0, 0, 0, 0.35),
+    0 0 35px rgba(255, 107, 44, 0.08);
+}
+
+
+/* =========================================================
+   TOP ROW
+========================================================= */
 
 .agent-card-top {
   width: 100%;
 
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-/* =========================================
-   AGENT ICON
-========================================= */
+
+/* =========================================================
+   ICON
+========================================================= */
 
 .agent-icon {
-  width: 64px;
-  height: 64px;
+  width: 58px;
+  height: 58px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 2.4rem;
+  border-radius: 16px;
 
-  border-radius: 18px;
+  font-size: 2rem;
+
+  color: #ffffff;
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(139, 92, 246, 0.18),
-      rgba(168, 85, 247, 0.05)
-    );
+    linear-gradient(145deg,
+      rgba(255, 107, 44, 0.14),
+      rgba(255, 107, 44, 0.035));
 
-  border: 1px solid rgba(167, 139, 250, 0.18);
+  border: 1px solid rgba(255, 107, 44, 0.20);
 
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .agent-card:hover .agent-icon {
-  transform: scale(1.06);
+  transform: scale(1.05);
+
+  border-color: rgba(255, 107, 44, 0.38);
 
   box-shadow:
-    0 0 25px rgba(139, 92, 246, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 0 25px rgba(255, 107, 44, 0.16);
 }
 
-/* =========================================
+
+/* =========================================================
    STATUS
-========================================= */
+========================================================= */
 
 .agent-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
 
-  padding: 6px 9px;
+  gap: 7px;
+
+  padding: 6px 10px;
 
   border-radius: 999px;
 
   font-size: 0.72rem;
+
   font-weight: 600;
 }
 
+
+/* =========================================================
+   ONLINE
+========================================================= */
+
 .agent-status.online {
-  color: #c4b5fd;
+  color: #d4d4d4;
 
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(255, 255, 255, 0.035);
 
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.13);
 }
+
+
+/* =========================================================
+   COMING SOON
+========================================================= */
 
 .agent-status.coming-soon {
   color: #94a3b8;
 
-  background: rgba(148, 163, 184, 0.08);
+  background: rgba(148, 163, 184, 0.06);
 
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.12);
 }
+
+
+/* =========================================================
+   STATUS DOT
+========================================================= */
 
 .status-dot {
   width: 6px;
@@ -187,22 +208,36 @@
   border-radius: 50%;
 }
 
+
+/* =========================================================
+   ONLINE DOT
+========================================================= */
+
 .agent-status.online .status-dot {
-  background: #a78bfa;
+  background: #ff7135;
 
   box-shadow:
-    0 0 8px rgba(167, 139, 250, 0.8);
+    0 0 8px rgba(255, 113, 53, 0.75);
 
-  animation: onlinePulse 1.8s infinite;
+  animation: statusPulse 1.8s infinite;
 }
+
+
+/* =========================================================
+   COMING SOON DOT
+========================================================= */
 
 .agent-status.coming-soon .status-dot {
   background: #64748b;
 }
 
-/* Online indicator animation */
 
-@keyframes onlinePulse {
+/* =========================================================
+   STATUS ANIMATION
+========================================================= */
+
+@keyframes statusPulse {
+
   0%,
   100% {
     opacity: 1;
@@ -215,52 +250,57 @@
   }
 }
 
-/* =========================================
+
+/* =========================================================
    TITLE
-========================================= */
+========================================================= */
 
 .agent-card h3 {
   margin: 0 0 7px;
 
+  color: #ffffff;
+
   font-size: 1.45rem;
+
   font-weight: 750;
 
   letter-spacing: -0.025em;
 
-  color: #ffffff;
-
-  transition: color 0.25s ease;
+  transition: color 0.2s ease;
 }
 
 .agent-card:hover h3 {
-  color: #e9ddff;
+  color: #ffffff;
 }
 
-/* =========================================
+
+/* =========================================================
    CATEGORY
-========================================= */
+========================================================= */
 
 .agent-category {
   display: inline-block;
 
   margin-bottom: 14px;
 
-  color: #a78bfa;
+  color: #ff7135;
 
   font-size: 0.78rem;
+
   font-weight: 600;
 
   letter-spacing: 0.02em;
 }
 
-/* =========================================
+
+/* =========================================================
    DESCRIPTION
-========================================= */
+========================================================= */
 
 .agent-card p {
-  margin: 0 auto 24px;
+  margin: 0 0 22px;
 
-  max-width: 270px;
+  max-width: 290px;
 
   color: #9ca3af;
 
@@ -269,119 +309,211 @@
   line-height: 1.65;
 }
 
-/* =========================================
-   BUTTON
-========================================= */
+
+/* =========================================================
+   SUGGESTED PROMPTS
+========================================================= */
+
+.agent-prompts {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  margin-bottom: 20px;
+}
+
+.agent-prompts span {
+  display: block;
+
+  padding: 8px 10px;
+
+  border-radius: 8px;
+
+  color: #a1a1aa;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  border: 1px solid rgba(255, 255, 255, 0.055);
+
+  font-size: 0.76rem;
+
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   EXPLORE BUTTON
+========================================================= */
 
 .agent-card button {
-  margin-top: auto;
-
   width: 100%;
+
+  margin-top: auto;
 
   padding: 12px 20px;
 
-  border: none;
+  border: 1px solid rgba(255, 107, 44, 0.25);
 
   border-radius: 11px;
 
+  background:
+    linear-gradient(135deg,
+      #ff7135,
+      #ff5a1f);
+
   color: #ffffff;
 
-  background:
-    linear-gradient(
-      135deg,
-      #7c3aed,
-      #9333ea
-    );
-
   font-size: 0.88rem;
+
   font-weight: 650;
 
   cursor: pointer;
 
+  box-shadow:
+    0 8px 20px rgba(255, 90, 31, 0.16);
+
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    opacity 0.2s ease;
+    filter 0.2s ease;
 }
+
+
+/* =========================================================
+   BUTTON HOVER
+========================================================= */
 
 .agent-card button:hover:not(:disabled) {
   transform: translateY(-2px);
 
+  filter: brightness(1.08);
+
   box-shadow:
-    0 10px 25px rgba(124, 58, 237, 0.3);
+    0 12px 28px rgba(255, 90, 31, 0.30);
 }
+
+
+/* =========================================================
+   BUTTON ACTIVE
+========================================================= */
 
 .agent-card button:active:not(:disabled) {
   transform: translateY(0);
 }
 
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
 .agent-card button:disabled {
   color: #64748b;
 
-  background: rgba(255, 255, 255, 0.055);
+  background: rgba(255, 255, 255, 0.045);
 
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.07);
 
   cursor: not-allowed;
 
-  opacity: 0.75;
+  box-shadow: none;
+
+  opacity: 0.7;
 }
 
-/* =========================================
-   MOBILE
-========================================= */
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.agent-card button:focus-visible {
+  outline: 2px solid #ff7135;
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media (max-width: 700px) {
+
   .agent-card {
     max-width: 100%;
 
-    min-height: 310px;
+    min-height: 320px;
 
     padding: 24px;
   }
 
   .agent-icon {
-    width: 58px;
-    height: 58px;
+    width: 54px;
+    height: 54px;
 
-    font-size: 2.1rem;
+    font-size: 1.8rem;
+  }
+
+  .agent-card h3 {
+    font-size: 1.35rem;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .agent-card {
+    padding: 22px;
+
+    border-radius: 18px;
+  }
+
+  .agent-card-top {
+    margin-bottom: 20px;
+  }
+
+  .agent-icon {
+    width: 52px;
+    height: 52px;
+
+    font-size: 1.7rem;
+  }
+
+  .agent-status {
+    padding: 5px 8px;
+
+    font-size: 0.68rem;
   }
 
   .agent-card h3 {
     font-size: 1.3rem;
   }
+
+  .agent-card p {
+    font-size: 0.88rem;
+  }
 }
 
-/* =========================================
-   REDUCE MOTION
-========================================= */
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
   .agent-card,
   .agent-icon,
   .agent-card button,
   .agent-card::before,
   .agent-status.online .status-dot {
     animation: none;
+
     transition: none;
   }
-.agent-prompts {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin-bottom: 20px;
-}
-
-.agent-prompts span {
-  padding: 8px 10px;
-  border-radius: 8px;
-
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  font-size: 0.78rem;
-  line-height: 1.3;
-}
 }

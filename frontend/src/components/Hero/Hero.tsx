@@ -6,38 +6,64 @@ function Hero() {
 
   return (
     <section className="hero">
+
+      {/* Background */}
+      <div className="hero-grid" />
+
+      <div className="hero-glow hero-glow-left" />
+      <div className="hero-glow hero-glow-right" />
+
+      {/* Hero Content */}
       <div className="hero-content">
 
-        <div className="hero-brand">
-          <span className="hero-rocket">🚀</span>
+        <h1 className="hero-title">
 
-          <h1>AgentVerse AI</h1>
-        </div>
+          <span className="hero-line hero-line-white">
+            One Platform
+          </span>
 
-        <h2>One Platform. Infinite AI Agents.</h2>
+          <span className="hero-line hero-line-gradient">
+            Infinite AI Agents
+          </span>
 
-        <p>
-          Build, manage and collaborate with intelligent AI agents
-          through one unified platform.
+        </h1>
+
+        <p className="hero-description">
+          Build, manage and collaborate with intelligent AI
+          agents through one unified platform.
         </p>
 
         <div className="hero-buttons">
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/agents")}
-          >
-            Get Started
-          </button>
 
           <button
-            className="secondary-btn"
+            type="button"
+            className="hero-primary-btn"
             onClick={() => navigate("/agents")}
           >
             Explore Agents
           </button>
+
+          <button
+            type="button"
+            className="hero-primary-btn"
+            onClick={() => navigate("/features")}
+          >
+            View Features
+          </button>
+
         </div>
 
       </div>
+
+      {/* Scroll to Agents */}
+      <a
+        href="#agents-section"
+        className="hero-scroll-button"
+        aria-label="Scroll to AI Agents"
+      >
+        <span>↓</span>
+      </a>
+
     </section>
   );
 }

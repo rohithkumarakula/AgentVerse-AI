@@ -6,7 +6,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <h1 className="logo">🚀 AgentVerse AI</h1>
+      <h1 className="logo">AgentVerse AI</h1>
 
       <ul className="nav-links">
         <li>

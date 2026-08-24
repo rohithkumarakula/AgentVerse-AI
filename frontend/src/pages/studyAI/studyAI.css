@@ -1,43 +1,60 @@
-/* =========================================
-   STUDY AI PAGE
-========================================= */
+/* =========================================================
+   STUDY AI — AGENTVERSE AI REDESIGN
+   Clean dark AI workspace
+   No rocket / no welcome banner
+========================================================= */
 
 .study-page {
   min-height: calc(100vh - 80px);
-  padding: 40px 20px 60px;
+  width: 100%;
 
-  background: #0f1017;
-  color: #f5f5f7;
+  padding: 32px 24px 50px;
+
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(124, 58, 237, 0.10),
+      transparent 38%),
+    #090a0f;
+
+  color: #f5f3ff;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+========================================================= */
 
 .study-header {
   width: min(1100px, 100%);
-  margin: 0 auto 28px;
+
+  margin: 0 auto 24px;
 
   text-align: center;
 
   position: relative;
 }
 
+
+/* =========================================================
+   BRAND
+========================================================= */
+
 .study-brand {
   display: flex;
+
   align-items: center;
   justify-content: center;
 
-  gap: 14px;
-  margin-bottom: 10px;
+  gap: 12px;
 
-  overflow: visible;
+  margin-bottom: 8px;
 }
 
 .study-icon {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
 
   flex-shrink: 0;
 
@@ -45,19 +62,20 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 14px;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(135deg,
+      #7c3aed,
+      #9333ea);
+
+  color: #ffffff;
 
   font-size: 15px;
   font-weight: 800;
 
-  color: white;
-
-  background: linear-gradient(135deg,
-      #7c3aed,
-      #a855f7);
-
   box-shadow:
-    0 0 25px rgba(139, 92, 246, 0.35);
+    0 8px 25px rgba(124, 58, 237, 0.25);
 }
 
 .study-brand-text {
@@ -66,41 +84,49 @@
 
 .study-brand h1 {
   margin: 0;
-  padding: 2px 0 4px;
 
-  min-height: 40px;
+  padding: 2px 0;
 
   font-size: 32px;
+
+  line-height: 1.2;
+
   font-weight: 800;
 
-  line-height: 1.15;
+  letter-spacing: -0.04em;
 
-  background: linear-gradient(90deg,
+  background:
+    linear-gradient(135deg,
       #ffffff,
+      #e9ddff 55%,
       #c084fc);
 
   background-clip: text;
   -webkit-background-clip: text;
+
   -webkit-text-fill-color: transparent;
-
-  overflow: visible;
-
-  display: block;
 
   white-space: nowrap;
 }
 
+
+/* =========================================================
+   ONLINE STATUS
+========================================================= */
+
 .study-status {
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   gap: 7px;
-  margin-top: 4px;
 
-  color: #9ca3af;
+  margin-top: 5px;
 
-  font-size: 13px;
+  color: #8f96a8;
+
+  font-size: 12px;
 }
 
 .study-status span {
@@ -112,33 +138,45 @@
   background: #22c55e;
 
   box-shadow:
-    0 0 10px rgba(34, 197, 94, 0.8);
+    0 0 10px rgba(34, 197, 94, 0.7);
 }
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
 
 .study-header>p {
-  margin: 12px 0 18px;
+  max-width: 650px;
 
-  color: #9ca3af;
+  margin: 10px auto 16px;
 
-  font-size: 15px;
+  color: #8f96a8;
+
+  font-size: 14px;
+
+  line-height: 1.6;
 }
 
 
-/* =========================================
+/* =========================================================
    CLEAR CHAT
-========================================= */
+========================================================= */
 
 .clear-chat-btn {
-  padding: 9px 18px;
+  padding: 8px 16px;
 
-  border: 1px solid rgba(168, 85, 247, 0.5);
-  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
 
-  background: rgba(124, 58, 237, 0.08);
+  border-radius: 9px;
 
-  color: #c084fc;
+  background:
+    rgba(124, 58, 237, 0.06);
 
-  font-size: 13px;
+  color: #bda7f8;
+
+  font-size: 12px;
+
   font-weight: 600;
 
   cursor: pointer;
@@ -146,13 +184,18 @@
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease;
 }
 
 .clear-chat-btn:hover:not(:disabled) {
-  background: rgba(124, 58, 237, 0.18);
+  background:
+    rgba(124, 58, 237, 0.14);
 
-  border-color: #a855f7;
+  border-color:
+    rgba(167, 139, 250, 0.55);
+
+  color: #ffffff;
 
   transform: translateY(-1px);
 }
@@ -164,9 +207,9 @@
 }
 
 
-/* =========================================
-   CHAT CONTAINER
-========================================= */
+/* =========================================================
+   MAIN CHAT WINDOW
+========================================================= */
 
 .study-chat-container {
   width: min(1100px, 100%);
@@ -176,24 +219,30 @@
   margin: 0 auto;
 
   display: flex;
+
   flex-direction: column;
 
   overflow: hidden;
 
-  border: 1px solid rgba(139, 92, 246, 0.22);
+  background:
+    rgba(15, 16, 23, 0.96);
 
-  border-radius: 20px;
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
 
-  background: #15151f;
+  border-radius: 18px;
 
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.35);
+    0 25px 70px rgba(0, 0, 0, 0.38);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 
-/* =========================================
-   CHAT MESSAGES
-========================================= */
+/* =========================================================
+   CHAT MESSAGES AREA
+========================================================= */
 
 .study-chat-messages {
   flex: 1;
@@ -209,12 +258,12 @@
 }
 
 
-/* =========================================
+/* =========================================================
    SCROLLBAR
-========================================= */
+========================================================= */
 
 .study-chat-messages::-webkit-scrollbar {
-  width: 7px;
+  width: 6px;
 }
 
 .study-chat-messages::-webkit-scrollbar-track {
@@ -224,17 +273,17 @@
 .study-chat-messages::-webkit-scrollbar-thumb {
   background: #302746;
 
-  border-radius: 10px;
+  border-radius: 999px;
 }
 
 .study-chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #4c3575;
+  background: #5b3b91;
 }
 
 
-/* =========================================
+/* =========================================================
    AI MESSAGE
-========================================= */
+========================================================= */
 
 .ai-message {
   width: fit-content;
@@ -243,13 +292,16 @@
 
   margin-bottom: 18px;
 
-  padding: 17px 20px;
+  padding: 16px 19px;
 
-  border: 1px solid rgba(139, 92, 246, 0.22);
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
 
-  border-radius: 16px 16px 16px 5px;
+  border-radius:
+    15px 15px 15px 5px;
 
-  background: #1b1a27;
+  background:
+    #181923;
 
   color: #e5e7eb;
 
@@ -264,9 +316,9 @@
 }
 
 
-/* =========================================
+/* =========================================================
    USER MESSAGE
-========================================= */
+========================================================= */
 
 .user-message {
   width: fit-content;
@@ -274,32 +326,35 @@
   max-width: 75%;
 
   margin-left: auto;
+
   margin-bottom: 18px;
 
   padding: 14px 18px;
 
-  border-radius: 16px 16px 5px 16px;
+  border-radius:
+    15px 15px 5px 15px;
 
-  background: linear-gradient(135deg,
+  background:
+    linear-gradient(135deg,
       #7c3aed,
       #9333ea);
 
-  color: white;
+  color: #ffffff;
 
   line-height: 1.6;
 
   font-size: 15px;
 
   box-shadow:
-    0 8px 25px rgba(124, 58, 237, 0.18);
+    0 8px 25px rgba(124, 58, 237, 0.16);
 
   overflow-wrap: break-word;
 }
 
 
-/* =========================================
+/* =========================================================
    MARKDOWN
-========================================= */
+========================================================= */
 
 .ai-message p {
   margin: 0 0 12px;
@@ -313,9 +368,12 @@
 .ai-message h2,
 .ai-message h3 {
   margin-top: 18px;
+
   margin-bottom: 10px;
 
   color: #ffffff;
+
+  line-height: 1.3;
 }
 
 .ai-message h1 {
@@ -323,7 +381,7 @@
 }
 
 .ai-message h2 {
-  font-size: 22px;
+  font-size: 21px;
 
   font-weight: 800;
 }
@@ -358,24 +416,27 @@
 
   padding: 10px 15px;
 
-  border-left: 3px solid #a855f7;
+  border-left:
+    3px solid #8b5cf6;
 
-  background: rgba(168, 85, 247, 0.08);
+  background:
+    rgba(139, 92, 246, 0.07);
 
   color: #c4b5fd;
 }
 
 
-/* =========================================
+/* =========================================================
    INLINE CODE
-========================================= */
+========================================================= */
 
 .ai-message code:not(pre code) {
   padding: 3px 7px;
 
-  border-radius: 6px;
+  border-radius: 5px;
 
-  background: #27233a;
+  background:
+    #242233;
 
   color: #c084fc;
 
@@ -385,9 +446,9 @@
 }
 
 
-/* =========================================
+/* =========================================================
    CODE BLOCK
-========================================= */
+========================================================= */
 
 .code-block-wrapper {
   width: 100%;
@@ -396,11 +457,13 @@
 
   overflow: hidden;
 
-  border: 1px solid #302746;
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius: 12px;
+  border-radius: 11px;
 
-  background: #0b0b10;
+  background:
+    #0a0b10;
 }
 
 .code-block-header {
@@ -411,11 +474,13 @@
 
   padding: 9px 12px;
 
-  border-bottom: 1px solid #302746;
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.07);
 
-  background: #171520;
+  background:
+    #14151c;
 
-  color: #9ca3af;
+  color: #8f96a8;
 
   font-size: 12px;
 
@@ -425,13 +490,14 @@
 .copy-code-btn {
   padding: 5px 10px;
 
-  border: 1px solid #4c3575;
+  border:
+    1px solid rgba(139, 92, 246, 0.3);
 
   border-radius: 6px;
 
   background: transparent;
 
-  color: #c084fc;
+  color: #bda7f8;
 
   font-size: 11px;
 
@@ -439,13 +505,17 @@
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .copy-code-btn:hover {
-  background: rgba(168, 85, 247, 0.12);
+  background:
+    rgba(139, 92, 246, 0.12);
 
-  border-color: #a855f7;
+  border-color:
+    rgba(167, 139, 250, 0.55);
 }
 
 .code-block-wrapper pre {
@@ -473,9 +543,9 @@
 }
 
 
-/* =========================================
+/* =========================================================
    SUGGESTED PROMPTS
-========================================= */
+========================================================= */
 
 .suggested-prompts {
   margin-top: 22px;
@@ -483,13 +553,13 @@
   padding-top: 16px;
 
   border-top:
-    1px solid rgba(139, 92, 246, 0.15);
+    1px solid rgba(255, 255, 255, 0.07);
 }
 
 .suggested-prompts p {
   margin-bottom: 10px;
 
-  color: #9ca3af;
+  color: #8f96a8;
 
   font-size: 13px;
 
@@ -507,25 +577,32 @@
 .prompt-list button {
   padding: 9px 13px;
 
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border:
+    1px solid rgba(139, 92, 246, 0.25);
 
   border-radius: 9px;
 
-  background: rgba(124, 58, 237, 0.08);
+  background:
+    rgba(124, 58, 237, 0.06);
 
-  color: #c4b5fd;
+  color: #bda7f8;
 
   font-size: 12px;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .prompt-list button:hover:not(:disabled) {
-  background: rgba(124, 58, 237, 0.2);
+  background:
+    rgba(124, 58, 237, 0.15);
 
-  border-color: #8b5cf6;
+  border-color:
+    rgba(139, 92, 246, 0.55);
 
   transform: translateY(-1px);
 }
@@ -548,24 +625,25 @@
 
   padding: 22px 24px;
 
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  border:
+    1px solid rgba(139, 92, 246, 0.28);
 
-  border-radius: 18px;
+  border-radius: 16px;
 
   background:
     linear-gradient(145deg,
-      rgba(124, 58, 237, 0.08),
-      rgba(27, 26, 39, 0.98));
+      rgba(124, 58, 237, 0.07),
+      rgba(20, 20, 29, 0.98));
 
   box-shadow:
-    0 12px 35px rgba(124, 58, 237, 0.12);
+    0 12px 35px rgba(0, 0, 0, 0.18);
 
   box-sizing: border-box;
 }
 
 
 /* =========================================================
-   QUIZ MAIN HEADER
+   QUIZ HEADER
 ========================================================= */
 
 .quiz-main-header {
@@ -581,7 +659,7 @@
   padding-bottom: 16px;
 
   border-bottom:
-    1px solid rgba(139, 92, 246, 0.18);
+    1px solid rgba(255, 255, 255, 0.07);
 }
 
 .quiz-label {
@@ -589,9 +667,9 @@
 
   margin-bottom: 6px;
 
-  color: #a855f7;
+  color: #a78bfa;
 
-  font-size: 11px;
+  font-size: 10px;
 
   font-weight: 800;
 
@@ -615,13 +693,15 @@
 
   padding: 7px 11px;
 
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  border:
+    1px solid rgba(139, 92, 246, 0.25);
 
   border-radius: 8px;
 
-  background: rgba(124, 58, 237, 0.08);
+  background:
+    rgba(124, 58, 237, 0.07);
 
-  color: #c4b5fd;
+  color: #bda7f8;
 
   font-size: 12px;
 
@@ -642,11 +722,13 @@
 
   box-sizing: border-box;
 
-  border: 1px solid rgba(139, 92, 246, 0.22);
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
 
-  border-radius: 14px;
+  border-radius: 13px;
 
-  background: #1a1925;
+  background:
+    #181923;
 
   transition:
     border-color 0.2s ease,
@@ -659,17 +741,18 @@
 
 .quiz-question-active {
   border-color:
-    rgba(168, 85, 247, 0.45);
+    rgba(168, 85, 247, 0.4);
 
   box-shadow:
-    0 8px 25px rgba(124, 58, 237, 0.08);
+    0 8px 25px rgba(124, 58, 237, 0.07);
 }
 
 .quiz-question-answered {
   border-color:
-    rgba(139, 92, 246, 0.18);
+    rgba(139, 92, 246, 0.15);
 
-  background: #171621;
+  background:
+    #15161e;
 }
 
 
@@ -688,7 +771,7 @@
 }
 
 .quiz-question-number {
-  color: #c084fc;
+  color: #b78cff;
 
   font-size: 12px;
 
@@ -700,7 +783,7 @@
 }
 
 .quiz-total {
-  color: #6b7280;
+  color: #666d7c;
 
   font-size: 12px;
 
@@ -752,11 +835,13 @@
 
   box-sizing: border-box;
 
-  border: 1px solid rgba(139, 92, 246, 0.22);
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
 
   border-radius: 10px;
 
-  background: #22202f;
+  background:
+    #20212c;
 
   color: #e5e7eb;
 
@@ -777,24 +862,26 @@
 
 .quiz-option:hover:not(:disabled) {
   background:
-    rgba(124, 58, 237, 0.18);
+    rgba(124, 58, 237, 0.15);
 
-  border-color: #8b5cf6;
+  border-color:
+    rgba(139, 92, 246, 0.55);
 
   transform: translateX(3px);
 
   box-shadow:
-    0 5px 18px rgba(124, 58, 237, 0.12);
+    0 5px 18px rgba(124, 58, 237, 0.08);
 }
 
 .quiz-option.selected {
-  border-color: #a855f7;
+  border-color:
+    #a855f7;
 
   background:
-    rgba(124, 58, 237, 0.2);
+    rgba(124, 58, 237, 0.18);
 
   box-shadow:
-    0 0 0 1px rgba(168, 85, 247, 0.2);
+    0 0 0 1px rgba(168, 85, 247, 0.15);
 }
 
 .quiz-option:disabled {
@@ -833,10 +920,11 @@
 
   border-radius: 10px;
 
-  border: 1px solid rgba(168, 85, 247, 0.22);
+  border:
+    1px solid rgba(168, 85, 247, 0.2);
 
   background:
-    rgba(124, 58, 237, 0.08);
+    rgba(124, 58, 237, 0.07);
 
   color: #d1d5db;
 
@@ -873,10 +961,10 @@
   border-radius: 9px;
 
   background:
-    rgba(34, 197, 94, 0.08);
+    rgba(34, 197, 94, 0.06);
 
   border:
-    1px solid rgba(34, 197, 94, 0.2);
+    1px solid rgba(34, 197, 94, 0.16);
 
   color: #86efac;
 
@@ -891,7 +979,7 @@
 
 
 /* =========================================================
-   FINAL QUIZ RESULT CARD
+   FINAL QUIZ RESULT
 ========================================================= */
 
 .quiz-result-card {
@@ -899,23 +987,19 @@
 
   padding: 24px;
 
-  border: 1px solid rgba(168, 85, 247, 0.4);
+  border:
+    1px solid rgba(168, 85, 247, 0.32);
 
-  border-radius: 16px;
+  border-radius: 15px;
 
   background:
     linear-gradient(145deg,
-      rgba(124, 58, 237, 0.12),
+      rgba(124, 58, 237, 0.10),
       rgba(18, 18, 26, 0.98));
 
   box-shadow:
-    0 15px 40px rgba(124, 58, 237, 0.12);
+    0 15px 40px rgba(0, 0, 0, 0.18);
 }
-
-
-/* =========================================================
-   RESULT TITLE
-========================================================= */
 
 .quiz-result-title {
   color: #ffffff;
@@ -933,7 +1017,7 @@
   margin: 18px 0;
 
   background:
-    rgba(139, 92, 246, 0.2);
+    rgba(255, 255, 255, 0.07);
 }
 
 
@@ -950,7 +1034,7 @@
 
   padding: 10px 0;
 
-  color: #9ca3af;
+  color: #8f96a8;
 
   font-size: 14px;
 }
@@ -1013,11 +1097,13 @@
 
   padding: 10px 12px;
 
-  border: 1px solid rgba(139, 92, 246, 0.15);
+  border:
+    1px solid rgba(255, 255, 255, 0.06);
 
   border-radius: 8px;
 
-  background: rgba(27, 26, 39, 0.8);
+  background:
+    rgba(27, 26, 39, 0.8);
 
   color: #d1d5db;
 
@@ -1047,12 +1133,12 @@
   padding: 14px;
 
   border:
-    1px solid rgba(239, 68, 68, 0.18);
+    1px solid rgba(239, 68, 68, 0.15);
 
   border-radius: 10px;
 
   background:
-    rgba(239, 68, 68, 0.05);
+    rgba(239, 68, 68, 0.04);
 
   color: #d1d5db;
 
@@ -1079,12 +1165,12 @@
   padding: 14px;
 
   border:
-    1px solid rgba(34, 197, 94, 0.2);
+    1px solid rgba(34, 197, 94, 0.18);
 
   border-radius: 10px;
 
   background:
-    rgba(34, 197, 94, 0.06);
+    rgba(34, 197, 94, 0.05);
 
   color: #86efac;
 
@@ -1151,7 +1237,7 @@
 
 
 /* =========================================================
-   INPUT AREA
+   CHAT INPUT
 ========================================================= */
 
 .study-chat-input {
@@ -1161,12 +1247,13 @@
 
   gap: 10px;
 
-  padding: 16px 18px;
+  padding: 14px 16px;
 
   border-top:
-    1px solid rgba(139, 92, 246, 0.18);
+    1px solid rgba(255, 255, 255, 0.07);
 
-  background: #12121a;
+  background:
+    #101117;
 
   flex-shrink: 0;
 }
@@ -1178,13 +1265,15 @@
 
   padding: 13px 15px;
 
-  border: 1px solid #302746;
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius: 11px;
+  border-radius: 10px;
 
   outline: none;
 
-  background: #1b1a27;
+  background:
+    #191a22;
 
   color: #ffffff;
 
@@ -1192,18 +1281,23 @@
 
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .study-chat-input input::placeholder {
-  color: #6b7280;
+  color: #666d7c;
 }
 
 .study-chat-input input:focus {
-  border-color: #8b5cf6;
+  border-color:
+    rgba(139, 92, 246, 0.7);
+
+  background:
+    #1c1d26;
 
   box-shadow:
-    0 0 0 3px rgba(139, 92, 246, 0.1);
+    0 0 0 3px rgba(139, 92, 246, 0.08);
 }
 
 .study-chat-input input:disabled {
@@ -1222,14 +1316,14 @@
 
   border: none;
 
-  border-radius: 11px;
+  border-radius: 10px;
 
   background:
     linear-gradient(135deg,
       #7c3aed,
       #9333ea);
 
-  color: white;
+  color: #ffffff;
 
   font-size: 14px;
 
@@ -1250,6 +1344,10 @@
     0 7px 20px rgba(124, 58, 237, 0.3);
 }
 
+.study-chat-input button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .study-chat-input button:disabled {
   opacity: 0.4;
 
@@ -1258,27 +1356,20 @@
 
 
 /* =========================================================
-   MOBILE
+   TABLET
 ========================================================= */
 
 @media (max-width: 768px) {
-
   .study-page {
-    padding: 25px 12px 40px;
+    padding: 25px 14px 40px;
   }
 
   .study-brand h1 {
-    font-size: 27px;
-
-    line-height: 1.15;
-
-    min-height: 34px;
-
-    padding-bottom: 3px;
+    font-size: 28px;
   }
 
   .study-chat-container {
-    height: calc(100vh - 230px);
+    height: calc(100vh - 225px);
 
     min-height: 500px;
 
@@ -1317,9 +1408,7 @@
   }
 
 
-  /* =========================================
-     QUIZ MOBILE
-  ========================================= */
+  /* QUIZ */
 
   .quiz-container {
     width: 100%;
@@ -1382,36 +1471,29 @@
 
 
 /* =========================================================
-   SMALL MOBILE
+   MOBILE
 ========================================================= */
 
-@media (max-width: 480px) {
-
+@media (max-width: 600px) {
   .study-page {
-    padding: 20px 8px 30px;
+    padding: 18px 10px 30px;
   }
 
   .study-brand {
-    gap: 10px;
+    gap: 9px;
   }
 
   .study-icon {
     width: 42px;
     height: 42px;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
     font-size: 13px;
   }
 
   .study-brand h1 {
-    font-size: 24px;
-
-    line-height: 1.15;
-
-    min-height: 30px;
-
-    padding-bottom: 3px;
+    font-size: 25px;
   }
 
   .study-header>p {
@@ -1419,9 +1501,11 @@
   }
 
   .study-chat-container {
-    height: calc(100vh - 210px);
+    height: calc(100vh - 205px);
 
     min-height: 450px;
+
+    border-radius: 14px;
   }
 
   .study-chat-input {
@@ -1437,15 +1521,13 @@
   }
 
   .study-chat-input button {
-    padding: 12px;
+    padding: 12px 14px;
 
     font-size: 12px;
   }
 
 
-  /* =========================================
-     QUIZ SMALL MOBILE
-  ========================================= */
+  /* QUIZ */
 
   .quiz-container {
     padding: 13px;
@@ -1493,5 +1575,52 @@
 
   .quiz-incorrect-item {
     font-size: 12px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 400px) {
+  .study-page {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .study-brand h1 {
+    font-size: 23px;
+  }
+
+  .study-chat-container {
+    min-height: 430px;
+  }
+
+  .ai-message,
+  .user-message {
+    max-width: 94%;
+  }
+
+  .study-chat-input button {
+    padding: 12px;
+  }
+}
+
+
+/* =========================================================
+   REDUCE MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .typing-dot,
+  .clear-chat-btn,
+  .study-chat-input button,
+  .quiz-option,
+  .prompt-list button {
+    animation: none;
+
+    transition: none;
   }
 }

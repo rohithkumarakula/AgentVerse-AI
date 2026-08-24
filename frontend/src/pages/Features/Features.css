@@ -1,179 +1,480 @@
-/* =========================================
+/* =========================================================
    AGENTVERSE AI — FEATURES PAGE
-========================================= */
+   ========================================================= */
 
 .features-page {
+  position: relative;
+
   min-height: 100vh;
-  box-sizing: border-box;
 
-  background: #0f172a;
-  color: white;
+  padding: 90px 6% 100px;
 
-  padding: 100px 80px 80px;
+  overflow: hidden;
 
   text-align: center;
+
+  color: #f5f5f7;
+
+  background:
+    radial-gradient(circle at 15% 10%,
+      rgba(124, 58, 237, 0.13),
+      transparent 30%),
+    radial-gradient(circle at 85% 25%,
+      rgba(168, 85, 247, 0.08),
+      transparent 28%),
+    #07080d;
 }
 
-/* =========================================
+
+/* =========================================================
+   BACKGROUND GRID
+   ========================================================= */
+
+.features-page::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px),
+    linear-gradient(90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px);
+
+  background-size: 60px 60px;
+
+  mask-image:
+    linear-gradient(to bottom,
+      black,
+      transparent 90%);
+
+  -webkit-mask-image:
+    linear-gradient(to bottom,
+      black,
+      transparent 90%);
+}
+
+
+/* =========================================================
+   AMBIENT GLOW
+   ========================================================= */
+
+.features-page::after {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  top: -180px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(124, 58, 237, 0.08);
+
+  filter: blur(110px);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
    PAGE TITLE
-========================================= */
+   ========================================================= */
 
 .features-page h1 {
-  font-size: 3rem;
-  margin: 0 0 15px;
+  position: relative;
 
-  font-weight: 700;
-  color: #f8fafc;
+  z-index: 1;
+
+  margin: 0 0 14px;
+
+  font-size: clamp(2.7rem,
+      6vw,
+      4.5rem);
+
+  line-height: 1.1;
+
+  font-weight: 800;
+
+  letter-spacing: -0.05em;
+
+  background:
+    linear-gradient(135deg,
+      #ffffff 15%,
+      #e9ddff 55%,
+      #c084fc 100%);
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color: transparent;
 }
+
+
+/* =========================================================
+   PAGE DESCRIPTION
+   ========================================================= */
 
 .features-page>p {
-  color: #cbd5e1;
+  position: relative;
 
-  margin: 0 0 55px;
+  z-index: 1;
 
-  font-size: 1.05rem;
+  width: min(600px, 100%);
+
+  margin: 0 auto 55px;
+
+  color: #9299aa;
+
+  font-size: 1rem;
+
+  line-height: 1.7;
 }
 
-/* =========================================
+
+/* =========================================================
    FEATURES GRID
-========================================= */
+   ========================================================= */
 
 .features-grid {
-  display: grid;
+  position: relative;
 
-  /* EXACTLY 3 CARDS PER ROW */
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  z-index: 1;
 
-  gap: 30px;
-
-  width: 100%;
-  max-width: 1450px;
+  width: min(1120px,
+      100%);
 
   margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3,
+      minmax(0, 1fr));
+
+  gap: 22px;
 }
 
-/* =========================================
+
+/* =========================================================
    FEATURE CARD
-========================================= */
+   ========================================================= */
 
 .feature-card {
-  box-sizing: border-box;
+  position: relative;
 
-  min-height: 275px;
+  min-height: 250px;
+
+  padding: 30px 26px;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: flex-start;
 
-  background: #1e293b;
+  text-align: center;
 
-  padding: 30px 25px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
-  border-radius: 16px;
+  border-radius: 20px;
 
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018));
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.22);
+
+  backdrop-filter: blur(16px);
+
+  -webkit-backdrop-filter: blur(16px);
+
+  overflow: hidden;
 
   transition:
     transform 0.3s ease,
+    border-color 0.3s ease,
     box-shadow 0.3s ease,
-    border-color 0.3s ease;
+    background 0.3s ease;
 }
 
-/* =========================================
+
+/* =========================================================
+   CARD TOP GLOW
+   ========================================================= */
+
+.feature-card::before {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+  height: 120px;
+
+  top: -80px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(139, 92, 246, 0.14);
+
+  filter: blur(55px);
+
+  opacity: 0;
+
+  transition:
+    opacity 0.3s ease;
+}
+
+
+/* =========================================================
    CARD HOVER
-========================================= */
+   ========================================================= */
 
 .feature-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-7px);
 
-  border-color: rgba(56, 189, 248, 0.25);
+  border-color:
+    rgba(139, 92, 246, 0.4);
+
+  background:
+    linear-gradient(145deg,
+      rgba(139, 92, 246, 0.08),
+      rgba(255, 255, 255, 0.025));
 
   box-shadow:
-    0 15px 35px rgba(0, 0, 0, 0.25);
+    0 25px 55px rgba(0, 0, 0, 0.32),
+    0 0 35px rgba(139, 92, 246, 0.08);
 }
 
-/* =========================================
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+
+/* =========================================================
    FEATURE ICON
-========================================= */
+   ========================================================= */
 
 .feature-icon {
-  font-size: 3rem;
+  position: relative;
 
-  line-height: 1;
+  z-index: 1;
 
-  margin-bottom: 20px;
+  width: 64px;
+  height: 64px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 22px;
+
+  border-radius: 17px;
+
+  border: 1px solid rgba(167, 139, 250, 0.18);
+
+  background:
+    linear-gradient(145deg,
+      rgba(139, 92, 246, 0.18),
+      rgba(168, 85, 247, 0.04));
+
+  font-size: 2rem;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-/* =========================================
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.07);
+
+  box-shadow:
+    0 0 25px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================================
    FEATURE TITLE
-========================================= */
+   ========================================================= */
 
 .feature-card h3 {
-  margin: 0 0 15px;
+  position: relative;
 
-  color: #38bdf8;
+  z-index: 1;
 
-  font-size: 1.35rem;
+  margin: 0 0 12px;
+
+  color: #ffffff;
+
+  font-size: 1.25rem;
 
   font-weight: 700;
+
+  letter-spacing: -0.02em;
+
+  transition:
+    color 0.25s ease;
 }
 
-/* =========================================
+
+.feature-card:hover h3 {
+  color: #e9ddff;
+}
+
+
+/* =========================================================
    FEATURE DESCRIPTION
-========================================= */
+   ========================================================= */
 
 .feature-card p {
+  position: relative;
+
+  z-index: 1;
+
+  max-width: 280px;
+
   margin: 0;
 
-  color: #cbd5e1;
+  color: #9299aa;
 
-  line-height: 1.6;
+  font-size: 0.9rem;
 
-  font-size: 1rem;
+  line-height: 1.7;
 }
 
-/* =========================================
-   TABLET
-========================================= */
 
-@media (max-width: 1000px) {
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 950px) {
   .features-page {
-    padding: 90px 40px 60px;
+    padding:
+      75px 5% 80px;
   }
 
   .features-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2,
+        minmax(0, 1fr));
+
+    gap: 20px;
   }
 }
 
-/* =========================================
+
+/* =========================================================
    MOBILE
-========================================= */
+   ========================================================= */
 
 @media (max-width: 650px) {
   .features-page {
-    padding: 70px 20px 50px;
+    padding:
+      65px 16px 65px;
   }
 
   .features-page h1 {
-    font-size: 2.2rem;
+    font-size: 2.6rem;
   }
 
   .features-page>p {
-    font-size: 0.95rem;
-    margin-bottom: 40px;
+    margin-bottom: 38px;
+
+    font-size: 0.92rem;
   }
 
   .features-grid {
     grid-template-columns: 1fr;
 
-    gap: 20px;
+    gap: 18px;
+
+    width: min(380px,
+        100%);
   }
 
   .feature-card {
-    min-height: 250px;
+    min-height: 230px;
 
     padding: 28px 22px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+  .features-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .features-page h1 {
+    font-size: 2.25rem;
+  }
+
+  .features-page>p {
+    font-size: 0.88rem;
+  }
+
+  .feature-card {
+    padding:
+      25px 20px;
+  }
+
+  .feature-icon {
+    width: 58px;
+    height: 58px;
+
+    font-size: 1.8rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .feature-card p {
+    font-size: 0.86rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .feature-card,
+  .feature-icon,
+  .feature-card::before {
+    transition: none;
   }
 }

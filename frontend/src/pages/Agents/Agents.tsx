@@ -8,24 +8,12 @@ import AgentCard from "../../components/AgentCard/AgentCard";
 import { agents } from "../../data/agents";
 
 function Agents() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const filteredAgents = agents.filter((agent) => {
-    const search = searchTerm.toLowerCase();
-    const categoryMatch =
-      selectedCategory === "All" ||
-      agent.category === selectedCategory;
 
+  const filteredAgents = agents.filter((agent) => {
     return (
-      categoryMatch &&
-      (
-        agent.title.toLowerCase().includes(search) ||
-        agent.category.toLowerCase().includes(search) ||
-        agent.description.toLowerCase().includes(search) ||
-        agent.suggestedPrompts.some((prompt) =>
-          prompt.toLowerCase().includes(search)
-        )
-      )
+      selectedCategory === "All" ||
+      agent.category === selectedCategory
     );
   });
 
@@ -36,36 +24,31 @@ function Agents() {
       <section className="agents-page">
         <h1>Explore AI Agents</h1>
 
-        <p>Choose an AI agent based on your needs.</p>
+        <p>
+          Choose an AI agent based on your needs.
+        </p>
+
         <div className="category-filters">
-          {["All", ...new Set(agents.map((agent) => agent.category))].map(
-            (category) => (
-              <button
-                key={category}
-                className={selectedCategory === category ? "active" : ""}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            )
-          )}
-        </div>
-        <div className="agent-search">
-          <input
-            type="text"
-            placeholder="Search AI agents..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
+          {[
+            "All",
+            ...new Set(
+              agents.map((agent) => agent.category)
+            ),
+          ].map((category) => (
             <button
-              className="clear-search"
-              onClick={() => setSearchTerm("")}
-              aria-label="Clear search"
+              key={category}
+              className={
+                selectedCategory === category
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setSelectedCategory(category)
+              }
             >
-              ×
+              {category}
             </button>
-          )}
+          ))}
         </div>
 
         <div className="agents-grid">
@@ -78,7 +61,6 @@ function Agents() {
               route={agent.route}
               category={agent.category}
               status={agent.status}
-
             />
           ))}
         </div>
@@ -86,7 +68,10 @@ function Agents() {
         {filteredAgents.length === 0 && (
           <div className="no-agents">
             <h3>No agents found</h3>
-            <p>Try searching for a different agent or category.</p>
+
+            <p>
+              No agents are available in this category.
+            </p>
           </div>
         )}
       </section>

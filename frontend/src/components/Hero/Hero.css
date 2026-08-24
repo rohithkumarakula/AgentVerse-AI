@@ -1,283 +1,305 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
-/* =========================================
-   AGENTVERSE AI — PREMIUM HERO
-========================================= */
+/* =========================================================
+   AGENTVERSE AI — HERO
+========================================================= */
 
 .hero {
-  min-height: 82vh;
   position: relative;
+
+  width: 100%;
+  min-height: calc(100vh - 82px);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 100px 24px 80px;
+  background: #080808;
+
+  color: #ffffff;
+
+  box-sizing: border-box;
 
   overflow: hidden;
-  text-align: center;
-
-  color: #f8fafc;
-
-  background:
-    radial-gradient(
-      circle at 20% 25%,
-      rgba(124, 58, 237, 0.18),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 35%,
-      rgba(168, 85, 247, 0.12),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 50% 100%,
-      rgba(99, 102, 241, 0.09),
-      transparent 32%
-    ),
-    #07080d;
 }
 
-/* =========================================
+
+/* =========================================================
    BACKGROUND GRID
-========================================= */
+========================================================= */
 
-.hero::before {
-  content: "";
-
+.hero-grid {
   position: absolute;
+
   inset: 0;
+
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px),
+    linear-gradient(90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px);
+
+  background-size: 72px 72px;
 
   pointer-events: none;
 
-  background-image:
-    linear-gradient(
-      rgba(255, 255, 255, 0.022) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.022) 1px,
-      transparent 1px
-    );
-
-  background-size: 60px 60px;
-
-  mask-image: linear-gradient(
-    to bottom,
-    black 0%,
-    black 55%,
-    transparent 100%
-  );
+  opacity: 0.7;
 }
 
-/* =========================================
-   AMBIENT GLOW
-========================================= */
 
-.hero::after {
-  content: "";
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
 
+.hero-glow {
   position: absolute;
 
-  width: 520px;
-  height: 520px;
-
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
+  width: 650px;
+  height: 500px;
 
   border-radius: 50%;
 
-  background: rgba(124, 58, 237, 0.07);
-
-  filter: blur(100px);
+  filter: blur(120px);
 
   pointer-events: none;
+
+  opacity: 0.13;
 }
 
-/* =========================================
+.hero-glow-left {
+  top: -180px;
+  left: -160px;
+
+  background: #ff5a1f;
+}
+
+.hero-glow-right {
+  top: -160px;
+  right: -180px;
+
+  background: #ff7135;
+}
+
+
+/* =========================================================
    HERO CONTENT
-========================================= */
+========================================================= */
 
 .hero-content {
   position: relative;
-  z-index: 1;
 
-  width: min(950px, 100%);
+  z-index: 2;
+
+  width: 100%;
+  max-width: 1400px;
 
   margin: 0 auto;
 
-  animation: heroReveal 0.7s ease-out both;
+  padding: 70px 40px 115px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  overflow: visible;
 }
 
-/* =========================================
-   HERO BRAND
-========================================= */
 
-.hero-brand {
+/* =========================================================
+   HERO TITLE
+========================================================= */
+
+.hero-title {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
   display: flex;
 
+  flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
-  gap: 18px;
+  overflow: visible;
 
-  width: 100%;
-  max-width: 100%;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 
-  margin-bottom: 28px;
+  font-size: clamp(4rem, 6.8vw, 6.4rem);
+
+  font-weight: 800;
+
+  line-height: 1.12;
+
+  letter-spacing: -0.02em;
+
+  text-align: center;
 
   box-sizing: border-box;
 }
 
-/* =========================================
-   ROCKET
-========================================= */
 
-.hero-rocket {
-  display: inline-block;
+/* =========================================================
+   TITLE LINES
+========================================================= */
 
-  flex-shrink: 0;
+.hero-line {
+  display: block;
 
-  font-size: clamp(3rem, 6vw, 4.8rem);
+  width: 100%;
 
-  filter:
-    drop-shadow(
-      0 0 18px rgba(168, 85, 247, 0.25)
-    );
-
-  animation: rocketFloat 3s ease-in-out infinite;
-}
-
-/* =========================================
-   AGENTVERSE AI
-========================================= */
-
-.hero-brand h1 {
   margin: 0;
-  padding-bottom: 12px;
 
-  font-family: "Inter", sans-serif;
+  padding: 0 15px;
 
-  font-size: clamp(3.2rem, 7vw, 5.5rem);
+  box-sizing: border-box;
 
-  line-height: 1.2;
-
-  font-weight: 800;
-
-  letter-spacing: -0.04em;
-
-  white-space: nowrap;
+  text-align: center;
 
   overflow: visible;
 
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ONE PLATFORM
+========================================================= */
+
+.hero-line-white {
+  color: #f8f8f8;
+
+  letter-spacing: -0.02em;
+
+  padding-bottom: 3px;
+}
+
+
+/* =========================================================
+   INFINITE AI AGENTS
+========================================================= */
+
+.hero-line-gradient {
+  margin-top: 2px;
+
+  padding: 0 15px 18px;
+
+  color: #ff7135;
+
   background:
-    linear-gradient(
-      135deg,
-      #ffffff 15%,
-      #e9ddff 55%,
-      #c084fc 100%
-    );
+    linear-gradient(105deg,
+      #fff1e9 0%,
+      #ffc2a8 25%,
+      #ff9a72 50%,
+      #ff7135 78%,
+      #ff5a1f 100%);
 
   -webkit-background-clip: text;
   background-clip: text;
 
   -webkit-text-fill-color: transparent;
 
-  font-synthesis: none;
-}
-
-/* =========================================
-   MAIN HEADLINE
-========================================= */
-
-.hero h2 {
-  margin: 0 auto 24px;
-
-  max-width: 850px;
-
-  font-family: "Inter", sans-serif;
-
-  font-size: clamp(2rem, 5vw, 3.4rem);
-
   line-height: 1.12;
 
-  font-weight: 700;
+  letter-spacing: -0.02em;
 
-  letter-spacing: -0.045em;
+  overflow: visible;
 
-  color: #f8fafc;
+  box-sizing: border-box;
 }
 
-/* =========================================
+
+/* =========================================================
    DESCRIPTION
-========================================= */
+========================================================= */
 
-.hero p {
-  max-width: 680px;
+.hero-description {
+  max-width: 780px;
 
-  margin: 0 auto 38px;
+  margin: 20px auto 0;
 
-  font-family: "Inter", sans-serif;
+  color: #858585;
 
-  color: #9299aa;
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
 
-  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-size: 1.05rem;
 
-  line-height: 1.8;
+  font-weight: 400;
 
-  letter-spacing: 0.005em;
+  line-height: 1.7;
+
+  letter-spacing: -0.01em;
 }
 
-/* =========================================
-   BUTTONS
-========================================= */
+
+/* =========================================================
+   BUTTON CONTAINER
+========================================================= */
 
 .hero-buttons {
   display: flex;
 
-  justify-content: center;
   align-items: center;
 
-  gap: 14px;
+  justify-content: center;
 
-  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-top: 32px;
 }
 
-/* =========================================
-   PRIMARY BUTTON
-========================================= */
 
-.primary-btn {
-  min-width: 155px;
+/* =========================================================
+   BOTH HERO BUTTONS
+========================================================= */
 
-  padding: 14px 25px;
+.hero-primary-btn {
+  display: inline-flex;
 
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  align-items: center;
 
-  border-radius: 12px;
+  justify-content: center;
+
+  min-width: 175px;
+
+  height: 54px;
+
+  padding: 0 24px;
+
+  border: none;
+
+  border-radius: 9px;
 
   background:
-    linear-gradient(
-      135deg,
-      #7c3aed,
-      #9333ea
-    );
+    linear-gradient(135deg,
+      #ff7135,
+      #ff5a1f);
 
   color: #ffffff;
 
-  font-family: "Inter", sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
 
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 
-  font-weight: 600;
+  font-weight: 650;
 
   cursor: pointer;
 
   box-shadow:
-    0 12px 35px rgba(124, 58, 237, 0.20);
+    0 10px 30px rgba(255, 90, 31, 0.16);
 
   transition:
     transform 0.2s ease,
@@ -285,170 +307,243 @@
     filter 0.2s ease;
 }
 
-.primary-btn:hover {
+.hero-primary-btn:hover {
   transform: translateY(-2px);
 
-  filter: brightness(1.08);
+  filter: brightness(1.06);
 
   box-shadow:
-    0 16px 40px rgba(124, 58, 237, 0.35);
+    0 14px 35px rgba(255, 90, 31, 0.25);
 }
 
-.primary-btn:active {
+.hero-primary-btn:active {
   transform: translateY(0);
 }
 
-/* =========================================
-   SECONDARY BUTTON
-========================================= */
 
-.secondary-btn {
-  min-width: 155px;
+/* =========================================================
+   CIRCULAR SCROLL BUTTON
+========================================================= */
 
-  padding: 13px 25px;
+.hero-scroll-button {
+  position: absolute;
 
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 50;
 
-  border-radius: 12px;
+  left: 50%;
 
-  background: rgba(255, 255, 255, 0.025);
+  bottom: 20px;
 
-  color: #e5e7eb;
+  width: 48px;
+  height: 48px;
 
-  font-family: "Inter", sans-serif;
+  display: flex;
 
-  font-size: 0.95rem;
+  align-items: center;
 
-  font-weight: 600;
+  justify-content: center;
+
+  transform: translateX(-50%);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.22);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color: #ffffff;
+
+  text-decoration: none;
 
   cursor: pointer;
 
-  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.25);
 
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    color 0.2s ease;
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.secondary-btn:hover {
-  transform: translateY(-2px);
+.hero-scroll-button span {
+  display: block;
 
-  background: rgba(139, 92, 246, 0.10);
+  font-size: 20px;
 
-  border-color: rgba(167, 139, 250, 0.35);
+  line-height: 1;
 
-  color: #ffffff;
+  pointer-events: none;
 }
 
-.secondary-btn:active {
-  transform: translateY(0);
+.hero-scroll-button:hover {
+  transform:
+    translateX(-50%) translateY(-3px);
+
+  background:
+    rgba(255, 107, 44, 0.12);
+
+  border-color:
+    rgba(255, 107, 44, 0.55);
+
+  box-shadow:
+    0 8px 25px rgba(255, 90, 31, 0.20);
 }
 
-/* =========================================
-   ANIMATIONS
-========================================= */
-
-@keyframes heroReveal {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.hero-scroll-button:hover span {
+  transform: translateY(3px);
 }
 
-@keyframes rocketFloat {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-
-  50% {
-    transform: translateY(-7px) rotate(2deg);
-  }
+.hero-scroll-button:active {
+  transform:
+    translateX(-50%) translateY(0);
 }
 
-/* =========================================
+
+/* =========================================================
    TABLET
-========================================= */
+========================================================= */
 
-@media (max-width: 800px) {
-  .hero {
-    min-height: 78vh;
-    padding: 90px 20px 70px;
+@media (max-width: 1100px) {
+
+  .hero-content {
+    padding:
+      65px 25px 105px;
   }
 
-  .hero-brand h1 {
-    font-size: clamp(2.8rem, 10vw, 4.8rem);
+  .hero-title {
+    font-size:
+      clamp(3.7rem, 8vw, 5.8rem);
   }
 
-  .hero h2 {
-    font-size: clamp(1.9rem, 7vw, 2.8rem);
-  }
-
-  .hero p {
-    font-size: 1rem;
-  }
 }
 
-/* =========================================
+
+/* =========================================================
    MOBILE
-========================================= */
+========================================================= */
 
-@media (max-width: 600px) {
-  .hero-brand {
-    gap: 10px;
-  }
+@media (max-width: 700px) {
 
-  .hero-brand h1 {
-    font-size: 2.8rem;
-  }
-
-  .hero-rocket {
-    font-size: 2.8rem;
-  }
-}
-
-@media (max-width: 480px) {
   .hero {
-    padding: 80px 16px 60px;
+    min-height:
+      calc(100vh - 72px);
   }
 
-  .hero-brand {
-    flex-direction: column;
-    gap: 8px;
+  .hero-grid {
+    background-size: 55px 55px;
   }
 
-  .hero-brand h1 {
-    font-size: 2.5rem;
+  .hero-content {
+    padding:
+      55px 18px 95px;
   }
 
-  .hero-rocket {
-    font-size: 3rem;
+  .hero-title {
+    font-size:
+      clamp(2.8rem, 12vw, 4.2rem);
+
+    line-height: 1.12;
+
+    letter-spacing: -0.015em;
   }
 
-  .hero h2 {
-    font-size: 1.9rem;
+  .hero-line {
+    white-space: normal;
+
+    padding:
+      0 4px;
   }
 
-  .hero p {
+  .hero-line-gradient {
+    margin-top: 4px;
+
+    padding:
+      0 4px 14px;
+
+    line-height: 1.12;
+  }
+
+  .hero-description {
+    max-width: 500px;
+
+    margin-top: 20px;
+
     font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 30px;
+
+    line-height: 1.6;
   }
 
   .hero-buttons {
+    margin-top: 30px;
+
     flex-direction: column;
+
     width: 100%;
   }
 
-  .primary-btn,
-  .secondary-btn {
-    width: min(280px, 100%);
+  .hero-primary-btn {
+    width: 100%;
+
+    max-width: 300px;
   }
+
+  .hero-scroll-button {
+    width: 44px;
+    height: 44px;
+
+    bottom: 15px;
+  }
+
+  .hero-scroll-button span {
+    font-size: 18px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .hero-content {
+    padding:
+      45px 15px 85px;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
+
+    line-height: 1.12;
+  }
+
+  .hero-line-gradient {
+    padding-bottom: 13px;
+  }
+
+  .hero-description {
+    font-size: 0.88rem;
+
+    margin-top: 18px;
+  }
+
+  .hero-buttons {
+    margin-top: 26px;
+  }
+
+  .hero-primary-btn {
+    height: 50px;
+  }
+
 }

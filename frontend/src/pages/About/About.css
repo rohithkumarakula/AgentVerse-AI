@@ -1,155 +1,273 @@
-/* =========================================
+/* =========================================================
    AGENTVERSE AI — ABOUT PAGE
-========================================= */
+   ========================================================= */
 
 .about-page {
-    min-height: calc(100vh - 80px);
+    position: relative;
 
-    padding: 80px 30px;
+    min-height: 100vh;
 
-    box-sizing: border-box;
+    padding: 90px 30px 100px;
+
+    overflow: hidden;
 
     background:
         radial-gradient(circle at 50% 0%,
-            rgba(124, 58, 237, 0.18),
-            transparent 45%),
-        #0b0c12;
+            rgba(124, 58, 237, 0.14),
+            transparent 35%),
+        #07080d;
 
-    color: #f8fafc;
+    color: #f5f5f7;
 
     text-align: center;
 }
 
 
-/* =========================================
+/* =========================================================
+   BACKGROUND GRID
+   ========================================================= */
+
+.about-page::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px),
+        linear-gradient(90deg,
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px);
+
+    background-size: 60px 60px;
+
+    mask-image:
+        linear-gradient(to bottom,
+            black,
+            transparent 90%);
+
+    -webkit-mask-image:
+        linear-gradient(to bottom,
+            black,
+            transparent 90%);
+}
+
+
+/* =========================================================
+   AMBIENT GLOW
+   ========================================================= */
+
+.about-page::after {
+    content: "";
+
+    position: absolute;
+
+    width: 450px;
+    height: 450px;
+
+    top: -180px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(124, 58, 237, 0.08);
+
+    filter: blur(100px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
    CONTAINER
-========================================= */
+   ========================================================= */
 
 .about-container {
-    width: 100%;
-    max-width: 1100px;
+    position: relative;
+
+    z-index: 1;
+
+    width: min(1100px,
+            100%);
 
     margin: 0 auto;
 }
 
 
-/* =========================================
+/* =========================================================
    ICON
-========================================= */
+   ========================================================= */
 
 .about-icon {
-    width: 76px;
-    height: 76px;
+    width: 72px;
+    height: 72px;
 
-    margin: 0 auto 25px;
+    margin: 0 auto 24px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    border-radius: 22px;
-
-    font-size: 38px;
+    border-radius: 18px;
 
     background:
         linear-gradient(135deg,
             #7c3aed,
             #a855f7);
 
+    font-size: 36px;
+
     box-shadow:
-        0 0 35px rgba(139, 92, 246, 0.35);
+        0 0 30px rgba(139, 92, 246, 0.28);
 }
 
 
-/* =========================================
+/* =========================================================
    MAIN HEADING
-========================================= */
+   ========================================================= */
 
 .about-container>h1 {
-    margin: 0 0 20px;
+    margin: 0 0 18px;
 
-    font-size: 52px;
+    font-size: clamp(2.7rem,
+            6vw,
+            4.5rem);
 
     line-height: 1.1;
 
     font-weight: 800;
 
-    letter-spacing: -1.5px;
+    letter-spacing: -0.05em;
 
     background:
-        linear-gradient(90deg,
-            #ffffff,
-            #c084fc);
+        linear-gradient(135deg,
+            #ffffff 15%,
+            #e9ddff 55%,
+            #c084fc 100%);
 
     background-clip: text;
+
     -webkit-background-clip: text;
 
     -webkit-text-fill-color: transparent;
 }
 
 
-/* =========================================
+/* =========================================================
    INTRO
-========================================= */
+   ========================================================= */
 
 .about-intro {
-    width: 100%;
-    max-width: 750px;
+    width: min(750px,
+            100%);
 
-    margin: 0 auto 65px;
+    margin: 0 auto 60px;
 
-    color: #9ca3af;
+    color: #9299aa;
 
-    font-size: 18px;
+    font-size: 1rem;
 
-    line-height: 1.7;
+    line-height: 1.8;
 }
 
 
-/* =========================================
+/* =========================================================
    AGENT CARDS
-========================================= */
+   ========================================================= */
 
 .about-cards {
-    display: flex;
+    display: grid;
 
-    justify-content: center;
+    grid-template-columns:
+        repeat(3,
+            minmax(0, 1fr));
 
-    align-items: stretch;
+    gap: 22px;
 
-    gap: 25px;
-
-    flex-wrap: wrap;
-
-    margin-bottom: 70px;
+    margin-bottom: 65px;
 }
 
 
+/* =========================================================
+   ABOUT CARD
+   ========================================================= */
+
 .about-card {
-    flex: 1 1 280px;
+    position: relative;
 
-    max-width: 330px;
+    min-height: 280px;
 
-    padding: 35px 28px;
+    padding: 30px 26px;
 
-    box-sizing: border-box;
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     border-radius: 20px;
 
-    border: 1px solid rgba(139, 92, 246, 0.18);
-
     background:
         linear-gradient(145deg,
-            #182033,
-            #131722);
+            rgba(255, 255, 255, 0.055),
+            rgba(255, 255, 255, 0.018));
 
     box-shadow:
-        0 15px 40px rgba(0, 0, 0, 0.25);
+        0 18px 45px rgba(0, 0, 0, 0.22);
+
+    backdrop-filter: blur(16px);
+
+    -webkit-backdrop-filter: blur(16px);
+
+    overflow: hidden;
 
     transition:
-        transform 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* =========================================================
+   CARD GLOW
+   ========================================================= */
+
+.about-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 120px;
+
+    top: -70px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(139, 92, 246, 0.14);
+
+    filter: blur(55px);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.3s ease;
 }
 
 
@@ -157,80 +275,150 @@
     transform: translateY(-7px);
 
     border-color:
-        rgba(168, 85, 247, 0.55);
+        rgba(139, 92, 246, 0.4);
 
     box-shadow:
-        0 20px 50px rgba(124, 58, 237, 0.18);
+        0 25px 55px rgba(0, 0, 0, 0.3),
+        0 0 35px rgba(139, 92, 246, 0.08);
 }
 
 
-/* =========================================
+.about-card:hover::before {
+    opacity: 1;
+}
+
+
+/* =========================================================
    CARD ICON
-========================================= */
+   ========================================================= */
 
 .about-card-icon {
-    font-size: 48px;
+    position: relative;
 
-    margin-bottom: 15px;
+    z-index: 1;
+
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(167, 139, 250, 0.18);
+
+    background:
+        linear-gradient(145deg,
+            rgba(139, 92, 246, 0.18),
+            rgba(168, 85, 247, 0.04));
+
+    font-size: 2rem;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 
-/* =========================================
+.about-card:hover .about-card-icon {
+    transform: scale(1.07);
+
+    box-shadow:
+        0 0 25px rgba(139, 92, 246, 0.15);
+}
+
+
+/* =========================================================
    CARD HEADING
-========================================= */
+   ========================================================= */
 
 .about-card h2 {
-    margin: 0 0 15px;
+    position: relative;
 
-    color: #38bdf8;
+    z-index: 1;
 
-    font-size: 25px;
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 1.3rem;
 
     font-weight: 700;
+
+    letter-spacing: -0.02em;
+
+    transition:
+        color 0.25s ease;
 }
 
 
-/* =========================================
+.about-card:hover h2 {
+    color: #e9ddff;
+}
+
+
+/* =========================================================
    CARD TEXT
-========================================= */
+   ========================================================= */
 
 .about-card p {
+    position: relative;
+
+    z-index: 1;
+
     margin: 0;
 
-    color: #b6c0d4;
+    color: #9299aa;
 
-    font-size: 15px;
+    font-size: 0.9rem;
 
     line-height: 1.7;
 }
 
 
-/* =========================================
+/* =========================================================
    MISSION
-========================================= */
+   ========================================================= */
 
 .about-mission {
-    max-width: 800px;
+    width: min(800px,
+            100%);
 
     margin: 0 auto;
 
-    padding: 40px 30px;
+    padding: 38px 30px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     border-radius: 20px;
 
-    border: 1px solid rgba(139, 92, 246, 0.18);
-
     background:
-        rgba(18, 20, 30, 0.8);
+        linear-gradient(145deg,
+            rgba(255, 255, 255, 0.045),
+            rgba(255, 255, 255, 0.015));
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.2);
+
+    backdrop-filter: blur(15px);
+
+    -webkit-backdrop-filter: blur(15px);
 }
 
 
 .about-mission h2 {
-    margin: 0 0 15px;
+    margin: 0 0 14px;
 
     color: #ffffff;
 
-    font-size: 30px;
+    font-size: 1.7rem;
 
     font-weight: 700;
 }
@@ -239,24 +427,26 @@
 .about-mission p {
     margin: 0;
 
-    color: #9ca3af;
+    color: #9299aa;
 
-    font-size: 16px;
+    font-size: 0.95rem;
 
     line-height: 1.8;
 }
 
 
-/* =========================================
+/* =========================================================
    TAGLINE
-========================================= */
+   ========================================================= */
 
 .about-tagline {
-    margin-top: 45px;
+    margin-top: 42px;
 
-    font-size: 20px;
+    font-size: 1.1rem;
 
     font-weight: 700;
+
+    letter-spacing: -0.01em;
 
     background:
         linear-gradient(90deg,
@@ -264,53 +454,123 @@
             #c084fc);
 
     background-clip: text;
+
     -webkit-background-clip: text;
 
     -webkit-text-fill-color: transparent;
 }
 
 
-/* =========================================
-   MOBILE
-========================================= */
+/* =========================================================
+   TABLET
+   ========================================================= */
 
-@media (max-width: 768px) {
-
+@media (max-width: 850px) {
     .about-page {
-        padding: 55px 18px;
-    }
-
-    .about-container>h1 {
-        font-size: 36px;
-    }
-
-    .about-intro {
-        font-size: 16px;
-
-        margin-bottom: 45px;
+        padding:
+            75px 24px 80px;
     }
 
     .about-cards {
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+    .about-page {
+        padding:
+            65px 16px 65px;
+    }
+
+    .about-container>h1 {
+        font-size: 2.6rem;
+    }
+
+    .about-intro {
+        margin-bottom: 42px;
+
+        font-size: 0.92rem;
+    }
+
+    .about-cards {
+        grid-template-columns: 1fr;
+
         gap: 18px;
 
         margin-bottom: 45px;
     }
 
     .about-card {
-        max-width: 100%;
+        min-height: 250px;
 
-        padding: 30px 22px;
+        padding: 28px 22px;
     }
 
     .about-mission {
-        padding: 30px 20px;
+        padding: 30px 22px;
     }
 
     .about-mission h2 {
-        font-size: 25px;
+        font-size: 1.45rem;
+    }
+
+    .about-mission p {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+    .about-page {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .about-container>h1 {
+        font-size: 2.25rem;
+    }
+
+    .about-icon {
+        width: 64px;
+        height: 64px;
+
+        font-size: 32px;
+    }
+
+    .about-intro {
+        font-size: 0.88rem;
+    }
+
+    .about-card p {
+        font-size: 0.86rem;
     }
 
     .about-tagline {
-        font-size: 17px;
+        font-size: 1rem;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .about-card,
+    .about-card-icon,
+    .about-card::before {
+        transition: none;
     }
 }

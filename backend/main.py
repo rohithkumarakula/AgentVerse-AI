@@ -9,6 +9,7 @@ import json
 import re
 import os
 import base64
+import asyncio
 
 
 # =========================================
@@ -76,6 +77,92 @@ class TailorRequest(BaseModel):
     message: str
     history: list[Message] = Field(default_factory=list)
     profile: CareerProfile | None = None
+
+
+# =========================================
+# TAILOR HISTORY LIMITS
+# =========================================
+
+# The frontend keeps the complete chat for display/history,
+# but the model should receive only a bounded context window.
+# These limits also protect the API when an older frontend/client
+# sends an unexpectedly large history.
+TAILOR_MAX_HISTORY_MESSAGES = 10
+TAILOR_MAX_HISTORY_CHARS = 9000
+TAILOR_MAX_MESSAGE_CHARS = 2000
+TAILOR_REQUEST_TIMEOUT_SECONDS = 75
+TAILOR_MAX_OUTPUT_TOKENS = 3200
+
+
+def compact_tailor_history(history):
+    """Return recent conversation context under a safe character budget."""
+    if not isinstance(history, list):
+        return []
+
+    result = []
+    total_chars = 0
+
+    for item in reversed(history):
+        if not isinstance(item, dict):
+            continue
+
+        sender = (
+            "user"
+            if item.get("sender") == "user"
+            else "ai"
+        )
+
+        text = str(item.get("text") or "").strip()
+
+        attachment = item.get("attachment")
+        attachment_meta = None
+
+        if isinstance(attachment, dict):
+            attachment_meta = {
+                "name": str(
+                    attachment.get("name") or "Attachment"
+                )[:180],
+                "type": str(
+                    attachment.get("type")
+                    or "application/octet-stream"
+                )[:120],
+            }
+
+        if not text and not attachment_meta:
+            continue
+
+        text = text[:TAILOR_MAX_MESSAGE_CHARS]
+
+        item_size = (
+            len(text)
+            + len(
+                attachment_meta["name"]
+                if attachment_meta
+                else ""
+            )
+            + 80
+        )
+
+        if (
+            result
+            and total_chars + item_size
+            > TAILOR_MAX_HISTORY_CHARS
+        ):
+            break
+
+        result.append({
+            "text": text,
+            "sender": sender,
+            "attachment": attachment_meta,
+        })
+
+        total_chars += item_size
+
+        if len(result) >= TAILOR_MAX_HISTORY_MESSAGES:
+            break
+
+    result.reverse()
+    return result
 
 
 class StudyRequest(BaseModel):
@@ -296,6 +383,14 @@ async def tailor_ai(request: Request):
             )
 
         # -----------------------------------------
+        # PROTECT THE MODEL FROM LONG CHATS
+        # -----------------------------------------
+
+        history_data = compact_tailor_history(
+            history_data
+        )
+
+        # -----------------------------------------
         # SYSTEM PROMPT
         # -----------------------------------------
 
@@ -364,15 +459,22 @@ async def tailor_ai(request: Request):
             "Do not unnecessarily redirect general questions back to career topics.\n\n"
 
             "RESPONSE STYLE:\n"
-            "1. Be practical and actionable.\n"
-            "2. Keep explanations beginner-friendly when appropriate.\n"
-            "3. Use headings, bullets, tables, or numbered steps when useful.\n"
-            "4. Avoid unnecessary repetition.\n"
-            "5. Be honest about difficulty, timelines, and job requirements.\n"
-            "6. Do not promise jobs or guaranteed salaries.\n"
-            "7. Keep answers focused on the user's actual question or goal.\n"
-            "8. Keep simple questions concise.\n"
-            "9. Ask a clarifying question only when the request is genuinely unclear."
+            "1. Answer the user's exact question first.\n"
+            "2. Be practical, direct, and beginner-friendly when appropriate.\n"
+            "3. Prefer short paragraphs, clear headings, bullets, numbered steps, and small tables.\n"
+            "4. Use Markdown formatting consistently so the answer is easy to scan.\n"
+            "5. Do not write one giant paragraph. Break information into logical sections.\n"
+            "6. Do not repeat the same point in different words.\n"
+            "7. For simple questions, answer briefly (usually 3-8 sentences).\n"
+            "8. For normal questions, aim for roughly 250-500 words unless more detail is genuinely necessary.\n"
+            "9. Only give a long answer when the user asks for detail or the topic truly requires it.\n"
+            "10. Put the most important answer near the top.\n"
+            "11. For comparisons, use a compact Markdown table when it improves clarity.\n"
+            "12. For roadmaps, use numbered phases or weeks instead of long prose.\n"
+            "13. For code, explain briefly and keep code in fenced code blocks.\n"
+            "14. Be honest about difficulty, timelines, and job requirements.\n"
+            "15. Do not promise jobs or guaranteed salaries.\n"
+            "16. Ask a clarifying question only when the request is genuinely unclear."
         )
 
         messages = [
@@ -463,18 +565,39 @@ async def tailor_ai(request: Request):
             else "openai/gpt-oss-120b"
         )
 
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1000 if image_data_url else 700
-        )
+        # Groq's Python client is synchronous. Run it in a worker thread so
+        # FastAPI's event loop is not blocked while the model is generating.
+        # A timeout also prevents the browser from appearing frozen forever.
+        def generate_response():
+            return client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.5,
+                max_tokens=TAILOR_MAX_OUTPUT_TOKENS
+            )
 
-        reply = response.choices[0].message.content
+        try:
+            response = await asyncio.wait_for(
+                asyncio.to_thread(generate_response),
+                timeout=TAILOR_REQUEST_TIMEOUT_SECONDS
+            )
+        except asyncio.TimeoutError:
+            raise HTTPException(
+                status_code=504,
+                detail=(
+                    "TailorAI took too long to respond. "
+                    "Please try the question again or make it shorter."
+                )
+            )
+
+        choice = response.choices[0]
+        reply = choice.message.content or ""
+        finish_reason = getattr(choice, "finish_reason", None)
 
         return {
             "reply": reply,
-            "has_image": bool(image_data_url)
+            "has_image": bool(image_data_url),
+            "truncated": finish_reason == "length"
         }
 
     except HTTPException:
@@ -1439,7 +1562,11 @@ def study_ai(request: StudyRequest):
         }
     ]
 
-    for history_message in request.history:
+    bounded_study_history = compact_tailor_history(
+        [item.model_dump() for item in request.history]
+    )
+
+    for history_message in bounded_study_history:
 
         role = (
             "user"
@@ -1609,7 +1736,11 @@ def life_ai(request: LifeRequest):
     # ADD CONVERSATION HISTORY
     # -----------------------------------------
 
-    for history_message in request.history:
+    bounded_life_history = compact_tailor_history(
+        [item.model_dump() for item in request.history]
+    )
+
+    for history_message in bounded_life_history:
 
         role = (
             "user"

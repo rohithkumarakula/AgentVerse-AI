@@ -3,7 +3,7 @@ import "./Footer.css";
 function Footer() {
   return (
     <footer className="footer">
-      <h3>🚀 AgentVerse AI</h3>
+      <h3>AgentVerse AI</h3>
 
       <p>
         Build, manage and collaborate with intelligent AI agents.

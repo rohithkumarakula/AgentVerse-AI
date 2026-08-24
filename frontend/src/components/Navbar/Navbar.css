@@ -1,57 +1,69 @@
 /* =========================================
-   AGENTVERSE AI — PREMIUM NAVBAR
+   AGENTVERSE AI — NAVBAR
+   BLACK + ORANGE DESIGN
 ========================================= */
 
 .navbar {
   position: relative;
   z-index: 100;
 
+  width: 100%;
+  height: 82px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  width: 100%;
+  padding: 0 6%;
+
   box-sizing: border-box;
 
-  padding: 18px 6%;
+  background: #080808;
 
-  background: rgba(8, 9, 13, 0.78);
-
-  color: #f8fafc;
+  color: #ffffff;
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.18);
 }
+
 
 /* =========================================
    LOGO
 ========================================= */
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  font-size: 1.55rem;
-  font-weight: 800;
-
-  letter-spacing: -0.035em;
+  margin: 0;
 
   color: #ffffff;
 
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 1.35rem;
+
+  font-weight: 750;
+
+  letter-spacing: -0.04em;
+
+  white-space: nowrap;
+
   cursor: pointer;
 
-  transition: opacity 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .logo:hover {
-  opacity: 0.9;
+  color: #ff7135;
+
+  opacity: 1;
 }
+
 
 /* =========================================
    NAVIGATION
@@ -59,120 +71,137 @@
 
 .nav-links {
   display: flex;
+
   align-items: center;
 
+  gap: 38px;
+
+  margin: 0;
+  padding: 0;
+
   list-style: none;
+}
 
-  gap: 34px;
-
+.nav-links li {
   margin: 0;
   padding: 0;
 }
 
-.nav-links li {
-  position: relative;
 
-  cursor: pointer;
-}
-
-/* Navigation links */
+/* =========================================
+   NAVIGATION LINKS
+========================================= */
 
 .nav-links a {
   position: relative;
 
   display: inline-block;
 
-  padding: 8px 2px;
+  padding: 8px 0;
+
+  color: #858585;
 
   text-decoration: none;
 
-  color: #a7adbd;
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
 
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+
   font-weight: 500;
 
   transition:
-    color 0.25s ease,
-    transform 0.25s ease;
+    color 0.25s ease;
 }
-
-/* Hover */
 
 .nav-links a:hover {
   color: #ffffff;
 }
 
-/* Purple underline */
+
+/* =========================================
+   NAVIGATION UNDERLINE
+========================================= */
 
 .nav-links a::after {
   content: "";
 
   position: absolute;
 
-  left: 0;
-  bottom: 0;
+  left: 50%;
+  bottom: -3px;
 
   width: 0;
   height: 2px;
 
-  border-radius: 10px;
+  transform: translateX(-50%);
 
-  background: linear-gradient(
-    90deg,
-    #8b5cf6,
-    #c084fc
-  );
+  border-radius: 999px;
 
-  transition: width 0.25s ease;
+  background: #ff6b2c;
+
+  box-shadow:
+    0 0 10px rgba(255, 107, 44, 0.5);
+
+  transition:
+    width 0.25s ease;
 }
 
 .nav-links a:hover::after {
-  width: 100%;
+  width: 18px;
 }
 
-/* Active page */
+
+/* =========================================
+   ACTIVE LINK
+========================================= */
 
 .nav-links a.active {
   color: #ffffff;
-  font-weight: 600;
 }
 
 .nav-links a.active::after {
-  width: 100%;
-
-  box-shadow:
-    0 0 10px rgba(139, 92, 246, 0.6);
+  width: 18px;
 }
 
+
 /* =========================================
-   GET STARTED BUTTON
+   GET STARTED
 ========================================= */
 
 .login-btn {
   position: relative;
 
-  padding: 11px 20px;
+  padding: 12px 22px;
 
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  border: none;
 
-  border-radius: 11px;
+  border-radius: 999px;
 
   background:
-    linear-gradient(
-      135deg,
-      #7c3aed,
-      #9333ea
-    );
+    linear-gradient(135deg,
+      #ff7135,
+      #ff5a1f);
 
   color: #ffffff;
 
-  font-size: 0.9rem;
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
+
+  font-size: 0.88rem;
+
   font-weight: 600;
+
+  letter-spacing: -0.01em;
 
   cursor: pointer;
 
   box-shadow:
-    0 8px 25px rgba(124, 58, 237, 0.18);
+    0 8px 25px rgba(255, 90, 31, 0.15);
 
   transition:
     transform 0.2s ease,
@@ -186,64 +215,52 @@
   filter: brightness(1.08);
 
   box-shadow:
-    0 10px 30px rgba(124, 58, 237, 0.35);
+    0 10px 30px rgba(255, 90, 31, 0.3);
 }
 
 .login-btn:active {
   transform: translateY(0);
 }
 
+
 /* =========================================
-   MOBILE
+   TABLET
 ========================================= */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .navbar {
-    padding: 16px 24px;
+    padding: 0 4%;
   }
 
   .nav-links {
-    gap: 20px;
+    gap: 25px;
   }
 
   .nav-links a {
-    font-size: 0.88rem;
-  }
-
-  .login-btn {
-    padding: 9px 15px;
     font-size: 0.85rem;
   }
 }
 
-@media (max-width: 650px) {
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
   .navbar {
-    padding: 15px 18px;
+    height: auto;
+
+    min-height: 72px;
+
+    padding: 14px 20px;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
   }
 
   .logo {
-    font-size: 1.25rem;
-  }
-
-  .nav-links {
-    gap: 14px;
-  }
-
-  .nav-links a {
-    font-size: 0.8rem;
-  }
-
-  .login-btn {
-    padding: 8px 12px;
-    border-radius: 9px;
-  }
-}
-
-@media (max-width: 520px) {
-  .navbar {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
+    font-size: 1.15rem;
   }
 
   .nav-links {
@@ -253,6 +270,41 @@
 
     justify-content: center;
 
-    gap: 20px;
+    gap: 22px;
+
+    padding-top: 4px;
+  }
+
+  .nav-links a {
+    font-size: 0.78rem;
+  }
+
+  .login-btn {
+    padding: 10px 17px;
+
+    font-size: 0.8rem;
+  }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 13px 15px;
+  }
+
+  .nav-links {
+    gap: 15px;
+  }
+
+  .nav-links a {
+    font-size: 0.72rem;
+  }
+
+  .login-btn {
+    padding: 9px 14px;
   }
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "./CareerProfile.css";
+import "./careerProfile.css";
 
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";

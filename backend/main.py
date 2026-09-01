@@ -43,10 +43,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-    ],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1):(517[0-9]|518[0-9])",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -91,7 +88,9 @@ TAILOR_MAX_HISTORY_MESSAGES = 10
 TAILOR_MAX_HISTORY_CHARS = 9000
 TAILOR_MAX_MESSAGE_CHARS = 2000
 TAILOR_REQUEST_TIMEOUT_SECONDS = 75
-TAILOR_MAX_OUTPUT_TOKENS = 3200
+TAILOR_MAX_OUTPUT_TOKENS = 5000
+STUDY_MAX_OUTPUT_TOKENS = 5000
+LIFE_MAX_OUTPUT_TOKENS = 4000
 
 
 def compact_tailor_history(history):
@@ -1570,16 +1569,19 @@ def study_ai(request: StudyRequest):
 
         role = (
             "user"
-            if history_message.sender == "user"
+            if history_message.get("sender") == "user"
             else "assistant"
         )
 
-        messages.append(
-            {
-                "role": role,
-                "content": history_message.text
-            }
-        )
+        text = str(history_message.get("text") or "")
+
+        if text:
+            messages.append(
+                {
+                    "role": role,
+                    "content": text
+                }
+            )
 
     messages.append(
         {
@@ -1594,14 +1596,16 @@ def study_ai(request: StudyRequest):
             model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.5,
-            max_tokens=1000
+            max_tokens=STUDY_MAX_OUTPUT_TOKENS
         )
 
-        reply = response.choices[0].message.content
+        choice = response.choices[0]
+        reply = choice.message.content or ""
 
         return {
             "type": "normal",
-            "reply": reply
+            "reply": reply,
+            "truncated": getattr(choice, "finish_reason", None) == "length"
         }
 
     except Exception as error:
@@ -1657,6 +1661,9 @@ def life_ai(request: LifeRequest):
         "GOAL SETTING:\n"
         "When a user wants help setting goals, have a short "
         "conversation first.\n"
+        "If the user explicitly asks for a detailed plan, "
+        "schedule, roadmap, or table and provides its scope, "
+        "answer directly instead of asking follow-up questions.\n"
         "Ask only 1-3 useful questions at a time.\n"
         "Useful information may include:\n"
         "- What they want to achieve\n"
@@ -1675,6 +1682,9 @@ def life_ai(request: LifeRequest):
         "ROUTINES:\n"
         "When the user wants a routine, first understand "
         "their schedule and priorities when necessary.\n"
+        "If they explicitly request a detailed routine or plan, "
+        "provide a practical best-effort version immediately and "
+        "state any assumptions briefly.\n"
         "Then create a realistic routine with priorities, "
         "time blocks, and reasonable breaks.\n"
         "Do not create an unrealistic schedule packed with tasks.\n\n"
@@ -1744,16 +1754,19 @@ def life_ai(request: LifeRequest):
 
         role = (
             "user"
-            if history_message.sender == "user"
+            if history_message.get("sender") == "user"
             else "assistant"
         )
 
-        messages.append(
-            {
-                "role": role,
-                "content": history_message.text
-            }
-        )
+        text = str(history_message.get("text") or "")
+
+        if text:
+            messages.append(
+                {
+                    "role": role,
+                    "content": text
+                }
+            )
 
     # -----------------------------------------
     # CURRENT MESSAGE
@@ -1776,14 +1789,16 @@ def life_ai(request: LifeRequest):
             model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.6,
-            max_tokens=700
+            max_tokens=LIFE_MAX_OUTPUT_TOKENS
         )
 
-        reply = response.choices[0].message.content
+        choice = response.choices[0]
+        reply = choice.message.content or ""
 
         return {
             "type": "normal",
-            "reply": reply
+            "reply": reply,
+            "truncated": getattr(choice, "finish_reason", None) == "length"
         }
 
     except Exception as error:
@@ -1798,4 +1813,155 @@ def life_ai(request: LifeRequest):
             detail=(
                 "LifeAI could not generate a response."
             )
+        )
+
+
+# =========================================
+# CODE / FINANCE / HEALTH AI
+# =========================================
+
+class SpecializedAgentRequest(BaseModel):
+    message: str
+    history: list[Message] = Field(default_factory=list)
+
+
+SPECIALIZED_MAX_OUTPUT_TOKENS = 5000
+
+
+def generate_specialized_agent_response(
+    request: SpecializedAgentRequest,
+    system_prompt: str,
+    temperature: float,
+):
+    message = request.message.strip()
+
+    if not message:
+        raise HTTPException(
+            status_code=400,
+            detail="Please enter a message."
+        )
+
+    messages = [{
+        "role": "system",
+        "content": system_prompt
+    }]
+
+    bounded_history = compact_tailor_history(
+        [item.model_dump() for item in request.history]
+    )
+
+    for history_message in bounded_history:
+        text = str(history_message.get("text") or "")
+        if text:
+            messages.append({
+                "role": (
+                    "user"
+                    if history_message.get("sender") == "user"
+                    else "assistant"
+                ),
+                "content": text
+            })
+
+    messages.append({
+        "role": "user",
+        "content": message
+    })
+
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-120b",
+        messages=messages,
+        temperature=temperature,
+        max_tokens=SPECIALIZED_MAX_OUTPUT_TOKENS
+    )
+
+    choice = response.choices[0]
+    return {
+        "type": "normal",
+        "reply": choice.message.content or "",
+        "truncated": getattr(choice, "finish_reason", None) == "length"
+    }
+
+
+CODE_AI_PROMPT = (
+    "You are CodeAI, a programming and software development assistant.\n\n"
+    "Focus on programming, debugging, algorithms, software development, "
+    "frameworks, databases, APIs, and technical learning. Give clear "
+    "explanations and practical examples. Use properly formatted Markdown "
+    "code blocks for code, and tables when comparisons or structured data "
+    "benefit from them. Preserve complete code and explain errors safely. "
+    "Do not discuss career advice unless the user asks."
+)
+
+
+FINANCE_AI_PROMPT = (
+    "You are FinanceAI, a financial education and planning assistant.\n\n"
+    "Focus on budgeting, saving, investing concepts, personal finance "
+    "education, financial planning basics, and financial literacy. Explain "
+    "clearly and structure plans with tables or lists when useful. Clearly "
+    "distinguish general educational information from professional advice. "
+    "Never promise returns or present financial outcomes as guaranteed."
+)
+
+
+HEALTH_AI_PROMPT = (
+    "You are HealthAI, a general health, fitness, nutrition, and wellness "
+    "information assistant.\n\n"
+    "Give practical, safe, evidence-aware general information and use tables "
+    "or lists when useful. Do not diagnose conditions or present uncertain "
+    "medical information as certainty. For serious symptoms or emergencies, "
+    "recommend appropriate professional medical care."
+)
+
+
+@app.post("/code-ai")
+def code_ai(request: SpecializedAgentRequest):
+    try:
+        return generate_specialized_agent_response(
+            request,
+            CODE_AI_PROMPT,
+            0.4
+        )
+    except HTTPException:
+        raise
+    except Exception as error:
+        print("CodeAI Error:", error)
+        raise HTTPException(
+            status_code=500,
+            detail="CodeAI could not generate a response."
+        )
+
+
+@app.post("/finance-ai")
+def finance_ai(request: SpecializedAgentRequest):
+    try:
+        return generate_specialized_agent_response(
+            request,
+            FINANCE_AI_PROMPT,
+            0.5
+        )
+    except HTTPException:
+        raise
+    except Exception as error:
+        print("FinanceAI Error:", error)
+        raise HTTPException(
+            status_code=500,
+            detail="FinanceAI could not generate a response."
+        )
+
+
+@app.post("/health-ai")
+def health_ai(request: SpecializedAgentRequest):
+    try:
+        return generate_specialized_agent_response(
+            request,
+            HEALTH_AI_PROMPT,
+            0.5
+        )
+    except HTTPException:
+        raise
+    except Exception as error:
+        print("HealthAI Error:", error)
+        raise HTTPException(
+            status_code=500,
+            detail="HealthAI could not generate a response."
         )

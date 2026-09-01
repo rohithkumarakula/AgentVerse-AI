@@ -8,7 +8,10 @@ import TailorAI from "./pages/TailorAI/TailorAI";
 import StudyAI from "./pages/studyAI/studyAI";
 import LifeAI from "./pages/LifeAI/LifeAI";
 import CareerProfile from "./components/careerProfile/careerProfile";
-import About from "./pages/About/about.tsx";
+import About from "./pages/About/About";
+import CodeAI from "./pages/CodeAI/CodeAI";
+import FinanceAI from "./pages/FinanceAI/FinanceAI";
+import HealthAI from "./pages/HealthAI/HealthAI";
 
 function App() {
   return (
@@ -24,6 +27,12 @@ function App() {
       <Route path="/study-ai" element={<StudyAI />} />
 
       <Route path="/life-ai" element={<LifeAI />} />
+
+      <Route path="/code-ai" element={<CodeAI />} />
+
+      <Route path="/finance-ai" element={<FinanceAI />} />
+
+      <Route path="/health-ai" element={<HealthAI />} />
 
       <Route
         path="/career-profile"

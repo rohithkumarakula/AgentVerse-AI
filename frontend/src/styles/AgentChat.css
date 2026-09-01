@@ -24,14 +24,14 @@ body {
    PAGE
    ========================================================= */
 
-.tailor-page {
+.agent-chat-page {
   display: flex;
 
   width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
 
-  overflow: hidden;
+  overflow: visible;
 
   background: #090909;
   color: #eeeeee;
@@ -51,15 +51,17 @@ body {
    SIDEBAR
    ========================================================= */
 
-.tailor-sidebar {
-  position: relative;
+.agent-chat-sidebar {
+  position: sticky;
+  top: 0;
 
   display: flex;
   flex-direction: column;
 
   width: 300px;
   min-width: 300px;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
 
   background: #0b0b0b;
 
@@ -754,6 +756,9 @@ body {
    ========================================================= */
 
 .collapsed-sidebar {
+  position: sticky;
+  top: 0;
+
   display: flex;
   flex-direction: column;
 
@@ -761,7 +766,8 @@ body {
 
   width: 58px;
   min-width: 58px;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
 
   background: #0b0b0b;
 
@@ -819,7 +825,7 @@ body {
    MAIN
    ========================================================= */
 
-.tailor-main {
+.agent-chat-main {
   position: relative;
 
   display: flex;
@@ -828,11 +834,12 @@ body {
   flex: 1;
 
   min-width: 0;
-  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
 
   background: #090909;
 
-  overflow: hidden;
+  overflow: visible;
 }
 
 
@@ -899,12 +906,11 @@ body {
    ========================================================= */
 
 .messages-container {
-  flex: 1;
+  flex: none;
 
-  min-height: 0;
+  min-height: auto;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
 
   padding:
     0 32px 36px;
@@ -1747,7 +1753,7 @@ body {
    SELECTION
    ========================================================= */
 
-.tailor-page ::selection {
+.agent-chat-page ::selection {
   background:
     rgba(255, 107, 24, 0.35);
 
@@ -1760,7 +1766,7 @@ body {
    ========================================================= */
 
 @media (max-width: 900px) {
-  .tailor-sidebar {
+  .agent-chat-sidebar {
     width: 270px;
     min-width: 270px;
   }
@@ -1782,7 +1788,7 @@ body {
 
 
 @media (max-width: 700px) {
-  .tailor-sidebar {
+  .agent-chat-sidebar {
     width: 245px;
     min-width: 245px;
   }
@@ -1843,7 +1849,7 @@ body {
 
 
 @media (max-width: 520px) {
-  .tailor-sidebar {
+  .agent-chat-sidebar {
     width: 220px;
     min-width: 220px;
   }
@@ -1907,13 +1913,13 @@ body {
    LONG-CHAT STABILITY + CHATGPT-LIKE READABILITY
    ========================================================= */
 
-.tailor-page.is-loading .messages-container {
+.agent-chat-page.is-loading .messages-container {
   overflow-anchor: none;
 }
 
 .messages-container {
   overflow-anchor: none;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
 }
 
 .conversation {

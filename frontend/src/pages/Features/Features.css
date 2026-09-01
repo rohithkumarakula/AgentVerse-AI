@@ -17,10 +17,10 @@
 
   background:
     radial-gradient(circle at 15% 10%,
-      rgba(124, 58, 237, 0.13),
+      rgba(255, 113, 53, 0.13),
       transparent 30%),
     radial-gradient(circle at 85% 25%,
-      rgba(168, 85, 247, 0.08),
+      rgba(255, 92, 31, 0.08),
       transparent 28%),
     #07080d;
 }
@@ -79,7 +79,7 @@
 
   border-radius: 50%;
 
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(255, 113, 53, 0.08);
 
   filter: blur(110px);
 
@@ -111,8 +111,8 @@
   background:
     linear-gradient(135deg,
       #ffffff 15%,
-      #e9ddff 55%,
-      #c084fc 100%);
+      #ffe1d4 55%,
+      #ff7135 100%);
 
   background-clip: text;
 
@@ -233,8 +233,7 @@
 
   border-radius: 50%;
 
-  background:
-    rgba(139, 92, 246, 0.14);
+  background: rgba(255, 113, 53, 0.14);
 
   filter: blur(55px);
 
@@ -252,17 +251,16 @@
 .feature-card:hover {
   transform: translateY(-7px);
 
-  border-color:
-    rgba(139, 92, 246, 0.4);
+  border-color: rgba(255, 113, 53, 0.4);
 
   background:
     linear-gradient(145deg,
-      rgba(139, 92, 246, 0.08),
+      rgba(255, 113, 53, 0.08),
       rgba(255, 255, 255, 0.025));
 
   box-shadow:
     0 25px 55px rgba(0, 0, 0, 0.32),
-    0 0 35px rgba(139, 92, 246, 0.08);
+    0 0 35px rgba(255, 113, 53, 0.08);
 }
 
 
@@ -292,12 +290,12 @@
 
   border-radius: 17px;
 
-  border: 1px solid rgba(167, 139, 250, 0.18);
+  border: 1px solid rgba(255, 113, 53, 0.18);
 
   background:
     linear-gradient(145deg,
-      rgba(139, 92, 246, 0.18),
-      rgba(168, 85, 247, 0.04));
+      rgba(255, 113, 53, 0.18),
+      rgba(255, 142, 82, 0.04));
 
   font-size: 2rem;
 
@@ -314,7 +312,7 @@
   transform: scale(1.07);
 
   box-shadow:
-    0 0 25px rgba(139, 92, 246, 0.15),
+    0 0 25px rgba(255, 113, 53, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 

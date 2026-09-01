@@ -1,4 +1,5 @@
 import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer/Footer";
 import "./About.css";
 
 function About() {
@@ -28,10 +29,11 @@ function About() {
 
                             <h2>TailorAI</h2>
 
+                            <span className="about-card-category">Career & Placement</span>
+
                             <p>
-                                Your personal AI assistant for career and professional growth.
-                                Improve your resume, prepare for interviews and get career
-                                guidance.
+                                Personal AI assistant for career and professional growth. Get help with resumes,
+                                interviews, career planning and professional guidance.
                             </p>
                         </div>
 
@@ -40,9 +42,11 @@ function About() {
 
                             <h2>StudyAI</h2>
 
+                            <span className="about-card-category">Education</span>
+
                             <p>
-                                Learn smarter with AI-powered study assistance. Understand
-                                difficult topics, create study plans and improve your learning.
+                                AI-powered learning assistant for students. Explain difficult topics, create study
+                                plans, help with revision and improve learning.
                             </p>
                         </div>
 
@@ -51,9 +55,41 @@ function About() {
 
                             <h2>LifeAI</h2>
 
+                            <span className="about-card-category">Productivity</span>
+
                             <p>
-                                Organize your goals, build better routines, track your habits
-                                and improve your everyday productivity.
+                                Personal productivity and life assistant for organizing goals, building routines,
+                                tracking habits and improving productivity.
+                            </p>
+                        </div>
+
+                        <div className="about-card">
+                            <div className="about-card-icon">💻</div>
+                            <h2>CodeAI</h2>
+                            <span className="about-card-category">Programming</span>
+                            <p>
+                                AI coding assistant for software development. Explain code, debug problems, generate
+                                code, explain programming concepts and assist with development.
+                            </p>
+                        </div>
+
+                        <div className="about-card">
+                            <div className="about-card-icon">💰</div>
+                            <h2>FinanceAI</h2>
+                            <span className="about-card-category">Finance</span>
+                            <p>
+                                Personal finance and financial education assistant for budgeting, saving, expenses
+                                and money-management topics. Provides general education, not professional advice.
+                            </p>
+                        </div>
+
+                        <div className="about-card">
+                            <div className="about-card-icon">🏋️</div>
+                            <h2>HealthAI</h2>
+                            <span className="about-card-category">Health & Fitness</span>
+                            <p>
+                                Fitness, nutrition and wellness assistant offering general guidance on exercise and
+                                healthy habits. It is not a doctor or a substitute for medical advice.
                             </p>
                         </div>
 
@@ -74,6 +110,8 @@ function About() {
 
                 </div>
             </div>
+
+            <Footer />
         </>
     );
 }

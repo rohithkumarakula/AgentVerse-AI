@@ -1,4 +1,4 @@
-import "./TailorAI.css";
+import "../../styles/AgentChat.css";
 import {
   useEffect,
   useRef,
@@ -8,6 +8,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
+import Footer from "../../components/Footer/Footer";
 
 
 /* =========================================================
@@ -171,15 +172,7 @@ function createMessageId(): string {
    ========================================================= */
 
 function cleanMarkdown(text: string): string {
-  if (!text) {
-    return "";
-  }
-
-  return text
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/\\\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return text || "";
 }
 
 
@@ -811,6 +804,7 @@ function TailorAI() {
 
   const messagesRef =
     useRef<HTMLDivElement>(null);
+  const lastScrolledMessageIdRef = useRef<string | null>(null);
 
   const fileInputRef =
     useRef<HTMLInputElement>(null);
@@ -1006,9 +1000,13 @@ function TailorAI() {
     const lastMessage =
       messages[messages.length - 1];
 
-    // Position the viewport at the START of the newest
-    // user/AI message. Never scroll to the bottom of a
-    // long AI response.
+    // Prevent scrolling to the same message twice
+    if (lastScrolledMessageIdRef.current === lastMessage.id) {
+      return;
+    }
+    lastScrolledMessageIdRef.current = lastMessage.id;
+
+    // Find the newest message element
     const newestMessage =
       element.querySelector(
         ".conversation .message-row:last-of-type"
@@ -1018,28 +1016,11 @@ function TailorAI() {
       return;
     }
 
+    // Use single requestAnimationFrame to avoid layout thrashing
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const containerRect =
-          element.getBoundingClientRect();
-
-        const messageRect =
-          newestMessage.getBoundingClientRect();
-
-        const topOffset =
-          lastMessage.sender === "ai"
-            ? 28
-            : 28;
-
-        const targetTop =
-          element.scrollTop +
-          (messageRect.top - containerRect.top) -
-          topOffset;
-
-        element.scrollTo({
-          top: Math.max(0, targetTop),
-          behavior: "auto",
-        });
+      newestMessage.scrollIntoView({
+        block: "start",
+        behavior: "auto",
       });
     });
   }, [messages.length]);
@@ -1986,11 +1967,20 @@ function TailorAI() {
               responseText
             );
 
-          backendMessage =
-            errorJson.detail ||
-            errorJson.message ||
-            errorJson.error ||
-            responseText;
+          if (Array.isArray(errorJson.detail)) {
+            // FastAPI 422 — detail is array of validation errors
+            backendMessage = errorJson.detail
+              .map((e: { loc?: string[]; msg?: string }) =>
+                [e.loc?.join("."), e.msg].filter(Boolean).join(": ")
+              )
+              .join(" | ");
+          } else {
+            backendMessage =
+              (typeof errorJson.detail === "string" ? errorJson.detail : null) ||
+              errorJson.message ||
+              errorJson.error ||
+              responseText;
+          }
         } catch {
           // Not JSON.
         }
@@ -2333,9 +2323,10 @@ function TailorAI() {
      ======================================================= */
 
   return (
+    <>
     <div
       className={
-        `tailor-page ${sidebarCollapsed
+        `agent-chat-page ${sidebarCollapsed
           ? "sidebar-collapsed"
           : ""
         }`
@@ -2348,7 +2339,7 @@ function TailorAI() {
 
       {!sidebarCollapsed ? (
 
-        <aside className="tailor-sidebar">
+        <aside className="agent-chat-sidebar">
 
           {/* HEADER */}
 
@@ -2599,7 +2590,7 @@ function TailorAI() {
           MAIN
           ================================================= */}
 
-      <main className="tailor-main">
+      <main className="agent-chat-main">
 
         {/* TOP BAR */}
 
@@ -2968,6 +2959,9 @@ function TailorAI() {
       </main>
 
     </div>
+
+    <Footer />
+    </>
   );
 }
 

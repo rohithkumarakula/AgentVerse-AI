@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import "./CareerProfile.css";
 
 import Navbar from "../Navbar/Navbar";
+import Footer from "../Footer/Footer";
 
 import {
   saveCareerProfile,
@@ -318,6 +319,8 @@ function CareerProfile() {
         )}
 
       </div>
+
+      <Footer />
     </>
   );
 }

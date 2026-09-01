@@ -10,7 +10,7 @@
 
   padding: 90px 6% 100px;
 
-  overflow: hidden;
+  overflow: visible;
 
   text-align: center;
 
@@ -97,13 +97,15 @@
 
   z-index: 1;
 
-  margin: 0 0 14px;
+  margin: 0 0 calc(14px - 0.08em);
+
+  padding-bottom: 0.08em;
 
   font-size: clamp(2.7rem,
       6vw,
       4.5rem);
 
-  line-height: 1.1;
+  line-height: 1.2;
 
   font-weight: 800;
 

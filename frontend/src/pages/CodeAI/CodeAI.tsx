@@ -1,4 +1,4 @@
-import "./studyAI.css";
+﻿import "./codeAI.css";
 import {
   useEffect,
   useRef,
@@ -42,7 +42,7 @@ type ChatSession = {
    ========================================================= */
 
 const CHAT_HISTORY_KEY =
-  "agentverse-study-chat-history-v2";
+  "agentverse-code-chat-history-v2";
 
 
 /* =========================================================
@@ -50,7 +50,7 @@ const CHAT_HISTORY_KEY =
    ========================================================= */
 
 const BACKEND_URL =
-  "http://127.0.0.1:8000/study-ai";
+  "http://127.0.0.1:8000/code-ai";
 
 /*
  * Keep the browser UI history unlimited, but never send the whole chat
@@ -741,7 +741,7 @@ function TrashIcon() {
    TAILOR AI
    ========================================================= */
 
-function StudyAI() {
+function CodeAI() {
 
   /* =======================================================
      STATE
@@ -861,12 +861,12 @@ function StudyAI() {
       // History loading does not use a request timeout.
       if (error instanceof DOMException && error.name === "AbortError") {
         error = new Error(
-          "StudyAI took too long to respond. Please try again with a shorter question."
+          "CodeAI took too long to respond. Please try again with a shorter question."
         );
       }
 
       console.error(
-        "StudyAI history load failed:",
+        "CodeAI history load failed:",
         error
       );
     }
@@ -895,7 +895,7 @@ function StudyAI() {
       );
     } catch (error) {
       console.error(
-        "StudyAI history save failed:",
+        "CodeAI history save failed:",
         error
       );
     }
@@ -1370,6 +1370,10 @@ function StudyAI() {
 
 
   /* =======================================================
+     CAREER PROFILE
+     ======================================================= */
+
+  /* =======================================================
      FILE SELECT
      ======================================================= */
 
@@ -1730,7 +1734,7 @@ function StudyAI() {
     );
 
     try {
-      // StudyAI backend (StudyRequest): { message, history, session_id }
+      // CodeAI backend (LifeRequest): { message, history }
       // Does NOT accept multipart/form-data or a profile field.
       const response: Response =
         await fetch(
@@ -1753,9 +1757,6 @@ function StudyAI() {
 
                 history:
                   backendHistory,
-
-                session_id:
-                  chatId || "default_session",
               }),
           }
         );
@@ -1786,7 +1787,7 @@ function StudyAI() {
             );
 
           if (Array.isArray(errorJson.detail)) {
-            // FastAPI 422 Unprocessable Entity — detail is an array of validation errors
+            // FastAPI 422 Unprocessable Entity â€” detail is an array of validation errors
             backendMessage = errorJson.detail
               .map((e: { loc?: string[]; msg?: string }) =>
                 [e.loc?.join("."), e.msg].filter(Boolean).join(": ")
@@ -1867,12 +1868,12 @@ function StudyAI() {
 
       if (error instanceof DOMException && error.name === "AbortError") {
         error = new Error(
-          "StudyAI took too long to respond. Please try again with a shorter question."
+          "CodeAI took too long to respond. Please try again with a shorter question."
         );
       }
 
       console.error(
-        "StudyAI error:",
+        "CodeAI error:",
         error
       );
 
@@ -2114,7 +2115,7 @@ function StudyAI() {
                 }
               >
                 <span className="folder-menu-icon">
-                  ▱
+                  â–±
                 </span>
 
                 <span>
@@ -2122,7 +2123,7 @@ function StudyAI() {
                 </span>
 
                 <span className="menu-arrow">
-                  ›
+                  â€º
                 </span>
               </button>
 
@@ -2248,7 +2249,7 @@ function StudyAI() {
                     setSearchQuery("")
                   }
                 >
-                  ×
+                  Ã—
                 </button>
               )}
 
@@ -2415,14 +2416,14 @@ function StudyAI() {
         <header className="chat-topbar">
 
           <div className="chat-title">
-            StudyAI
+            CodeAI
           </div>
 
           <div className="chat-status">
 
             <span />
 
-            AI Career Assistant
+            AI Coding Assistant
 
           </div>
 
@@ -2449,13 +2450,12 @@ function StudyAI() {
 
                 <h1>
                   How can I help with
-                  your career?
+                  your code?
                 </h1>
 
                 <p>
-                  Get career guidance,
-                  roadmaps, resume advice,
-                  and interview preparation.
+                  Explain concepts, debug programs,
+                  and build better software.
                 </p>
 
                 <div className="welcome-prompts">
@@ -2464,35 +2464,33 @@ function StudyAI() {
                     type="button"
                     onClick={() =>
                       handleSend(
-                        "Explain DBMS for a beginner"
+                        "Explain Python OOP with examples"
                       )
                     }
                   >
-                    Create a Python
-                    developer roadmap
+                    Explain Python OOP
                   </button>
 
                   <button
                     type="button"
                     onClick={() =>
                       handleSend(
-                        "Create a 7-day Python study plan"
+                        "Debug this Python code and explain the error"
                       )
                     }
                   >
-                    Improve my resume
+                    Debug my code
                   </button>
 
                   <button
                     type="button"
                     onClick={() =>
                       handleSend(
-                        "Give me 10 DSA practice questions"
+                        "Compare Python, Java, and JavaScript in a table"
                       )
                     }
                   >
-                    Prepare me for an
-                    interview
+                    Compare languages
                   </button>
 
                 </div>
@@ -2677,7 +2675,7 @@ function StudyAI() {
               }
               className="remove-file"
             >
-              ×
+              Ã—
             </button>
 
           </div>
@@ -2742,7 +2740,7 @@ function StudyAI() {
                 handleInputKeyDown
               }
               disabled={loading}
-              placeholder="Ask StudyAI anything about your studies..."
+              placeholder="Ask CodeAI anything about programming and code..."
             />
 
 
@@ -2762,13 +2760,13 @@ function StudyAI() {
               title="Send"
               aria-label="Send"
             >
-              ↑
+              â†‘
             </button>
 
           </div>
 
           <div className="composer-disclaimer">
-            StudyAI can make mistakes.
+            CodeAI can make mistakes.
             Check important information.
           </div>
 
@@ -2784,4 +2782,5 @@ function StudyAI() {
 }
 
 
-export default StudyAI;
+export default CodeAI;
+

@@ -13,7 +13,7 @@
 
     background:
         radial-gradient(circle at 50% 0%,
-            rgba(124, 58, 237, 0.14),
+            rgba(255, 113, 53, 0.14),
             transparent 35%),
         #07080d;
 
@@ -76,8 +76,7 @@
 
     border-radius: 50%;
 
-    background:
-        rgba(124, 58, 237, 0.08);
+    background: rgba(255, 113, 53, 0.08);
 
     filter: blur(100px);
 
@@ -120,13 +119,13 @@
 
     background:
         linear-gradient(135deg,
-            #7c3aed,
-            #a855f7);
+            #ff7135,
+            #ff9b5b);
 
     font-size: 36px;
 
     box-shadow:
-        0 0 30px rgba(139, 92, 246, 0.28);
+        0 0 30px rgba(255, 113, 53, 0.28);
 }
 
 
@@ -135,13 +134,15 @@
    ========================================================= */
 
 .about-container>h1 {
-    margin: 0 0 18px;
+    margin: 0 0 calc(18px - 0.08em);
+
+    padding-bottom: 0.08em;
 
     font-size: clamp(2.7rem,
             6vw,
             4.5rem);
 
-    line-height: 1.1;
+    line-height: 1.2;
 
     font-weight: 800;
 
@@ -150,8 +151,8 @@
     background:
         linear-gradient(135deg,
             #ffffff 15%,
-            #e9ddff 55%,
-            #c084fc 100%);
+            #ffe1d4 55%,
+            #ff7135 100%);
 
     background-clip: text;
 
@@ -260,7 +261,7 @@
     border-radius: 50%;
 
     background:
-        rgba(139, 92, 246, 0.14);
+        rgba(255, 113, 53, 0.14);
 
     filter: blur(55px);
 
@@ -274,12 +275,11 @@
 .about-card:hover {
     transform: translateY(-7px);
 
-    border-color:
-        rgba(139, 92, 246, 0.4);
+    border-color: rgba(255, 113, 53, 0.4);
 
     box-shadow:
         0 25px 55px rgba(0, 0, 0, 0.3),
-        0 0 35px rgba(139, 92, 246, 0.08);
+        0 0 35px rgba(255, 113, 53, 0.08);
 }
 
 
@@ -309,12 +309,12 @@
 
     border-radius: 16px;
 
-    border: 1px solid rgba(167, 139, 250, 0.18);
+    border: 1px solid rgba(255, 113, 53, 0.18);
 
     background:
         linear-gradient(145deg,
-            rgba(139, 92, 246, 0.18),
-            rgba(168, 85, 247, 0.04));
+            rgba(255, 113, 53, 0.18),
+            rgba(255, 163, 120, 0.04));
 
     font-size: 2rem;
 
@@ -331,7 +331,7 @@
     transform: scale(1.07);
 
     box-shadow:
-        0 0 25px rgba(139, 92, 246, 0.15);
+        0 0 25px rgba(255, 113, 53, 0.15);
 }
 
 
@@ -380,6 +380,17 @@
     font-size: 0.9rem;
 
     line-height: 1.7;
+}
+
+.about-card-category {
+    position: relative;
+    z-index: 1;
+    margin: -10px 0 12px;
+    color: #ff9b5b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 
@@ -450,8 +461,8 @@
 
     background:
         linear-gradient(90deg,
-            #8b5cf6,
-            #c084fc);
+            #ff7135,
+            #ff9b5b);
 
     background-clip: text;
 

@@ -54,10 +54,10 @@ export const agents: Agent[] = [
   {
     icon: "💻",
     title: "CodeAI",
-    description: "Your coding companion for development.",
+    description: "Coding assistant for development.",
     route: "/code-ai",
     category: "Programming",
-    status: "coming-soon",
+    status: "online",
     suggestedPrompts: [
       "Explain this code",
       "Help me debug my program",
@@ -68,10 +68,10 @@ export const agents: Agent[] = [
   {
     icon: "💰",
     title: "FinanceAI",
-    description: "Track expenses and manage your finances.",
+    description: "Assistant for personal finance and financial education.",
     route: "/finance-ai",
     category: "Finance",
-    status: "coming-soon",
+    status: "online",
     suggestedPrompts: [
       "Create a monthly budget",
       "Help me track my expenses",
@@ -82,10 +82,10 @@ export const agents: Agent[] = [
   {
     icon: "🏋️",
     title: "HealthAI",
-    description: "Fitness, diet and wellness assistant.",
+    description: "Assistant for fitness, nutrition and wellness.",
     route: "/health-ai",
     category: "Health & Fitness",
-    status: "coming-soon",
+    status: "online",
     suggestedPrompts: [
       "Create a workout routine",
       "Help me build healthy habits",

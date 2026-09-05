@@ -1,13 +1,14 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8000";
+/* =========================================================
+   AGENTVERSE AI — REST HELPERS
+   ---------------------------------------------------------
+   Thin wrappers over the shared client in apiClient.ts so
+   every caller gets the same base URL, timeout and error
+   handling.
+   ========================================================= */
 
-export async function getWelcomeMessage() {
-  const response = await fetch(API_URL);
+import { getJson, postJson } from "./apiClient";
 
-  const data = await response.json();
-
-  return data;
-}
+export { API_URL, ApiError, toUserMessage } from "./apiClient";
 
 export type CareerProfileData = {
   skills: string;
@@ -17,40 +18,27 @@ export type CareerProfileData = {
   salaryGoal: string;
 };
 
-export async function saveCareerProfile(
-  profile: CareerProfileData
-) {
-  const response = await fetch(`${API_URL}/career-profile`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(profile),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to save career profile");
-  }
-
-  return response.json();
+export function getWelcomeMessage() {
+  return getJson<{
+    message: string;
+    status: string;
+  }>("");
 }
 
-export async function getCareerAIAnalysis(
+export function saveCareerProfile(
   profile: CareerProfileData
 ) {
-  const response = await fetch(`${API_URL}/career-ai`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      profile,
-    }),
-  });
+  return postJson<{
+    message: string;
+    profile: CareerProfileData;
+  }>("/career-profile", profile);
+}
 
-  if (!response.ok) {
-    throw new Error("Failed to generate career analysis");
-  }
-
-  return response.json();
+export function getCareerAIAnalysis(
+  profile: CareerProfileData
+) {
+  return postJson<{
+    type: string;
+    reply: string;
+  }>("/career-ai", { profile });
 }

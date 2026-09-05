@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException, Request, UploadFile
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from dotenv import load_dotenv
 from groq import Groq
+from typing import Any, NamedTuple
 from uuid import uuid4
 
 import json
@@ -10,6 +11,7 @@ import re
 import os
 import base64
 import asyncio
+import time
 
 
 # =========================================
@@ -23,7 +25,21 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 if not groq_api_key:
     raise RuntimeError("GROQ_API_KEY is not configured.")
 
-client = Groq(api_key=groq_api_key)
+# Requests go straight to https://api.groq.com — there is no
+# gateway or proxy in front of it.
+#
+# max_retries=0 is deliberate. The SDK defaults to 2, so a single
+# user message could become three HTTP attempts of up to 60s each
+# (plus backoff) and blow past any proxy read timeout while the
+# browser waits. One submission must mean one inference request;
+# a rate limit or network error is reported immediately instead.
+GROQ_ATTEMPT_TIMEOUT_SECONDS = 55
+
+client = Groq(
+    api_key=groq_api_key,
+    max_retries=0,
+    timeout=GROQ_ATTEMPT_TIMEOUT_SECONDS,
+)
 
 
 # =========================================
@@ -54,46 +70,109 @@ app.add_middleware(
 # DATA MODELS
 # =========================================
 
-class Message(BaseModel):
-    text: str
-    sender: str
-
-
 class CareerProfile(BaseModel):
     skills: str
     targetRole: str
     experience: str
     timeline: str
     salaryGoal: str
-    
+
 class CareerAIRequest(BaseModel):
     profile: CareerProfile
 
 
-class TailorRequest(BaseModel):
-    message: str
-    history: list[Message] = Field(default_factory=list)
-    profile: CareerProfile | None = None
+# =========================================
+# MODELS AND LIMITS
+# =========================================
+
+TEXT_MODEL = "openai/gpt-oss-120b"
+
+# Vision-capable, used automatically whenever an image is attached.
+VISION_MODEL = "qwen/qwen3.6-27b"
+
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
+AGENT_REQUEST_TIMEOUT_SECONDS = 75
+
+# The vision model is a reasoning model. Left to its default it
+# spends the whole budget on a <think> block and returns nothing,
+# and a large max_completion_tokens is rejected outright by the free tier's
+# 1000 output-tokens-per-minute cap. reasoning_effort="none" turns
+# the thinking off, which brings a typical answer down to well
+# under 200 tokens.
+VISION_MAX_OUTPUT_TOKENS = 900
+VISION_REASONING_EFFORT = "none"
 
 
 # =========================================
-# TAILOR HISTORY LIMITS
+# TOKEN BUDGET
 # =========================================
 
-# The frontend keeps the complete chat for display/history,
-# but the model should receive only a bounded context window.
-# These limits also protect the API when an older frontend/client
-# sends an unexpectedly large history.
-TAILOR_MAX_HISTORY_MESSAGES = 10
-TAILOR_MAX_HISTORY_CHARS = 9000
-TAILOR_MAX_MESSAGE_CHARS = 2000
-TAILOR_REQUEST_TIMEOUT_SECONDS = 75
-TAILOR_MAX_OUTPUT_TOKENS = 5000
-STUDY_MAX_OUTPUT_TOKENS = 5000
-LIFE_MAX_OUTPUT_TOKENS = 4000
+# Groq's tier for openai/gpt-oss-120b allows 8000 tokens per
+# minute and counts INPUT AND OUTPUT together
+# (x-ratelimit-limit-tokens: 8000). Every agent shares one budget
+# sized so the worst possible request still fits, with headroom
+# left for the next message in the same minute:
+#
+#   system prompt   713 tokens  (measured; TailorAI is the longest)
+#   history        1500 tokens  (MAX_HISTORY_CHARS / 4)
+#   this message    500 tokens  (MAX_MESSAGE_CHARS / 4)
+#   output         3000 tokens  (MAX_OUTPUT_TOKENS)
+#   ------------------------------------------------------
+#   worst case    ~5713 tokens  of the 8000 available
+#
+# Output is capped at 3000 rather than the model's ceiling because
+# generation time scales with it: ~3000 tokens lands well inside
+# the proxy read timeout, while 4000+ pushed some answers past it.
+#
+# The frontend keeps the full conversation for display; only this
+# bounded window is ever sent to the model. Re-bounding here also
+# protects the API from an older client sending more.
+MAX_HISTORY_MESSAGES = 8
+MAX_HISTORY_CHARS = 6000
+MAX_MESSAGE_CHARS = 2000
+MAX_OUTPUT_TOKENS = 3000
 
 
-def compact_tailor_history(history):
+# =========================================
+# INFERENCE TIMING LOGS
+# =========================================
+
+# Diagnostics for the origin-timeout investigation. These log only
+# sizes, model names and durations — never the API key, the system
+# prompt, or the user's message text.
+
+def log_ai(agent: str, stage: str, **fields: Any) -> None:
+    detail = " ".join(f"{key}={value}" for key, value in fields.items())
+
+    print(f"[AI] {agent:<10} {stage:<28} {detail}".rstrip(), flush=True)
+
+
+def approximate_input_chars(messages: list) -> int:
+    """
+    Character size of the text going to the model. The base64 image
+    is counted separately so this number stays meaningful.
+    """
+    total = 0
+
+    for message in messages:
+        content = message.get("content")
+
+        if isinstance(content, str):
+            total += len(content)
+
+        elif isinstance(content, list):
+            for part in content:
+                if (
+                    isinstance(part, dict)
+                    and isinstance(part.get("text"), str)
+                ):
+                    total += len(part["text"])
+
+    return total
+
+
+def compact_history(history):
     """Return recent conversation context under a safe character budget."""
     if not isinstance(history, list):
         return []
@@ -130,7 +209,7 @@ def compact_tailor_history(history):
         if not text and not attachment_meta:
             continue
 
-        text = text[:TAILOR_MAX_MESSAGE_CHARS]
+        text = text[:MAX_MESSAGE_CHARS]
 
         item_size = (
             len(text)
@@ -145,7 +224,7 @@ def compact_tailor_history(history):
         if (
             result
             and total_chars + item_size
-            > TAILOR_MAX_HISTORY_CHARS
+            > MAX_HISTORY_CHARS
         ):
             break
 
@@ -157,17 +236,400 @@ def compact_tailor_history(history):
 
         total_chars += item_size
 
-        if len(result) >= TAILOR_MAX_HISTORY_MESSAGES:
+        if len(result) >= MAX_HISTORY_MESSAGES:
             break
 
     result.reverse()
     return result
 
 
-class StudyRequest(BaseModel):
+# =========================================
+# REASONING CLEANUP
+# =========================================
+
+def strip_reasoning(text: str) -> str:
+    """
+    The vision model is a reasoning model and wraps its private
+    thinking in <think> tags. Those tags are not part of the
+    answer, so they are removed before the reply is returned.
+    An unterminated block means the model was cut off mid-thought.
+    """
+    if not text:
+        return ""
+
+    cleaned = re.sub(
+        r"<think>.*?</think>",
+        "",
+        text,
+        flags=re.DOTALL | re.IGNORECASE
+    )
+
+    cleaned = re.sub(
+        r"<think>.*\Z",
+        "",
+        cleaned,
+        flags=re.DOTALL | re.IGNORECASE
+    )
+
+    return cleaned.strip()
+
+
+# =========================================
+# UPLOADS
+# =========================================
+
+def is_upload(value: Any) -> bool:
+    """
+    Starlette's multipart parser returns
+    starlette.datastructures.UploadFile, which is the PARENT of
+    fastapi.UploadFile, so isinstance(value, fastapi.UploadFile)
+    is always False and every upload was silently ignored.
+    Duck-typing keeps this working across both classes and across
+    FastAPI/Starlette versions.
+    """
+    return hasattr(value, "read") and hasattr(value, "filename")
+
+async def read_uploaded_image(form) -> str | None:
+    """
+    Turn an uploaded image into a base64 data URL for the vision
+    model. Accepts either field name the frontend may use.
+    """
+    uploaded = form.get("image") or form.get("file")
+
+    if not is_upload(uploaded):
+        return None
+
+    content_type = (
+        getattr(uploaded, "content_type", "") or ""
+    ).lower()
+
+    if content_type and not content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Only images can be analyzed right now. "
+                "Please upload a PNG, JPG, or WEBP file."
+            )
+        )
+
+    image_bytes = await uploaded.read()
+
+    if not image_bytes:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "That image came through empty. "
+                "Please try attaching it again."
+            )
+        )
+
+    if len(image_bytes) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail="That image is too large. Please upload an image under 10 MB."
+        )
+
+    mime_type = content_type or "image/jpeg"
+    encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+
+    return f"data:{mime_type};base64,{encoded_image}"
+
+# =========================================
+# SHARED REQUEST PARSING
+# =========================================
+
+class AgentRequest(NamedTuple):
     message: str
-    history: list[Message] = Field(default_factory=list)
+    history: list
+    profile: dict | None
     session_id: str
+    image_data_url: str | None
+
+
+def load_json_field(raw: Any, fallback: Any) -> Any:
+    if raw is None:
+        return fallback
+
+    try:
+        return json.loads(str(raw))
+    except json.JSONDecodeError:
+        return fallback
+
+
+async def parse_agent_request(request: Request) -> AgentRequest:
+    """
+    Every agent accepts both shapes:
+      - application/json          { message, history, profile?, session_id? }
+      - multipart/form-data       the same fields plus an image file
+
+    Keeping this in one place is what makes image support behave
+    identically on every agent instead of only on TailorAI.
+    """
+    content_type = request.headers.get("content-type", "").lower()
+
+    if "multipart/form-data" in content_type:
+        form = await request.form()
+
+        message = str(form.get("message") or "").strip()
+        history = load_json_field(form.get("history"), [])
+        profile = load_json_field(form.get("profile"), None)
+        session_id = str(form.get("session_id") or "").strip()
+        image_data_url = await read_uploaded_image(form)
+
+    else:
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(
+                status_code=400,
+                detail="The request body could not be read."
+            )
+
+        if not isinstance(payload, dict):
+            raise HTTPException(
+                status_code=400,
+                detail="The request body must be a JSON object."
+            )
+
+        message = str(payload.get("message") or "").strip()
+        history = payload.get("history") or []
+        profile = payload.get("profile")
+        session_id = str(payload.get("session_id") or "").strip()
+        image_data_url = None
+
+    if not isinstance(profile, dict):
+        profile = None
+
+    if not message and not image_data_url:
+        raise HTTPException(
+            status_code=400,
+            detail="Please enter a message."
+        )
+
+    return AgentRequest(
+        message=message,
+        history=compact_history(history),
+        profile=profile,
+        session_id=session_id,
+        image_data_url=image_data_url,
+    )
+
+# =========================================
+# SHARED MODEL CALL
+# =========================================
+
+def build_model_messages(
+    system_prompt: str,
+    parsed: AgentRequest
+) -> list:
+    messages = [{
+        "role": "system",
+        "content": system_prompt
+    }]
+
+    for item in parsed.history:
+        if not isinstance(item, dict):
+            continue
+
+        text = str(item.get("text") or "")
+
+        if not text:
+            continue
+
+        messages.append({
+            "role": (
+                "user"
+                if item.get("sender") == "user"
+                else "assistant"
+            ),
+            "content": text,
+        })
+
+    if parsed.image_data_url:
+        # Vision models take a multimodal content array.
+        messages.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        parsed.message
+                        or "Describe this image in detail."
+                    )
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": parsed.image_data_url
+                    }
+                }
+            ]
+        })
+    else:
+        messages.append({
+            "role": "user",
+            "content": parsed.message
+        })
+
+    return messages
+
+async def generate_agent_reply(
+    agent_name: str,
+    system_prompt: str,
+    parsed: AgentRequest,
+    temperature: float,
+    output_tokens: int,
+) -> dict:
+    """
+    One code path for every agent: picks the vision model when an
+    image is attached, runs the synchronous Groq client off the
+    event loop, and bounds the wait so the browser never hangs.
+    """
+    messages = build_model_messages(system_prompt, parsed)
+
+    has_image = bool(parsed.image_data_url)
+
+    model = VISION_MODEL if has_image else TEXT_MODEL
+
+    output_cap = (
+        VISION_MAX_OUTPUT_TOKENS
+        if has_image
+        else output_tokens
+    )
+
+    started = time.monotonic()
+
+    log_ai(
+        agent_name,
+        "request started",
+        image=int(has_image),
+        history_messages=len(parsed.history),
+        input_chars=approximate_input_chars(messages),
+        image_b64_chars=len(parsed.image_data_url or ""),
+    )
+
+    request_options = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "max_completion_tokens": output_cap,
+    }
+
+    if has_image:
+        request_options["reasoning_effort"] = (
+            VISION_REASONING_EFFORT
+        )
+
+    def call_model():
+        return client.chat.completions.create(**request_options)
+
+    log_ai(
+        agent_name,
+        "inference request sent",
+        model=model,
+        output_cap=output_cap,
+        attempt_timeout=GROQ_ATTEMPT_TIMEOUT_SECONDS,
+        sdk_retries=client.max_retries,
+    )
+
+    try:
+        response = await asyncio.wait_for(
+            asyncio.to_thread(call_model),
+            timeout=AGENT_REQUEST_TIMEOUT_SECONDS
+        )
+
+    except asyncio.TimeoutError:
+        log_ai(
+            agent_name,
+            "inference DEADLINE EXCEEDED",
+            seconds=round(time.monotonic() - started, 2),
+        )
+
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                f"{agent_name} took too long to respond. "
+                "Please try the question again or make it shorter."
+            )
+        )
+
+    except Exception as error:
+        log_ai(
+            agent_name,
+            "inference FAILED",
+            seconds=round(time.monotonic() - started, 2),
+            error=type(error).__name__,
+        )
+
+        print(f"{agent_name} Error:", repr(error))
+
+        # A rate limit is temporary and worth saying out loud,
+        # rather than hiding behind a generic failure.
+        if getattr(error, "status_code", None) == 429:
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    f"{agent_name} is rate limited right now. "
+                    "Please wait a few seconds and try again."
+                )
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"{agent_name} could not generate a response."
+        )
+
+    choice = response.choices[0]
+
+    reply = strip_reasoning(choice.message.content or "")
+
+    truncated = getattr(choice, "finish_reason", None) == "length"
+
+    usage = getattr(response, "usage", None)
+
+    log_ai(
+        agent_name,
+        "inference response received",
+        finish=getattr(choice, "finish_reason", None),
+        prompt_tokens=getattr(usage, "prompt_tokens", None),
+        completion_tokens=getattr(usage, "completion_tokens", None),
+        reply_chars=len(reply),
+    )
+
+    log_ai(
+        agent_name,
+        "total duration",
+        seconds=round(time.monotonic() - started, 2),
+    )
+
+    # Never hand back an empty bubble: if the whole budget went to
+    # reasoning, say so instead of showing nothing.
+    if not reply:
+        reply = (
+            "I ran out of room while working through that. "
+            "Please ask again, or ask for a shorter answer."
+            if truncated
+            else "I couldn't generate a response for that. Please try again."
+        )
+
+    return {
+        "type": "normal",
+        "reply": reply,
+        "has_image": bool(parsed.image_data_url),
+        "truncated": truncated,
+    }
+
+
+def career_profile_context(profile: dict) -> str:
+    return (
+        "\n\nUSER CAREER PROFILE:\n"
+        f"Current Skills: {profile.get('skills', '')}\n"
+        f"Target Role: {profile.get('targetRole', '')}\n"
+        f"Experience Level: {profile.get('experience', '')}\n"
+        f"Timeline: {profile.get('timeline', '')}\n"
+        f"Target Salary: {profile.get('salaryGoal', '')}\n\n"
+        "Use this profile when answering the user's current request."
+    )
 
 
 # =========================================
@@ -210,7 +672,7 @@ def save_career_profile(profile: CareerProfile):
 # =========================================
 
 @app.post("/career-ai")
-def career_ai(request: CareerAIRequest):
+async def career_ai(request: CareerAIRequest):
 
     profile = request.profile
 
@@ -255,360 +717,233 @@ def career_ai(request: CareerAIRequest):
         "Do not recommend unnecessary technologies."
     )
 
-    try:
+    messages = [
+        {
+            "role": "system",
+            "content": system_prompt
+        },
+        {
+            "role": "user",
+            "content": (
+                "Analyze my career profile and create "
+                "a personalized career plan."
+            )
+        }
+    ]
 
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        "Analyze my career profile and create "
-                        "a personalized career plan."
-                    )
-                }
-            ],
+    started = time.monotonic()
+
+    log_ai(
+        "CareerAI",
+        "request started",
+        image=0,
+        history_messages=0,
+        input_chars=approximate_input_chars(messages),
+    )
+
+    def call_model():
+        return client.chat.completions.create(
+            model=TEXT_MODEL,
+            messages=messages,
             temperature=0.5,
-            max_tokens=1500
+            max_completion_tokens=MAX_OUTPUT_TOKENS
         )
 
-        reply = response.choices[0].message.content
+    log_ai(
+        "CareerAI",
+        "inference request sent",
+        model=TEXT_MODEL,
+        output_cap=MAX_OUTPUT_TOKENS,
+        attempt_timeout=GROQ_ATTEMPT_TIMEOUT_SECONDS,
+        sdk_retries=client.max_retries,
+    )
 
-        return {
-            "type": "career-analysis",
-            "reply": reply
-        }
+    try:
+        # Same wall-clock bound as the chat agents. Without it this
+        # endpoint could hold the connection open past any proxy
+        # read timeout and surface as a 524 instead of a 504.
+        response = await asyncio.wait_for(
+            asyncio.to_thread(call_model),
+            timeout=AGENT_REQUEST_TIMEOUT_SECONDS
+        )
+
+    except asyncio.TimeoutError:
+        log_ai(
+            "CareerAI",
+            "inference DEADLINE EXCEEDED",
+            seconds=round(time.monotonic() - started, 2),
+        )
+
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "CareerAI took too long to respond. "
+                "Please try again."
+            )
+        )
 
     except Exception as error:
+        log_ai(
+            "CareerAI",
+            "inference FAILED",
+            seconds=round(time.monotonic() - started, 2),
+            error=type(error).__name__,
+        )
 
-        print("CareerAI Error:", error)
+        print("CareerAI Error:", repr(error))
+
+        if getattr(error, "status_code", None) == 429:
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "CareerAI is rate limited right now. "
+                    "Please wait a few seconds and try again."
+                )
+            )
 
         raise HTTPException(
             status_code=500,
             detail="CareerAI could not generate a response."
         )
 
+    choice = response.choices[0]
+
+    reply = strip_reasoning(choice.message.content or "")
+
+    usage = getattr(response, "usage", None)
+
+    log_ai(
+        "CareerAI",
+        "inference response received",
+        finish=getattr(choice, "finish_reason", None),
+        prompt_tokens=getattr(usage, "prompt_tokens", None),
+        completion_tokens=getattr(usage, "completion_tokens", None),
+        reply_chars=len(reply),
+    )
+
+    log_ai(
+        "CareerAI",
+        "total duration",
+        seconds=round(time.monotonic() - started, 2),
+    )
+
+    return {
+        "type": "career-analysis",
+        "reply": reply,
+        "truncated": (
+            getattr(choice, "finish_reason", None) == "length"
+        )
+    }
+
+
 # =========================================
 # TAILOR AI
 # =========================================
 
+TAILOR_AI_PROMPT = (
+    "You are TailorAI, an AI career and placement assistant for "
+    "students, fresh graduates, and early-career professionals.\n\n"
+
+    "PRIMARY ROLE:\n"
+    "Help users achieve their career goals, especially in software, "
+    "technology, programming, and professional development.\n\n"
+
+    "AREAS YOU CAN HELP WITH:\n"
+    "- Career guidance and career decisions\n"
+    "- Programming and technical skills\n"
+    "- Learning roadmaps\n"
+    "- Projects and GitHub portfolios\n"
+    "- Resume and LinkedIn improvement\n"
+    "- Technical and HR interview preparation\n"
+    "- Job and placement preparation\n"
+    "- Study plans and learning schedules\n"
+    "- Salary and job-role guidance\n"
+    "- Skill-gap analysis\n\n"
+
+    "PERSONALIZATION:\n"
+    "Use the user's career profile whenever it is provided.\n"
+    "Do not ignore the career profile.\n"
+    "Use it to personalize recommendations, roadmaps, skill-gap "
+    "analysis, project suggestions, interview preparation, and "
+    "career advice.\n\n"
+
+    "CAREER PROFILE RULES:\n"
+    "The profile may contain:\n"
+    "- Current skills\n"
+    "- Target role\n"
+    "- Experience level\n"
+    "- Learning timeline\n"
+    "- Target salary\n\n"
+
+    "When a career profile is available, treat it as the user's "
+    "current career information.\n"
+    "Do not repeatedly ask the user for information already present "
+    "in the profile.\n"
+    "If the user asks about their career, goals, skills, roadmap, "
+    "or what they should learn next, use the profile information "
+    "to answer.\n\n"
+
+    "ROADMAP RULES:\n"
+    "When creating a roadmap:\n"
+    "1. Start from the user's current level.\n"
+    "2. Identify the target role.\n"
+    "3. Organize skills in a logical order.\n"
+    "4. Include practical projects.\n"
+    "5. Include interview and placement preparation when relevant.\n"
+    "6. Consider the user's timeline.\n"
+    "7. Clearly separate must-have skills from optional skills.\n\n"
+
+    "CONVERSATION MEMORY:\n"
+    "Use the conversation history to understand previous messages.\n"
+    "If the user says 'my goal', 'my skills', 'what should I learn "
+    "next', or similar phrases, use the career profile and relevant "
+    "conversation history when available.\n\n"
+
+    "GENERAL QUESTIONS:\n"
+    "Answer the user's actual question directly, even when it is a "
+    "simple general knowledge or everyday question.\n"
+    "Do not unnecessarily redirect general questions back to career topics.\n\n"
+
+    "RESPONSE STYLE:\n"
+    "1. Answer the user's exact question first.\n"
+    "2. Be practical, direct, and beginner-friendly when appropriate.\n"
+    "3. Prefer short paragraphs, clear headings, bullets, numbered steps, and small tables.\n"
+    "4. Use Markdown formatting consistently so the answer is easy to scan.\n"
+    "5. Do not write one giant paragraph. Break information into logical sections.\n"
+    "6. Do not repeat the same point in different words.\n"
+    "7. For simple questions, answer briefly (usually 3-8 sentences).\n"
+    "8. For normal questions, aim for roughly 250-500 words unless more detail is genuinely necessary.\n"
+    "9. Only give a long answer when the user asks for detail or the topic truly requires it.\n"
+    "10. Put the most important answer near the top.\n"
+    "11. For comparisons, use a compact Markdown table when it improves clarity.\n"
+    "12. For roadmaps, use numbered phases or weeks instead of long prose.\n"
+    "13. For code, explain briefly and keep code in fenced code blocks.\n"
+    "14. Be honest about difficulty, timelines, and job requirements.\n"
+    "15. Do not promise jobs or guaranteed salaries.\n"
+    "16. Ask a clarifying question only when the request is genuinely unclear."
+)
+
+
 @app.post("/tailor-ai")
 async def tailor_ai(request: Request):
     """
-    TailorAI supports both:
-    1. JSON requests from the normal text chat.
-    2. multipart/form-data requests when an image is attached.
-
-    Text-only requests continue using GPT-OSS 120B.
-    Image requests use Groq's vision-capable Qwen 3.6 27B model.
+    Career chat. Accepts JSON or multipart/form-data; an
+    attached image is routed to the vision model automatically.
     """
+    parsed = await parse_agent_request(request)
 
-    content_type = request.headers.get("content-type", "").lower()
+    system_prompt = TAILOR_AI_PROMPT
 
-    try:
-        # -----------------------------------------
-        # READ REQUEST
-        # -----------------------------------------
+    if parsed.profile:
+        system_prompt += career_profile_context(parsed.profile)
 
-        image_data_url = None
-
-        if "multipart/form-data" in content_type:
-            form = await request.form()
-
-            message = str(form.get("message") or "").strip()
-
-            history_raw = form.get("history") or "[]"
-            profile_raw = form.get("profile")
-
-            try:
-                history_data = json.loads(str(history_raw))
-            except json.JSONDecodeError:
-                history_data = []
-
-            if not isinstance(history_data, list):
-                history_data = []
-
-            profile_data = None
-            if profile_raw:
-                try:
-                    profile_data = json.loads(str(profile_raw))
-                except json.JSONDecodeError:
-                    profile_data = None
-
-            # Support either "image" or "file" as the frontend field name.
-            uploaded_image = form.get("image") or form.get("file")
-
-            if isinstance(uploaded_image, UploadFile):
-                if uploaded_image.content_type and not uploaded_image.content_type.startswith("image/"):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Only image files are supported."
-                    )
-
-                image_bytes = await uploaded_image.read()
-
-                # Prevent unnecessarily large requests.
-                if len(image_bytes) > 10 * 1024 * 1024:
-                    raise HTTPException(
-                        status_code=413,
-                        detail="Image is too large. Please upload an image under 10 MB."
-                    )
-
-                mime_type = uploaded_image.content_type or "image/jpeg"
-                encoded_image = base64.b64encode(image_bytes).decode("utf-8")
-                image_data_url = f"data:{mime_type};base64,{encoded_image}"
-
-        else:
-            # Keep the existing JSON API fully compatible with the current frontend.
-            payload = await request.json()
-            tailor_request = TailorRequest.model_validate(payload)
-
-            message = tailor_request.message.strip()
-            history_data = [item.model_dump() for item in tailor_request.history]
-            profile_data = (
-                tailor_request.profile.model_dump()
-                if tailor_request.profile
-                else None
-            )
-
-        if not message:
-            raise HTTPException(
-                status_code=400,
-                detail="Please enter a message."
-            )
-
-        # -----------------------------------------
-        # PROTECT THE MODEL FROM LONG CHATS
-        # -----------------------------------------
-
-        history_data = compact_tailor_history(
-            history_data
-        )
-
-        # -----------------------------------------
-        # SYSTEM PROMPT
-        # -----------------------------------------
-
-        system_prompt = (
-            "You are TailorAI, an AI career and placement assistant for "
-            "students, fresh graduates, and early-career professionals.\n\n"
-
-            "PRIMARY ROLE:\n"
-            "Help users achieve their career goals, especially in software, "
-            "technology, programming, and professional development.\n\n"
-
-            "AREAS YOU CAN HELP WITH:\n"
-            "- Career guidance and career decisions\n"
-            "- Programming and technical skills\n"
-            "- Learning roadmaps\n"
-            "- Projects and GitHub portfolios\n"
-            "- Resume and LinkedIn improvement\n"
-            "- Technical and HR interview preparation\n"
-            "- Job and placement preparation\n"
-            "- Study plans and learning schedules\n"
-            "- Salary and job-role guidance\n"
-            "- Skill-gap analysis\n\n"
-
-            "PERSONALIZATION:\n"
-            "Use the user's career profile whenever it is provided.\n"
-            "Do not ignore the career profile.\n"
-            "Use it to personalize recommendations, roadmaps, skill-gap "
-            "analysis, project suggestions, interview preparation, and "
-            "career advice.\n\n"
-
-            "CAREER PROFILE RULES:\n"
-            "The profile may contain:\n"
-            "- Current skills\n"
-            "- Target role\n"
-            "- Experience level\n"
-            "- Learning timeline\n"
-            "- Target salary\n\n"
-
-            "When a career profile is available, treat it as the user's "
-            "current career information.\n"
-            "Do not repeatedly ask the user for information already present "
-            "in the profile.\n"
-            "If the user asks about their career, goals, skills, roadmap, "
-            "or what they should learn next, use the profile information "
-            "to answer.\n\n"
-
-            "ROADMAP RULES:\n"
-            "When creating a roadmap:\n"
-            "1. Start from the user's current level.\n"
-            "2. Identify the target role.\n"
-            "3. Organize skills in a logical order.\n"
-            "4. Include practical projects.\n"
-            "5. Include interview and placement preparation when relevant.\n"
-            "6. Consider the user's timeline.\n"
-            "7. Clearly separate must-have skills from optional skills.\n\n"
-
-            "CONVERSATION MEMORY:\n"
-            "Use the conversation history to understand previous messages.\n"
-            "If the user says 'my goal', 'my skills', 'what should I learn "
-            "next', or similar phrases, use the career profile and relevant "
-            "conversation history when available.\n\n"
-
-            "GENERAL QUESTIONS:\n"
-            "Answer the user's actual question directly, even when it is a "
-            "simple general knowledge or everyday question.\n"
-            "Do not unnecessarily redirect general questions back to career topics.\n\n"
-
-            "RESPONSE STYLE:\n"
-            "1. Answer the user's exact question first.\n"
-            "2. Be practical, direct, and beginner-friendly when appropriate.\n"
-            "3. Prefer short paragraphs, clear headings, bullets, numbered steps, and small tables.\n"
-            "4. Use Markdown formatting consistently so the answer is easy to scan.\n"
-            "5. Do not write one giant paragraph. Break information into logical sections.\n"
-            "6. Do not repeat the same point in different words.\n"
-            "7. For simple questions, answer briefly (usually 3-8 sentences).\n"
-            "8. For normal questions, aim for roughly 250-500 words unless more detail is genuinely necessary.\n"
-            "9. Only give a long answer when the user asks for detail or the topic truly requires it.\n"
-            "10. Put the most important answer near the top.\n"
-            "11. For comparisons, use a compact Markdown table when it improves clarity.\n"
-            "12. For roadmaps, use numbered phases or weeks instead of long prose.\n"
-            "13. For code, explain briefly and keep code in fenced code blocks.\n"
-            "14. Be honest about difficulty, timelines, and job requirements.\n"
-            "15. Do not promise jobs or guaranteed salaries.\n"
-            "16. Ask a clarifying question only when the request is genuinely unclear."
-        )
-
-        messages = [
-            {
-                "role": "system",
-                "content": system_prompt
-            }
-        ]
-
-        # -----------------------------------------
-        # ADD CAREER PROFILE
-        # -----------------------------------------
-
-        if profile_data:
-            profile = profile_data
-
-            profile_context = (
-                "\n\nUSER CAREER PROFILE:\n"
-                f"Current Skills: {profile.get('skills', '')}\n"
-                f"Target Role: {profile.get('targetRole', '')}\n"
-                f"Experience Level: {profile.get('experience', '')}\n"
-                f"Timeline: {profile.get('timeline', '')}\n"
-                f"Target Salary: {profile.get('salaryGoal', '')}\n\n"
-                "Use this profile when answering the user's current request."
-            )
-
-            messages[0]["content"] += profile_context
-
-        # -----------------------------------------
-        # ADD HISTORY
-        # -----------------------------------------
-
-        for history_message in history_data:
-            if not isinstance(history_message, dict):
-                continue
-
-            role = (
-                "user"
-                if history_message.get("sender") == "user"
-                else "assistant"
-            )
-
-            text = str(history_message.get("text") or "")
-
-            if text:
-                messages.append(
-                    {
-                        "role": role,
-                        "content": text
-                    }
-                )
-
-        # -----------------------------------------
-        # CURRENT MESSAGE
-        # -----------------------------------------
-
-        if image_data_url:
-            # Groq vision models accept a multimodal content array.
-            current_content = [
-                {
-                    "type": "text",
-                    "text": message
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": image_data_url
-                    }
-                }
-            ]
-        else:
-            current_content = message
-
-        messages.append(
-            {
-                "role": "user",
-                "content": current_content
-            }
-        )
-
-        # -----------------------------------------
-        # CALL GROQ
-        # -----------------------------------------
-
-        model = (
-            "qwen/qwen3.6-27b"
-            if image_data_url
-            else "openai/gpt-oss-120b"
-        )
-
-        # Groq's Python client is synchronous. Run it in a worker thread so
-        # FastAPI's event loop is not blocked while the model is generating.
-        # A timeout also prevents the browser from appearing frozen forever.
-        def generate_response():
-            return client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=0.5,
-                max_tokens=TAILOR_MAX_OUTPUT_TOKENS
-            )
-
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(generate_response),
-                timeout=TAILOR_REQUEST_TIMEOUT_SECONDS
-            )
-        except asyncio.TimeoutError:
-            raise HTTPException(
-                status_code=504,
-                detail=(
-                    "TailorAI took too long to respond. "
-                    "Please try the question again or make it shorter."
-                )
-            )
-
-        choice = response.choices[0]
-        reply = choice.message.content or ""
-        finish_reason = getattr(choice, "finish_reason", None)
-
-        return {
-            "reply": reply,
-            "has_image": bool(image_data_url),
-            "truncated": finish_reason == "length"
-        }
-
-    except HTTPException:
-        raise
-
-    except Exception as error:
-        print("TailorAI Error:", repr(error))
-
-        raise HTTPException(
-            status_code=500,
-            detail="TailorAI could not generate a response."
-        )
+    return await generate_agent_reply(
+        "TailorAI",
+        system_prompt,
+        parsed,
+        0.5,
+        MAX_OUTPUT_TOKENS,
+    )
 
 
 # =========================================
@@ -871,7 +1206,7 @@ STRICT REQUIREMENTS:
         ],
 
         temperature=0.0,
-        max_tokens=2200,
+        max_completion_tokens=2200,
 
         response_format={
             "type": "json_object"
@@ -1011,7 +1346,7 @@ Required structure:
         ],
 
         temperature=0.0,
-        max_tokens=2500,
+        max_completion_tokens=2500,
 
         response_format={
             "type": "json_object"
@@ -1047,17 +1382,47 @@ Required structure:
 # GENERATE VERIFIED QUIZ
 # =========================================
 
-def generate_quiz(topic: str):
+# Each attempt is TWO inference calls (generate, then fact-check).
+# Three attempts meant up to six sequential calls with no overall
+# bound, which is the one path that could hold a connection open
+# past a proxy read timeout. Two attempts plus the deadline below
+# keep the worst case inside QUIZ_TIMEOUT_SECONDS.
+QUIZ_MAX_ATTEMPTS = 2
+QUIZ_TIMEOUT_SECONDS = 70
+
+
+def generate_quiz(topic: str, deadline: float | None = None):
 
     last_error = None
 
-    for attempt in range(3):
+    for attempt in range(QUIZ_MAX_ATTEMPTS):
+
+        # Do not start another pair of calls that cannot finish in
+        # time; fail fast so the client gets a real answer instead
+        # of a dropped connection.
+        if (
+            deadline is not None
+            and time.monotonic() > deadline
+        ):
+            log_ai(
+                "StudyAI",
+                "quiz budget exhausted",
+                attempt=attempt + 1,
+            )
+
+            break
 
         try:
 
-            print(
-                f"Generating quiz for '{topic}' "
-                f"(attempt {attempt + 1}/3)"
+            started = time.monotonic()
+
+            log_ai(
+                "StudyAI",
+                "inference request sent",
+                path="quiz",
+                model=TEXT_MODEL,
+                attempt=f"{attempt + 1}/{QUIZ_MAX_ATTEMPTS}",
+                calls=2,
             )
 
             # ---------------------------------
@@ -1090,9 +1455,11 @@ def generate_quiz(topic: str):
             # Always preserve requested topic
             verified_quiz["topic"] = topic
 
-            print(
-                f"Quiz successfully generated and verified "
-                f"for '{topic}'."
+            log_ai(
+                "StudyAI",
+                "quiz ready",
+                seconds=round(time.monotonic() - started, 2),
+                attempt=attempt + 1,
             )
 
             return verified_quiz
@@ -1193,7 +1560,8 @@ def extract_quiz_topic(message: str):
 
 def start_quiz(
     session_id: str,
-    topic: str
+    topic: str,
+    deadline: float | None = None
 ):
 
     pending_quiz_topics.pop(
@@ -1201,7 +1569,7 @@ def start_quiz(
         None
     )
 
-    quiz = generate_quiz(topic)
+    quiz = generate_quiz(topic, deadline)
 
     questions = quiz["questions"]
 
@@ -1441,32 +1809,123 @@ def process_quiz_answer(
 # STUDY AI
 # =========================================
 
+STUDY_AI_PROMPT = (
+    "You are StudyAI, an AI study assistant for students.\n\n"
+
+    "PRIMARY ROLE:\n"
+    "Help students learn subjects, understand concepts, "
+    "create study plans, practice questions, prepare for "
+    "exams, and improve their learning.\n\n"
+
+    "AREAS YOU CAN HELP WITH:\n"
+    "- Study plans\n"
+    "- Subject explanations\n"
+    "- Practice questions\n"
+    "- Exam preparation\n"
+    "- Programming and technical subjects\n"
+    "- Problem solving\n"
+    "- Revision plans\n"
+    "- Learning roadmaps\n"
+    "- Beginner-friendly explanations\n\n"
+
+    "RESPONSE STYLE:\n"
+    "1. Explain concepts clearly and simply.\n"
+    "2. Use headings, bullets, numbered steps, and examples.\n"
+    "3. For study plans, organize by day or week.\n"
+    "4. Be practical and focused.\n"
+    "5. Keep simple answers concise.\n"
+    "6. Explain step-by-step when requested.\n"
+    "7. Use conversation history when useful.\n\n"
+
+    "OUTPUT BUDGET:\n"
+    "Your reply length is capped, so plan the whole answer before you "
+    "start writing.\n"
+    "In a long plan give each day one compact line, or group similar "
+    "days into a single row, rather than a paragraph each.\n"
+    "Always reach your final section instead of stopping mid-answer, "
+    "and offer to expand any week or topic the user wants in more "
+    "detail.\n"
+)
+async def build_quiz(session_id: str, topic: str) -> dict:
+    """
+    Quiz generation is the only path that makes more than one
+    inference call, so it gets its own wall-clock bound. The
+    deadline stops a second attempt from starting when it could
+    not finish in time, and wait_for guarantees the HTTP response
+    comes back before any proxy read timeout.
+    """
+    started = time.monotonic()
+
+    deadline = started + QUIZ_TIMEOUT_SECONDS * 0.6
+
+    log_ai(
+        "StudyAI",
+        "request started",
+        path="quiz",
+        attempts=QUIZ_MAX_ATTEMPTS,
+        budget=QUIZ_TIMEOUT_SECONDS,
+    )
+
+    try:
+        quiz = await asyncio.wait_for(
+            asyncio.to_thread(
+                start_quiz,
+                session_id,
+                topic,
+                deadline
+            ),
+            timeout=QUIZ_TIMEOUT_SECONDS
+        )
+
+    except asyncio.TimeoutError:
+        log_ai(
+            "StudyAI",
+            "quiz DEADLINE EXCEEDED",
+            seconds=round(time.monotonic() - started, 2),
+        )
+
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "Building that quiz took too long. "
+                "Please try a more specific topic."
+            )
+        )
+
+    log_ai(
+        "StudyAI",
+        "total duration",
+        path="quiz",
+        seconds=round(time.monotonic() - started, 2),
+    )
+
+    return quiz
+
+
 @app.post("/study-ai")
-def study_ai(request: StudyRequest):
+async def study_ai(request: Request):
+    parsed = await parse_agent_request(request)
 
-    message = request.message.strip()
+    session_id = parsed.session_id or "default_session"
+    message = parsed.message
 
-    # =====================================
-    # EXISTING QUIZ
-    # =====================================
+    # -------------------------------------
+    # ANSWERING AN ACTIVE QUIZ
+    # -------------------------------------
 
-    if request.session_id in quiz_sessions:
-
-        return process_quiz_answer(
-            request.session_id,
+    if session_id in quiz_sessions:
+        return await asyncio.to_thread(
+            process_quiz_answer,
+            session_id,
             message
         )
 
-    # =====================================
-    # WAITING FOR QUIZ TOPIC
-    # =====================================
+    # -------------------------------------
+    # WAITING FOR A QUIZ TOPIC
+    # -------------------------------------
 
-    if request.session_id in pending_quiz_topics:
-
-        topic = message.strip()
-
-        if not topic:
-
+    if session_id in pending_quiz_topics:
+        if not message:
             return {
                 "type": "quiz_setup",
                 "status": "waiting_for_topic",
@@ -1476,14 +1935,11 @@ def study_ai(request: StudyRequest):
                 )
             }
 
-        return start_quiz(
-            request.session_id,
-            topic
-        )
+        return await build_quiz(session_id, message)
 
-    # =====================================
-    # NEW QUIZ DETECTION
-    # =====================================
+    # -------------------------------------
+    # NEW QUIZ REQUEST
+    # -------------------------------------
 
     quiz_keywords = [
         "quiz",
@@ -1498,14 +1954,10 @@ def study_ai(request: StudyRequest):
     )
 
     if is_quiz_request:
-
         topic = extract_quiz_topic(message)
 
         if not topic:
-
-            pending_quiz_topics[
-                request.session_id
-            ] = True
+            pending_quiz_topics[session_id] = True
 
             return {
                 "type": "quiz_setup",
@@ -1516,371 +1968,137 @@ def study_ai(request: StudyRequest):
                 )
             }
 
-        return start_quiz(
-            request.session_id,
-            topic
-        )
+        return await build_quiz(session_id, topic)
 
-    # =====================================
-    # NORMAL STUDY AI
-    # =====================================
+    # -------------------------------------
+    # NORMAL STUDY CHAT
+    # -------------------------------------
 
-    system_prompt = (
-        "You are StudyAI, an AI study assistant for students.\n\n"
-
-        "PRIMARY ROLE:\n"
-        "Help students learn subjects, understand concepts, "
-        "create study plans, practice questions, prepare for "
-        "exams, and improve their learning.\n\n"
-
-        "AREAS YOU CAN HELP WITH:\n"
-        "- Study plans\n"
-        "- Subject explanations\n"
-        "- Practice questions\n"
-        "- Exam preparation\n"
-        "- Programming and technical subjects\n"
-        "- Problem solving\n"
-        "- Revision plans\n"
-        "- Learning roadmaps\n"
-        "- Beginner-friendly explanations\n\n"
-
-        "RESPONSE STYLE:\n"
-        "1. Explain concepts clearly and simply.\n"
-        "2. Use headings, bullets, numbered steps, and examples.\n"
-        "3. For study plans, organize by day or week.\n"
-        "4. Be practical and focused.\n"
-        "5. Keep simple answers concise.\n"
-        "6. Explain step-by-step when requested.\n"
-        "7. Use conversation history when useful.\n"
+    return await generate_agent_reply(
+        "StudyAI",
+        STUDY_AI_PROMPT,
+        parsed,
+        0.5,
+        MAX_OUTPUT_TOKENS,
     )
 
-    messages = [
-        {
-            "role": "system",
-            "content": system_prompt
-        }
-    ]
 
-    bounded_study_history = compact_tailor_history(
-        [item.model_dump() for item in request.history]
-    )
-
-    for history_message in bounded_study_history:
-
-        role = (
-            "user"
-            if history_message.get("sender") == "user"
-            else "assistant"
-        )
-
-        text = str(history_message.get("text") or "")
-
-        if text:
-            messages.append(
-                {
-                    "role": role,
-                    "content": text
-                }
-            )
-
-    messages.append(
-        {
-            "role": "user",
-            "content": message
-        }
-    )
-
-    try:
-
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=messages,
-            temperature=0.5,
-            max_tokens=STUDY_MAX_OUTPUT_TOKENS
-        )
-
-        choice = response.choices[0]
-        reply = choice.message.content or ""
-
-        return {
-            "type": "normal",
-            "reply": reply,
-            "truncated": getattr(choice, "finish_reason", None) == "length"
-        }
-
-    except Exception as error:
-
-        print(
-            "StudyAI Error:",
-            error
-        )
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "StudyAI could not generate a response."
-            )
-
-        )
 # =========================================
 # LIFE AI
 # =========================================
 
-class LifeRequest(BaseModel):
-    message: str
-    history: list[Message] = Field(default_factory=list)
+LIFE_AI_PROMPT = (
+    "You are LifeAI, a practical and friendly personal "
+    "productivity assistant.\n\n"
 
+    "YOUR PURPOSE:\n"
+    "Help users set meaningful goals, create routines, "
+    "build habits, manage tasks, improve productivity, "
+    "and organize their personal life.\n\n"
 
+    "IMPORTANT CONVERSATION RULE:\n"
+    "Talk to the user like a helpful personal assistant, "
+    "not like a textbook or an article.\n"
+    "Do NOT dump long frameworks, lectures, or generic "
+    "goal-setting explanations unless the user specifically "
+    "asks for them.\n\n"
+
+    "GOAL SETTING:\n"
+    "When a user wants help setting goals, have a short "
+    "conversation first.\n"
+    "If the user explicitly asks for a detailed plan, "
+    "schedule, roadmap, or table and provides its scope, "
+    "answer directly instead of asking follow-up questions.\n"
+    "Ask only 1-3 useful questions at a time.\n"
+    "Useful information may include:\n"
+    "- What they want to achieve\n"
+    "- Why it matters\n"
+    "- Their desired timeline\n"
+    "- Their available time\n"
+    "- Their current situation\n\n"
+
+    "Once you have enough information:\n"
+    "1. Create a clear main goal.\n"
+    "2. Make it specific and measurable.\n"
+    "3. Break it into realistic milestones.\n"
+    "4. Give practical next actions.\n"
+    "5. Suggest a simple way to track progress.\n\n"
+
+    "ROUTINES:\n"
+    "When the user wants a routine, first understand "
+    "their schedule and priorities when necessary.\n"
+    "If they explicitly request a detailed routine or plan, "
+    "provide a practical best-effort version immediately and "
+    "state any assumptions briefly.\n"
+    "Then create a realistic routine with priorities, "
+    "time blocks, and reasonable breaks.\n"
+    "Do not create an unrealistic schedule packed with tasks.\n\n"
+
+    "HABITS:\n"
+    "When the user wants to build or track habits, help "
+    "them choose a small number of realistic habits.\n"
+    "Suggest clear frequency and tracking methods.\n"
+    "Focus on consistency rather than perfection.\n\n"
+
+    "TASKS AND PRODUCTIVITY:\n"
+    "Help users prioritize tasks based on importance, "
+    "urgency, effort, and available time.\n"
+    "Give clear next actions rather than vague advice.\n\n"
+
+    "CONVERSATION MEMORY:\n"
+    "Use the conversation history when relevant.\n"
+    "Remember goals, timelines, routines, habits, tasks, "
+    "and preferences mentioned earlier in the conversation.\n"
+    "If the user refers to something previously discussed, "
+    "use the available history instead of asking them "
+    "to repeat it.\n\n"
+
+    "RESPONSE STYLE:\n"
+    "- Be friendly, practical, and encouraging.\n"
+    "- Keep responses concise unless the user asks for detail.\n"
+    "- Prefer short paragraphs and bullet points.\n"
+    "- Use Markdown when it improves readability.\n"
+    "- Avoid unnecessary repetition.\n"
+    "- Do not ask many questions at once.\n"
+    "- Ask a question only when the answer is useful for "
+    "personalizing the next step.\n"
+    "- Always move the conversation forward.\n"
+    "- Do not pretend to know information the user has not provided.\n"
+    "- Never promise guaranteed results.\n\n"
+
+    "EXAMPLE BEHAVIOR:\n"
+    "If the user says 'Help me set my goals', do NOT respond "
+    "with a long explanation of goal-setting frameworks.\n"
+    "Instead, respond naturally with something like:\n"
+    "'Absolutely. Let's keep it simple. What's the main "
+    "thing you'd like to achieve in the next 6-12 months?'\n"
+    "Then continue the conversation based on their answer.\n\n"
+
+    "FINAL PRINCIPLE:\n"
+    "Your job is not just to give advice. Help the user turn "
+    "their ideas into realistic actions and keep the conversation "
+    "focused on progress."
+)
 @app.post("/life-ai")
-def life_ai(request: LifeRequest):
+async def life_ai(request: Request):
+    """
+    Productivity chat. Accepts JSON or multipart/form-data; an
+    attached image is routed to the vision model automatically.
+    """
+    parsed = await parse_agent_request(request)
 
-    message = request.message.strip()
-
-    if not message:
-        raise HTTPException(
-            status_code=400,
-            detail="Please enter a message."
-        )
-
-    system_prompt = (
-        "You are LifeAI, a practical and friendly personal "
-        "productivity assistant.\n\n"
-
-        "YOUR PURPOSE:\n"
-        "Help users set meaningful goals, create routines, "
-        "build habits, manage tasks, improve productivity, "
-        "and organize their personal life.\n\n"
-
-        "IMPORTANT CONVERSATION RULE:\n"
-        "Talk to the user like a helpful personal assistant, "
-        "not like a textbook or an article.\n"
-        "Do NOT dump long frameworks, lectures, or generic "
-        "goal-setting explanations unless the user specifically "
-        "asks for them.\n\n"
-
-        "GOAL SETTING:\n"
-        "When a user wants help setting goals, have a short "
-        "conversation first.\n"
-        "If the user explicitly asks for a detailed plan, "
-        "schedule, roadmap, or table and provides its scope, "
-        "answer directly instead of asking follow-up questions.\n"
-        "Ask only 1-3 useful questions at a time.\n"
-        "Useful information may include:\n"
-        "- What they want to achieve\n"
-        "- Why it matters\n"
-        "- Their desired timeline\n"
-        "- Their available time\n"
-        "- Their current situation\n\n"
-
-        "Once you have enough information:\n"
-        "1. Create a clear main goal.\n"
-        "2. Make it specific and measurable.\n"
-        "3. Break it into realistic milestones.\n"
-        "4. Give practical next actions.\n"
-        "5. Suggest a simple way to track progress.\n\n"
-
-        "ROUTINES:\n"
-        "When the user wants a routine, first understand "
-        "their schedule and priorities when necessary.\n"
-        "If they explicitly request a detailed routine or plan, "
-        "provide a practical best-effort version immediately and "
-        "state any assumptions briefly.\n"
-        "Then create a realistic routine with priorities, "
-        "time blocks, and reasonable breaks.\n"
-        "Do not create an unrealistic schedule packed with tasks.\n\n"
-
-        "HABITS:\n"
-        "When the user wants to build or track habits, help "
-        "them choose a small number of realistic habits.\n"
-        "Suggest clear frequency and tracking methods.\n"
-        "Focus on consistency rather than perfection.\n\n"
-
-        "TASKS AND PRODUCTIVITY:\n"
-        "Help users prioritize tasks based on importance, "
-        "urgency, effort, and available time.\n"
-        "Give clear next actions rather than vague advice.\n\n"
-
-        "CONVERSATION MEMORY:\n"
-        "Use the conversation history when relevant.\n"
-        "Remember goals, timelines, routines, habits, tasks, "
-        "and preferences mentioned earlier in the conversation.\n"
-        "If the user refers to something previously discussed, "
-        "use the available history instead of asking them "
-        "to repeat it.\n\n"
-
-        "RESPONSE STYLE:\n"
-        "- Be friendly, practical, and encouraging.\n"
-        "- Keep responses concise unless the user asks for detail.\n"
-        "- Prefer short paragraphs and bullet points.\n"
-        "- Use Markdown when it improves readability.\n"
-        "- Avoid unnecessary repetition.\n"
-        "- Do not ask many questions at once.\n"
-        "- Ask a question only when the answer is useful for "
-        "personalizing the next step.\n"
-        "- Always move the conversation forward.\n"
-        "- Do not pretend to know information the user has not provided.\n"
-        "- Never promise guaranteed results.\n\n"
-
-        "EXAMPLE BEHAVIOR:\n"
-        "If the user says 'Help me set my goals', do NOT respond "
-        "with a long explanation of goal-setting frameworks.\n"
-        "Instead, respond naturally with something like:\n"
-        "'Absolutely. Let's keep it simple. What's the main "
-        "thing you'd like to achieve in the next 6-12 months?'\n"
-        "Then continue the conversation based on their answer.\n\n"
-
-        "FINAL PRINCIPLE:\n"
-        "Your job is not just to give advice. Help the user turn "
-        "their ideas into realistic actions and keep the conversation "
-        "focused on progress."
+    return await generate_agent_reply(
+        "LifeAI",
+        LIFE_AI_PROMPT,
+        parsed,
+        0.6,
+        MAX_OUTPUT_TOKENS,
     )
-
-    messages = [
-        {
-            "role": "system",
-            "content": system_prompt
-        }
-    ]
-
-    # -----------------------------------------
-    # ADD CONVERSATION HISTORY
-    # -----------------------------------------
-
-    bounded_life_history = compact_tailor_history(
-        [item.model_dump() for item in request.history]
-    )
-
-    for history_message in bounded_life_history:
-
-        role = (
-            "user"
-            if history_message.get("sender") == "user"
-            else "assistant"
-        )
-
-        text = str(history_message.get("text") or "")
-
-        if text:
-            messages.append(
-                {
-                    "role": role,
-                    "content": text
-                }
-            )
-
-    # -----------------------------------------
-    # CURRENT MESSAGE
-    # -----------------------------------------
-
-    messages.append(
-        {
-            "role": "user",
-            "content": message
-        }
-    )
-
-    # -----------------------------------------
-    # GENERATE LIFEAI RESPONSE
-    # -----------------------------------------
-
-    try:
-
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=messages,
-            temperature=0.6,
-            max_tokens=LIFE_MAX_OUTPUT_TOKENS
-        )
-
-        choice = response.choices[0]
-        reply = choice.message.content or ""
-
-        return {
-            "type": "normal",
-            "reply": reply,
-            "truncated": getattr(choice, "finish_reason", None) == "length"
-        }
-
-    except Exception as error:
-
-        print(
-            "LifeAI Error:",
-            error
-        )
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "LifeAI could not generate a response."
-            )
-        )
 
 
 # =========================================
 # CODE / FINANCE / HEALTH AI
 # =========================================
-
-class SpecializedAgentRequest(BaseModel):
-    message: str
-    history: list[Message] = Field(default_factory=list)
-
-
-SPECIALIZED_MAX_OUTPUT_TOKENS = 5000
-
-
-def generate_specialized_agent_response(
-    request: SpecializedAgentRequest,
-    system_prompt: str,
-    temperature: float,
-):
-    message = request.message.strip()
-
-    if not message:
-        raise HTTPException(
-            status_code=400,
-            detail="Please enter a message."
-        )
-
-    messages = [{
-        "role": "system",
-        "content": system_prompt
-    }]
-
-    bounded_history = compact_tailor_history(
-        [item.model_dump() for item in request.history]
-    )
-
-    for history_message in bounded_history:
-        text = str(history_message.get("text") or "")
-        if text:
-            messages.append({
-                "role": (
-                    "user"
-                    if history_message.get("sender") == "user"
-                    else "assistant"
-                ),
-                "content": text
-            })
-
-    messages.append({
-        "role": "user",
-        "content": message
-    })
-
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
-        messages=messages,
-        temperature=temperature,
-        max_tokens=SPECIALIZED_MAX_OUTPUT_TOKENS
-    )
-
-    choice = response.choices[0]
-    return {
-        "type": "normal",
-        "reply": choice.message.content or "",
-        "truncated": getattr(choice, "finish_reason", None) == "length"
-    }
-
 
 CODE_AI_PROMPT = (
     "You are CodeAI, a programming and software development assistant.\n\n"
@@ -1899,7 +2117,15 @@ FINANCE_AI_PROMPT = (
     "education, financial planning basics, and financial literacy. Explain "
     "clearly and structure plans with tables or lists when useful. Clearly "
     "distinguish general educational information from professional advice. "
-    "Never promise returns or present financial outcomes as guaranteed."
+    "Never promise returns or present financial outcomes as guaranteed.\n\n"
+
+    "OUTPUT BUDGET:\n"
+    "Your reply length is capped, so plan the whole answer before you "
+    "start writing. Keep tables compact, and summarise repeated months "
+    "or quarters in one grouped row rather than repeating every one in "
+    "full. Always reach your closing section instead of stopping "
+    "mid-answer, and offer to expand any part the user wants in more "
+    "detail."
 )
 
 
@@ -1914,54 +2140,39 @@ HEALTH_AI_PROMPT = (
 
 
 @app.post("/code-ai")
-def code_ai(request: SpecializedAgentRequest):
-    try:
-        return generate_specialized_agent_response(
-            request,
-            CODE_AI_PROMPT,
-            0.4
-        )
-    except HTTPException:
-        raise
-    except Exception as error:
-        print("CodeAI Error:", error)
-        raise HTTPException(
-            status_code=500,
-            detail="CodeAI could not generate a response."
-        )
+async def code_ai(request: Request):
+    parsed = await parse_agent_request(request)
+
+    return await generate_agent_reply(
+        "CodeAI",
+        CODE_AI_PROMPT,
+        parsed,
+        0.4,
+        MAX_OUTPUT_TOKENS,
+    )
 
 
 @app.post("/finance-ai")
-def finance_ai(request: SpecializedAgentRequest):
-    try:
-        return generate_specialized_agent_response(
-            request,
-            FINANCE_AI_PROMPT,
-            0.5
-        )
-    except HTTPException:
-        raise
-    except Exception as error:
-        print("FinanceAI Error:", error)
-        raise HTTPException(
-            status_code=500,
-            detail="FinanceAI could not generate a response."
-        )
+async def finance_ai(request: Request):
+    parsed = await parse_agent_request(request)
+
+    return await generate_agent_reply(
+        "FinanceAI",
+        FINANCE_AI_PROMPT,
+        parsed,
+        0.5,
+        MAX_OUTPUT_TOKENS,
+    )
 
 
 @app.post("/health-ai")
-def health_ai(request: SpecializedAgentRequest):
-    try:
-        return generate_specialized_agent_response(
-            request,
-            HEALTH_AI_PROMPT,
-            0.5
-        )
-    except HTTPException:
-        raise
-    except Exception as error:
-        print("HealthAI Error:", error)
-        raise HTTPException(
-            status_code=500,
-            detail="HealthAI could not generate a response."
-        )
+async def health_ai(request: Request):
+    parsed = await parse_agent_request(request)
+
+    return await generate_agent_reply(
+        "HealthAI",
+        HEALTH_AI_PROMPT,
+        parsed,
+        0.5,
+        MAX_OUTPUT_TOKENS,
+    )

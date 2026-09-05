@@ -9,15 +9,10 @@ import Footer from "../Footer/Footer";
 import {
   saveCareerProfile,
   getCareerAIAnalysis,
+  toUserMessage,
 } from "../../services/api";
 
-type CareerProfileData = {
-  skills: string;
-  targetRole: string;
-  experience: string;
-  timeline: string;
-  salaryGoal: string;
-};
+import type { CareerProfileData } from "../../services/api";
 
 const emptyProfile: CareerProfileData = {
   skills: "",
@@ -104,7 +99,11 @@ function CareerProfile() {
         error
       );
 
-      alert("Failed to save career profile.");
+      /* The profile is already in localStorage, so say what
+         actually failed instead of implying it was lost. */
+      alert(
+        `Saved on this device, but the server could not be reached.\n\n${toUserMessage(error)}`
+      );
     }
   }
 
@@ -138,9 +137,7 @@ function CareerProfile() {
         error
       );
 
-      setAnalysis(
-        "Sorry, something went wrong while generating your career analysis. Please make sure the backend server is running."
-      );
+      setAnalysis(toUserMessage(error));
     } finally {
       setAnalyzing(false);
     }

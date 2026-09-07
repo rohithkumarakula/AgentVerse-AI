@@ -1,206 +1,190 @@
-# 🚀 AgentVerse AI
+# AgentVerse AI
 
-> **One Platform. Infinite AI Agents.**
+One Platform. Infinite AI Agents.
 
-AgentVerse AI is a multi-agent AI platform designed to bring specialized AI assistants together under a single intelligent ecosystem. Instead of using separate AI applications for different tasks, AgentVerse AI enables multiple AI agents to collaborate through a shared memory engine and a central AI Brain.
+AgentVerse AI is a multi-agent AI platform that provides specialized AI assistants for different areas through a single unified interface.
 
-The platform is being built publicly as part of the **#60DaysOfAgentVerseAI** challenge.
+## Live Demo
 
----
+https://agent-verse-ai-teal.vercel.app
 
-## 🌟 Vision
+## AI Agents
 
-Build an AI platform where specialized agents work together, remember user preferences, and provide personalized assistance across different domains.
+| Agent | Purpose |
+|---|---|
+| TailorAI | Career and placement assistance |
+| StudyAI | Education and learning assistance |
+| LifeAI | Productivity and everyday assistance |
+| CodeAI | Programming and coding assistance |
+| FinanceAI | Personal finance analysis |
+| HealthAI | Health and fitness assistance |
 
-The long-term goal is to create an intelligent ecosystem that feels like having an entire team of AI assistants working together.
+## Key Features
 
----
+- Six specialized AI agents
+- Text-based AI conversations
+- Image analysis for supported agents
+- Chat history
+- New chat functionality
+- Copy, edit and share message actions
+- Responsive desktop and mobile interface
+- Centralized API client
+- FastAPI backend
+- React frontend
+- Production deployment
 
-# 🤖 Core Agents
+## Tech Stack
 
-## 🎯 TailorAI
-Your personal career assistant.
-
-### Features
-- Resume analysis
-- Resume tailoring
-- Cover letter generation
-- Job matching
-- Application tracking
-
----
-
-## 📚 StudyAI
-Your personalized learning companion.
-
-### Features
-- Study planning
-- PDF summarization
-- Quiz generation
-- Learning progress tracking
-- AI tutoring
-
----
-
-## 🏡 LifeAI
-Your everyday productivity assistant.
-
-### Features
-- Task management
-- Habit tracking
-- Reminders
-- Calendar organization
-- Personal productivity
-
----
-
-# 🧠 Core Architecture
-
-AgentVerse AI consists of five main components:
-
-- AI Brain
-- Memory Engine
-- Authentication System
-- Dashboard
-- Specialized AI Agents
-
-Each agent shares the same memory, allowing the platform to understand user preferences and context over time.
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend
-
+### Frontend
 - React
 - TypeScript
-- Tailwind CSS
 - Vite
+- CSS
 
-## Backend
-
+### Backend
 - Python
 - FastAPI
+- Groq API
 
-## Database
+### Deployment
+- Vercel — Frontend
+- Render — Backend
 
-- PostgreSQL
+## Architecture
 
-## AI
+Frontend
+    ↓
+Vercel
+    ↓
+FastAPI Backend
+    ↓
+Groq AI
+    ↓
+Specialized Agent
 
-- OpenAI API / Groq API
+## Project Structure
 
-## Authentication
-
-- JWT Authentication
-
----
-
-# 📁 Project Structure
-
-```text
 AgentVerse-AI/
-│
 ├── frontend/
 ├── backend/
-├── docs/
-│
 ├── README.md
 ├── BUILD_LOG.md
-├── ROADMAP.md
 ├── CHANGELOG.md
-├── LICENSE
-└── .gitignore
+├── ROADMAP.md
+└── LICENSE
+
+## Running Locally
+
+### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
 ```
 
----
+Backend runs at:
 
-# 🗺️ Roadmap
+http://localhost:8000
 
-### ✅ Day 0
-- Project vision
-- Branding
-- GitHub setup
-- Documentation
+### Frontend
 
-### 🚧 Phase 1
-- Project setup
-- Authentication
-- Database
-- Memory Engine
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### 🚧 Phase 2
-- AI Brain
+Frontend runs at:
 
-### 🚧 Phase 3
-- TailorAI
+http://localhost:5173
 
-### 🚧 Phase 4
-- StudyAI
+## Environment Variables
 
-### 🚧 Phase 5
-- LifeAI
+### Frontend
 
-### 🚧 Phase 6
-- Testing
-- Deployment
-- Documentation
+Create a `.env` file inside the `frontend` folder:
 
----
+```env
+VITE_API_URL=http://localhost:8000
+```
 
-# 🚀 Getting Started
+For production, the frontend uses the deployed backend URL.
 
-The project is currently under active development.
+### Backend
 
-Development officially begins on **Day 1** of the **#60DaysOfAgentVerseAI** challenge.
+Keep API keys and other sensitive credentials in environment variables. Do not commit `.env` files or API keys to GitHub.
 
----
+## API Endpoints
 
-# 📅 Build in Public
+The backend currently provides endpoints for:
 
-This project is being built completely in public.
+- `/career-profile`
+- `/career-ai`
+- `/tailor-ai`
+- `/study-ai`
+- `/life-ai`
+- `/code-ai`
+- `/finance-ai`
 
-Every day includes:
+## Testing
 
-- 💻 Development
-- 📌 GitHub commits
-- 📝 Build logs
-- 🌐 LinkedIn updates
+AgentVerse AI has been tested for:
 
-Follow the journey as AgentVerse AI evolves from an idea into a fully functional AI platform.
+- AI agent responses
+- Image analysis
+- Chat functionality
+- Chat history
+- New chat functionality
+- Message actions
+- Desktop responsive UI
+- Mobile responsive UI
+- Frontend-to-backend communication
+- Production deployment
 
----
+## Documentation
 
-# 🌱 Future Plans
+Additional project documentation:
 
-- AI Plugin Marketplace
-- Voice Assistant
-- Mobile Application
-- Multi-language Support
-- Team Collaboration
-- Cloud Deployment
-- Enterprise Version
+- `BUILD_LOG.md` — development progress
+- `CHANGELOG.md` — project changes
+- `ROADMAP.md` — future plans and development direction
 
----
+## Deployment
 
-# 🤝 Contributing
+The production application is deployed using:
 
-Contributions, suggestions, and feedback are welcome.
+- **Frontend:** Vercel
+- **Backend:** Render
 
-As the project grows, contribution guidelines will be added.
+Live application:
 
----
+https://agent-verse-ai-teal.vercel.app
 
-# 📄 License
+## Future Improvements
+
+- Additional specialized AI agents
+- Improved agent orchestration
+- More advanced memory capabilities
+- Voice interaction
+- Additional image-based capabilities
+- Enhanced personalization
+
+## License
 
 This project is licensed under the MIT License.
 
+## Author
+
+**Rohith Akula**
+
+GitHub: https://github.com/rohithkumarakula
+
 ---
 
-## ⭐ Support
-
-If you find this project interesting, consider giving it a ⭐ on GitHub and following the development journey.
-
----
-
-> **Building the future of AI—one day at a time.**
+Built as part of the `#60DaysOfAgentVerseAI` journey.
